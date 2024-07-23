@@ -5,7 +5,6 @@
     </template>
     <template #right-header>
       <CustomActions
-        v-if="leadsListView?.customListActions"
         :actions="leadsListView.customListActions"
       />
       <Button
@@ -243,6 +242,7 @@
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
     @applyFilter="(data) => viewControls.applyFilter(data)"
+    @applyFilterByListHeader="(data) => viewControls.applyFilterByListHeader(data)"
     @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
     @likeDoc="(data) => viewControls.likeDoc(data)"
   />

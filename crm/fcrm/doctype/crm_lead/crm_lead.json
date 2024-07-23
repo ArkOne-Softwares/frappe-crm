@@ -31,6 +31,7 @@
   "middle_name",
   "gender",
   "phone",
+  "dob",
   "column_break_dbsv",
   "status",
   "no_of_employees",
@@ -146,12 +147,6 @@
    "fieldtype": "Link",
    "label": "Lead Owner",
    "options": "User"
-  },
-  {
-   "fieldname": "source",
-   "fieldtype": "Link",
-   "label": "Source",
-   "options": "CRM Lead Source"
   },
   {
    "fieldname": "industry",
@@ -286,12 +281,24 @@
    "fieldtype": "Table",
    "label": "Status Change Log",
    "options": "CRM Status Change Log"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "CRM Lead Source"
+  },
+  {
+   "fieldname": "dob",
+   "fieldtype": "Date",
+   "label": "Date Of Birth",
+   "options": "18"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-05 00:58:07.321058",
+ "modified": "2024-07-19 21:37:57.605322",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

@@ -1043,6 +1043,20 @@ function saveView() {
   showViewModal.value = true
 }
 
+function applyFilterByListHeader( {event, column, searchValue} ) {
+  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  if (restrictedFieldtypes.includes(column.type)) return
+  
+  event.stopPropagation()
+  event.preventDefault()
+
+  let filters = { ...list.value.params.filters }
+
+  filters[column.key] = ['LIKE', `%${searchValue}%`]
+
+  updateFilter(filters)
+}
+
 function applyFilter({ event, idx, column, item, firstColumn }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
@@ -1096,6 +1110,7 @@ function likeDoc({ name, liked }) {
 
 defineExpose({
   applyFilter,
+  applyFilterByListHeader,
   applyLikeFilter,
   likeDoc,
   updateKanbanSettings,
