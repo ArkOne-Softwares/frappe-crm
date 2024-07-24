@@ -164,6 +164,7 @@
             />
           </div>
         </div>
+        
         <div
           v-if="activity.activity_type == 'communication'"
           class="pb-5 mt-px"

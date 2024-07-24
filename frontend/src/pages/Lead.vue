@@ -432,14 +432,25 @@ const tabs = computed(() => {
       icon: ActivityIcon,
     },
     {
-      name: 'Emails',
-      label: __('Emails'),
-      icon: EmailIcon,
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
     },
     {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
     },
     {
       name: 'Calls',
@@ -448,20 +459,9 @@ const tabs = computed(() => {
       condition: () => callEnabled.value,
     },
     {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
-    },
-    {
-      name: 'Notes',
-      label: __('Notes'),
-      icon: NoteIcon,
-    },
-    {
-      name: 'WhatsApp',
-      label: __('WhatsApp'),
-      icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
