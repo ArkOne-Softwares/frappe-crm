@@ -51,7 +51,8 @@
   "first_responded_on",
   "log_tab",
   "status_change_log",
-  "tasks"
+  "tasks",
+  "next_contact_date"
  ],
  "fields": [
   {
@@ -300,12 +301,17 @@
    "fieldtype": "Link",
    "label": "Tasks",
    "options": "CRM Task"
+  },
+  {
+   "fieldname": "next_contact_date",
+   "fieldtype": "Data",
+   "label": "Next Contact Date"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-25 16:42:59.172189",
+ "modified": "2024-07-26 03:32:15.960140",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

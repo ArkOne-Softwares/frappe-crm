@@ -45,7 +45,7 @@
             @update="updateKanbanSettings" />
           <ColumnSettings v-else-if="!options.hideColumnsButton" v-model="list" :doctype="doctype"
             :hideLabel="isMobileView" @update="(isDefault) => updateColumns(isDefault)" />
-          <QuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView"
+          <ShowQuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)" />
         </div>
       </div>
@@ -105,8 +105,7 @@
           @update="updateKanbanSettings" />
         <ColumnSettings v-else-if="!options.hideColumnsButton" v-model="list" :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)" />
-        <QuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView"
-          @update="(isDefault) => updateColumns(isDefault)" />
+        <ShowQuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView" @update="applyCustomQuickFilter" />
         <Dropdown v-if="
           !options.hideColumnsButton && route.params.viewType !== 'kanban'
         " :options="[
@@ -188,7 +187,7 @@ import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
-import QuickFilter from '@/components/QuickFilter.vue'
+import ShowQuickFilter from '@/components/ShowQuickFilter.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
@@ -950,6 +949,31 @@ function saveView() {
   showViewModal.value = true
 }
 
+function applyCustomQuickFilter(selectedFilter) {
+
+  console.log('applyCustomQuickFilter', selectedFilter);
+
+  if (!selectedFilter) updateFilter([])
+
+  // let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  // if (restrictedFieldtypes.includes(column.type)) return
+
+  // event.stopPropagation()
+  // event.preventDefault()
+  let filters = { ...list.value.params.filters }
+  if (selectedFilter == 'new') {
+    filters['status'] = `New`
+  }
+  if (selectedFilter == 'newToday') {
+    filters['status'] = `New`
+  }
+  if (selectedFilter == 'all') {
+    filters = []
+  }
+
+  updateFilter(filters)
+}
+
 function applyFilterByListHeader({ event, column, searchValue }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type)) return
@@ -1017,6 +1041,7 @@ function likeDoc({ name, liked }) {
 
 defineExpose({
   applyFilter,
+  applyCustomQuickFilter,
   applyFilterByListHeader,
   applyLikeFilter,
   likeDoc,
