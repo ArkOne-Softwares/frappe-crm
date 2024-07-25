@@ -50,7 +50,8 @@
   "first_response_time",
   "first_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "tasks"
  ],
  "fields": [
   {
@@ -293,12 +294,18 @@
    "fieldtype": "Date",
    "label": "Date Of Birth",
    "options": "18"
+  },
+  {
+   "fieldname": "tasks",
+   "fieldtype": "Link",
+   "label": "Tasks",
+   "options": "CRM Task"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-19 21:37:57.605322",
+ "modified": "2024-07-25 16:42:59.172189",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

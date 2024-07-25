@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="isMobileView"
-    class="flex flex-col justify-between gap-2 sm:px-5 px-3 py-4"
-  >
+  <div v-if="isMobileView" class="flex flex-col justify-between gap-2 sm:px-5 px-3 py-4">
     <div class="flex items-center justify-between gap-2 overflow-x-auto">
       <div class="flex gap-2">
         <Dropdown :options="viewsDropdownOptions">
@@ -12,18 +9,11 @@
                 <div v-if="isEmoji(currentView.icon)">
                   {{ currentView.icon }}
                 </div>
-                <FeatherIcon
-                  v-else-if="typeof currentView.icon == 'string'"
-                  :name="currentView.icon"
-                  class="h-4"
-                />
+                <FeatherIcon v-else-if="typeof currentView.icon == 'string'" :name="currentView.icon" class="h-4" />
                 <component v-else :is="currentView.icon" class="h-4" />
               </template>
               <template #suffix>
-                <FeatherIcon
-                  :name="open ? 'chevron-up' : 'chevron-down'"
-                  class="h-4 text-gray-600"
-                />
+                <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-gray-600" />
               </template>
             </Button>
           </template>
@@ -43,48 +33,24 @@
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between gap-2 overflow-x-auto">
         <div class="flex gap-2">
-          <Filter
-            v-model="list"
-            :doctype="doctype"
-            :default_filters="filters"
-            @update="updateFilter"
-          />
-          <GroupBy
-            v-if="route.params.viewType === 'group_by'"
-            v-model="list"
-            :doctype="doctype"
-            :hideLabel="isMobileView"
-            @update="updateGroupBy"
-          />
+          <Filter v-model="list" :doctype="doctype" :default_filters="filters" @update="updateFilter" />
+          <GroupBy v-if="route.params.viewType === 'group_by'" v-model="list" :doctype="doctype"
+            :hideLabel="isMobileView" @update="updateGroupBy" />
         </div>
 
         <div class="flex gap-2">
-          <SortBy
-            v-if="route.params.viewType !== 'kanban'"
-            v-model="list"
-            :doctype="doctype"
-            @update="updateSort"
-            :hideLabel="isMobileView"
-          />
-          <KanbanSettings
-            v-if="route.params.viewType === 'kanban'"
-            v-model="list"
-            :doctype="doctype"
-            @update="updateKanbanSettings"
-          />
-          <ColumnSettings
-            v-else-if="!options.hideColumnsButton"
-            v-model="list"
-            :doctype="doctype"
-            :hideLabel="isMobileView"
-            @update="(isDefault) => updateColumns(isDefault)"
-          />
+          <SortBy v-if="route.params.viewType !== 'kanban'" v-model="list" :doctype="doctype" @update="updateSort"
+            :hideLabel="isMobileView" />
+          <KanbanSettings v-if="route.params.viewType === 'kanban'" v-model="list" :doctype="doctype"
+            @update="updateKanbanSettings" />
+          <ColumnSettings v-else-if="!options.hideColumnsButton" v-model="list" :doctype="doctype"
+            :hideLabel="isMobileView" @update="(isDefault) => updateColumns(isDefault)" />
+          <QuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView"
+            @update="(isDefault) => updateColumns(isDefault)" />
         </div>
       </div>
-      <div
-        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
-        class="flex flex-row-reverse items-center gap-2 border-r pr-2"
-      >
+      <div v-if="viewUpdated && route.query.view && (!view.public || isManager())"
+        class="flex flex-row-reverse items-center gap-2 border-r pr-2">
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />
       </div>
@@ -97,18 +63,11 @@
           <Button :label="__(currentView.label)">
             <template #prefix>
               <div v-if="isEmoji(currentView.icon)">{{ currentView.icon }}</div>
-              <FeatherIcon
-                v-else-if="typeof currentView.icon == 'string'"
-                :name="currentView.icon"
-                class="h-4"
-              />
+              <FeatherIcon v-else-if="typeof currentView.icon == 'string'" :name="currentView.icon" class="h-4" />
               <component v-else :is="currentView.icon" class="h-4" />
             </template>
             <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4 text-gray-600"
-              />
+              <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4 text-gray-600" />
             </template>
           </Button>
         </template>
@@ -120,27 +79,15 @@
       </Dropdown>
     </div>
     <div class="-mr-2 h-[70%] border-l" />
-    <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto px-1"
-      orientation="horizontal"
-    >
-      <div
-        v-for="filter in quickFilterList"
-        :key="filter.name"
-        class="m-1 min-w-36"
-      >
-        <QuickFilterField
-          :filter="filter"
-          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
-        />
+    <FadedScrollableDiv class="flex flex-1 items-center overflow-x-auto px-1" orientation="horizontal">
+      <div v-for="filter in quickFilterList" :key="filter.name" class="m-1 min-w-36">
+        <QuickFilterField :filter="filter" @applyQuickFilter="(f, v) => applyQuickFilter(f, v)" />
       </div>
     </FadedScrollableDiv>
     <div class="-ml-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
-      <div
-        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
-        class="flex items-center gap-2 border-r pr-2"
-      >
+      <div v-if="viewUpdated && route.query.view && (!view.public || isManager())"
+        class="flex items-center gap-2 border-r pr-2">
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />
       </div>
@@ -150,55 +97,32 @@
             <RefreshIcon class="h-4 w-4" />
           </template>
         </Button>
-        <GroupBy
-          v-if="route.params.viewType === 'group_by'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateGroupBy"
-        />
-        <Filter
-          v-model="list"
-          :doctype="doctype"
-          :default_filters="filters"
-          @update="updateFilter"
-        />
-        <SortBy
-          v-if="route.params.viewType !== 'kanban'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateSort"
-        />
-        <KanbanSettings
-          v-if="route.params.viewType === 'kanban'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateKanbanSettings"
-        />
-        <ColumnSettings
-          v-else-if="!options.hideColumnsButton"
-          v-model="list"
-          :doctype="doctype"
-          @update="(isDefault) => updateColumns(isDefault)"
-        />
-        <Dropdown
-          v-if="
-            !options.hideColumnsButton && route.params.viewType !== 'kanban'
-          "
-          :options="[
-            {
-              group: __('Options'),
-              hideLabel: true,
-              items: [
-                {
-                  label: __('Export'),
-                  icon: () =>
-                    h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
-                  onClick: () => (showExportDialog = true),
-                },
-              ],
-            },
-          ]"
-        >
+        <GroupBy v-if="route.params.viewType === 'group_by'" v-model="list" :doctype="doctype"
+          @update="updateGroupBy" />
+        <Filter v-model="list" :doctype="doctype" :default_filters="filters" @update="updateFilter" />
+        <SortBy v-if="route.params.viewType !== 'kanban'" v-model="list" :doctype="doctype" @update="updateSort" />
+        <KanbanSettings v-if="route.params.viewType === 'kanban'" v-model="list" :doctype="doctype"
+          @update="updateKanbanSettings" />
+        <ColumnSettings v-else-if="!options.hideColumnsButton" v-model="list" :doctype="doctype"
+          @update="(isDefault) => updateColumns(isDefault)" />
+        <QuickFilter v-model="list" :doctype="doctype" :hideLabel="isMobileView"
+          @update="(isDefault) => updateColumns(isDefault)" />
+        <Dropdown v-if="
+          !options.hideColumnsButton && route.params.viewType !== 'kanban'
+        " :options="[
+          {
+            group: __('Options'),
+            hideLabel: true,
+            items: [
+              {
+                label: __('Export'),
+                icon: () =>
+                  h(FeatherIcon, { name: 'download', class: 'h-4 w-4' }),
+                onClick: () => (showExportDialog = true),
+              },
+            ],
+          },
+        ]">
           <template #default>
             <Button icon="more-horizontal" />
           </template>
@@ -206,63 +130,45 @@
       </div>
     </div>
   </div>
-  <ViewModal
-    v-model="showViewModal"
-    v-model:view="viewModalObj"
-    :doctype="doctype"
-    :options="{
-      afterCreate: async (v) => {
-        await reloadView()
-        viewUpdated = false
-        router.push({
-          name: route.name,
-          params: { viewType: v.type || 'list' },
-          query: { view: v.name },
-        })
+  <ViewModal v-model="showViewModal" v-model:view="viewModalObj" :doctype="doctype" :options="{
+    afterCreate: async (v) => {
+      await reloadView()
+      viewUpdated = false
+      router.push({
+        name: route.name,
+        params: { viewType: v.type || 'list' },
+        query: { view: v.name },
+      })
+    },
+    afterUpdate: () => {
+      viewUpdated = false
+      reloadView()
+    },
+  }" />
+  <Dialog v-model="showExportDialog" :options="{
+    title: __('Export'),
+    actions: [
+      {
+        label: __('Download'),
+        variant: 'solid',
+        onClick: () => exportRows(),
       },
-      afterUpdate: () => {
-        viewUpdated = false
-        reloadView()
-      },
-    }"
-  />
-  <Dialog
-    v-model="showExportDialog"
-    :options="{
-      title: __('Export'),
-      actions: [
-        {
-          label: __('Download'),
-          variant: 'solid',
-          onClick: () => exportRows(),
-        },
-      ],
-    }"
-  >
+    ],
+  }">
     <template #body-content>
-      <FormControl
-        variant="outline"
-        :label="__('Export Type')"
-        type="select"
-        :options="[
-          {
-            label: __('Excel'),
-            value: 'Excel',
-          },
-          {
-            label: __('CSV'),
-            value: 'CSV',
-          },
-        ]"
-        v-model="export_type"
-        :placeholder="__('Excel')"
-      />
+      <FormControl variant="outline" :label="__('Export Type')" type="select" :options="[
+        {
+          label: __('Excel'),
+          value: 'Excel',
+        },
+        {
+          label: __('CSV'),
+          value: 'CSV',
+        },
+      ]" v-model="export_type" :placeholder="__('Excel')" />
       <div class="mt-3">
-        <FormControl
-          type="checkbox"
-          :label="__('Export All {0} Record(s)', [list.data.total_count])"
-          v-model="export_all"
-        />
+        <FormControl type="checkbox" :label="__('Export All {0} Record(s)', [list.data.total_count])"
+          v-model="export_all" />
       </div>
     </template>
   </Dialog>
@@ -282,6 +188,7 @@ import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
+import QuickFilter from '@/components/QuickFilter.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
@@ -1043,10 +950,10 @@ function saveView() {
   showViewModal.value = true
 }
 
-function applyFilterByListHeader( {event, column, searchValue} ) {
+function applyFilterByListHeader({ event, column, searchValue }) {
   let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type)) return
-  
+
   event.stopPropagation()
   event.preventDefault()
 
