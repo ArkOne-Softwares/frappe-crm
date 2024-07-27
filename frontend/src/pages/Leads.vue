@@ -5,6 +5,7 @@
     </template>
     <template #right-header>
       <CustomActions
+      v-if="leadsListView?.customListActions"
         :actions="leadsListView.customListActions"
       />
       <Button
