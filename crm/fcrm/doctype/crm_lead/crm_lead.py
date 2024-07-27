@@ -33,12 +33,6 @@ class CRMLead(Document):
 	def before_save(self):
 		self.apply_sla()
 
-	# def set_full_name(self):
-	# 	if self.first_name:
-	# 		self.lead_name = " ".join(
-	# 			filter(None, [self.salutation, self.first_name, self.middle_name, self.last_name])
-	# 		)
-
 	def set_lead_name(self):
 		if not self.lead_name:
 			# Check for leads being created through data import
