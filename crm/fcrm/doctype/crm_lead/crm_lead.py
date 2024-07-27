@@ -101,7 +101,7 @@ class CRMLead(Document):
 
 	def create_contact(self, throw=True):
 		if not self.lead_name:
-			self.set_full_name()
+			# self.set_full_name()
 			self.set_lead_name()
 
 		existing_contact = self.contact_exists(throw)
