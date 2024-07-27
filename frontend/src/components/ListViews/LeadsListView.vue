@@ -1,14 +1,11 @@
 <template>
   <!-- <div class="flex flex-row justify-stretch"> -->
   <div>
-    <ListView class="w-3/4" :class="$attrs.class" :columns="columns" :rows="rows" :options="{
+    <ListView :class="$attrs.class" :columns="columns" :rows="rows" :options="{
+      getRowRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
-      onRowClick: (row) => {
-        // selectedLead = row.name
-        // { name: 'Lead', params: { leadId: row.name } }
-      },
     }" row-key="name">
       <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
         <ListHeaderItem v-for="column in columns" :key="column.key" :item="column"
@@ -90,14 +87,14 @@
                 'response_by',
               ].includes(column.key)
             " class="truncate text-base" @click="(event) =>
-                emit('applyFilter', {
-                  event,
-                  idx,
-                  column,
-                  item,
-                  firstColumn: columns[0],
-                })
-                ">
+              emit('applyFilter', {
+                event,
+                idx,
+                column,
+                item,
+                firstColumn: columns[0],
+              })
+              ">
               <Tooltip :text="item.label">
                 <div>{{ item.timeAgo }}</div>
               </Tooltip>
