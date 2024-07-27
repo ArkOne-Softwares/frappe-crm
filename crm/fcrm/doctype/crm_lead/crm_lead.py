@@ -17,7 +17,7 @@ class CRMLead(Document):
 		self.set_sla()
 
 	def validate(self):
-		self.set_full_name()
+		# self.set_full_name()
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
