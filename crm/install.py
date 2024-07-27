@@ -115,7 +115,7 @@ def add_default_fields_layout():
 	quick_entry_layouts = {
 		"CRM Lead-Quick Entry": {
 			"doctype": "CRM Lead",
-			"layout": '[{"label":"Person","fields":["salutation","first_name","last_name","email","mobile_no", "gender", "dob"],"hideLabel":true},{"label":"Organization","fields":["organization","website","no_of_employees","territory","annual_revenue","industry"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
+			"layout": '[{"label":"Person","fields":["salutation","lead_name","email","mobile_no","gender","dob","height","weight","marital_status"],"hideLabel":true},{"label":"Organization","fields":["annual_revenue","qualification","lead_source","city","state","caste","kids","family_background","lead_status"],"hideLabel":true,"hideBorder":false},{"label":"Other","columns":2,"fields":["status","lead_owner"],"hideLabel":true,"hideBorder":false}]'
 		},
 		"CRM Deal-Quick Entry": {
 			"doctype": "CRM Deal",
