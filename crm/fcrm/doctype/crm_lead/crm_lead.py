@@ -17,7 +17,6 @@ class CRMLead(Document):
 		self.set_sla()
 
 	def validate(self):
-		# self.set_full_name()
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
@@ -34,11 +33,11 @@ class CRMLead(Document):
 	def before_save(self):
 		self.apply_sla()
 
-	def set_full_name(self):
-		if self.first_name:
-			self.lead_name = " ".join(
-				filter(None, [self.salutation, self.first_name, self.middle_name, self.last_name])
-			)
+	# def set_full_name(self):
+	# 	if self.first_name:
+	# 		self.lead_name = " ".join(
+	# 			filter(None, [self.salutation, self.first_name, self.middle_name, self.last_name])
+	# 		)
 
 	def set_lead_name(self):
 		if not self.lead_name:
@@ -101,7 +100,6 @@ class CRMLead(Document):
 
 	def create_contact(self, throw=True):
 		if not self.lead_name:
-			# self.set_full_name()
 			self.set_lead_name()
 
 		existing_contact = self.contact_exists(throw)
