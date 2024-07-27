@@ -964,8 +964,16 @@ function applyCustomQuickFilter(selectedFilter) {
   if (selectedFilter == 'new') {
     filters['status'] = `New`
   }
+  if (selectedFilter == 'today') {
+    filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
+  }
   if (selectedFilter == 'newToday') {
     filters['status'] = `New`
+    filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
+  }
+  if (selectedFilter == 'today&beyond') {
+    filters['status'] = `New`
+    filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'all') {
     filters = []

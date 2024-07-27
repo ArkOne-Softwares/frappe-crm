@@ -17,6 +17,8 @@
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('today', 'Today')" :label="__('Today')">
           </Button>
+          <Button class="w-full !justify-start" variant="ghost" @click="filter('todat&beyond', 'Today & Beyond')" :label="__('Today & Beyond')">
+          </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('newToday', 'New & Today')" :label="__('New & Today')">
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('all', 'All')" :label="__('All')">
