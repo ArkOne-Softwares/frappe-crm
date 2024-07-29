@@ -311,7 +311,7 @@ def get_from_name(message):
         if doc.get("contacts"):
             for c in doc.get("contacts"):
                 if c.is_primary:
-                    from_name = c.full_name or c.mobile_no
+                    from_name = c.lead_name or c.mobile_no
                     break
         else:
             from_name = doc.get("lead_name")
