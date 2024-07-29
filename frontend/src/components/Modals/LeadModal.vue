@@ -84,17 +84,23 @@ const sections = createResource({
 
 const lead = reactive({
   salutation: '',
-  first_name: '',
-  last_name: '',
+  lead_name: '',
   email: '',
   mobile_no: '',
   gender: '',
-  organization: '',
-  website: '',
-  no_of_employees: '',
-  territory: '',
+  dob: '',
+  height: '',
+  weight: '',
+  marital_status: '',
   annual_revenue: '',
-  industry: '',
+  qualification: '',
+  lead_source: '',
+  city: '',
+  state: '',
+  caste: '',
+  kids: '',
+  family_background: '',
+  lead_status: '',
   status: '',
   lead_owner: '',
 })
@@ -127,16 +133,9 @@ function createNewLead() {
   createLead.submit(lead, {
     validate() {
       error.value = null
-      if (!lead.first_name) {
-        error.value = __('First Name is mandatory')
+      if (!lead.lead_name) {
+        error.value = __('Name is mandatory')
         return error.value
-      }
-      if (lead.annual_revenue) {
-        lead.annual_revenue = lead.annual_revenue.replace(/,/g, '')
-        if (isNaN(lead.annual_revenue)) {
-          error.value = __('Annual Revenue should be a number')
-          return error.value
-        }
       }
       if (lead.mobile_no && isNaN(lead.mobile_no.replace(/[-+() ]/g, ''))) {
         error.value = __('Mobile No should be a number')
