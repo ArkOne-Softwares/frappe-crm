@@ -134,7 +134,7 @@ def add_default_fields_layout():
 	sidebar_fields_layouts = {
 		"CRM Lead-Side Panel": {
 			"doctype": "CRM Lead",
-			"layout": '[{"label": "Details", "name": "details", "opened": true, "fields": ["organization", "website", "territory", "industry", "job_title", "source", "lead_owner"]}, {"label": "Person", "name": "person_tab", "opened": true, "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]'
+			"layout": '[{"label":"Person","name":"person_tab","opened":true,"fields":["salutation","lead_name","email","mobile_no"]},{"label":"Details","name":"details","opened":true,"fields":["next_contact_date","city","state","source","lead_owner"]}]'
 		},
 		"CRM Deal-Side Panel": {
 			"doctype": "CRM Deal",
