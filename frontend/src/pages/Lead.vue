@@ -68,7 +68,7 @@
               <Avatar
                 size="3xl"
                 class="size-12"
-                :label="lead.data.first_name || __('Untitled')"
+                :label="lead.data.lead_name || __('Untitled')"
                 :image="lead.data.image"
               />
               <component
@@ -107,7 +107,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="lead.data.lead_name || __('Set first name')">
+              <Tooltip :text="lead.data.lead_name || __('Set Name')">
                 <div class="truncate text-2xl font-medium">
                   {{ lead.data.lead_name || __('Untitled') }}
                 </div>
@@ -540,8 +540,7 @@ async function convertToDeal(updated) {
 
   if (existingContactChecked.value && existingContact.value) {
     lead.data.salutation = getContactByName(existingContact.value).salutation
-    lead.data.first_name = getContactByName(existingContact.value).first_name
-    lead.data.last_name = getContactByName(existingContact.value).last_name
+    lead.data.lead_name = getContactByName(existingContact.value).lead_name
     lead.data.email_id = getContactByName(existingContact.value).email_id
     lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
     existingContactChecked.value = false
@@ -558,8 +557,7 @@ async function convertToDeal(updated) {
     updateLead(
       {
         salutation: lead.data.salutation,
-        first_name: lead.data.first_name,
-        last_name: lead.data.last_name,
+        lead_name: lead.data.lead_name,
         email_id: lead.data.email_id,
         mobile_no: lead.data.mobile_no,
         organization: lead.data.organization,
