@@ -28,6 +28,7 @@
   "lead_name",
   "gender",
   "phone",
+  "phone2",
   "dob",
   "column_break_dbsv",
   "status",
@@ -64,7 +65,8 @@
   "height",
   "qualification",
   "job",
-  "lead_status"
+  "lead_status",
+  "first_name"
  ],
  "fields": [
   {
@@ -378,12 +380,23 @@
    "fieldname": "lead_status",
    "fieldtype": "Data",
    "label": "Lead Status"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "phone2",
+   "fieldtype": "Data",
+   "label": "Alternate Phone",
+   "options": "Phone"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-27 17:36:07.101043",
+ "modified": "2024-07-27 19:59:09.508308",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
