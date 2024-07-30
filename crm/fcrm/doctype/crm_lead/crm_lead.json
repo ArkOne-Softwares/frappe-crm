@@ -66,7 +66,8 @@
   "qualification",
   "job",
   "lead_status",
-  "first_name"
+  "first_name",
+  "last_name"
  ],
  "fields": [
   {
@@ -391,12 +392,17 @@
    "fieldtype": "Data",
    "label": "Alternate Phone",
    "options": "Phone"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-27 19:59:09.508308",
+ "modified": "2024-07-30 14:18:07.783134",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
