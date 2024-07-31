@@ -962,16 +962,20 @@ function applyCustomQuickFilter(selectedFilter) {
   // event.preventDefault()
   let filters = { ...list.value.params.filters }
   if (selectedFilter == 'new') {
+    filters = []
     filters['status'] = `New`
   }
   if (selectedFilter == 'today') {
+    filters = []
     filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'newToday') {
+    filters = []
     filters['status'] = `New`
     filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'today&beyond') {
+    filters = []
     filters['status'] = `New`
     filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
   }
