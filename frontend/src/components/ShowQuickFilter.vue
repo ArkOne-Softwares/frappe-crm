@@ -13,13 +13,13 @@
     <template #body="{ close }">
       <div class="my-2 rounded-lg border border-gray-100 bg-white p-1.5 shadow-xl">
         <div>
+          <Button class="w-full !justify-start" variant="ghost" @click="filter('newToday', 'New & Today')" :label="__('New & Today')">
+          </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('new', 'New')" :label="__('New')">
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('today', 'Today')" :label="__('Today')">
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('todat&beyond', 'Today & Beyond')" :label="__('Today & Beyond')">
-          </Button>
-          <Button class="w-full !justify-start" variant="ghost" @click="filter('newToday', 'New & Today')" :label="__('New & Today')">
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('all', 'All')" :label="__('All')">
           </Button>
