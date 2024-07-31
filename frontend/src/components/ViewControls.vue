@@ -271,6 +271,7 @@ const view = ref({
   type: 'list',
   icon: '',
   filters: {},
+  or_filters: {},
   order_by: 'modified desc',
   column_field: 'status',
   title_field: '',
@@ -306,6 +307,7 @@ function getParams() {
   const view_name = _view?.name || ''
   const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
+  const or_filters = (_view?.or_filters && JSON.parse(_view.or_filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
   const columns = _view?.columns || ''
@@ -321,6 +323,7 @@ function getParams() {
     type: view_type,
     icon: _view?.icon || '',
     filters: filters,
+    or_filters: or_filters,
     order_by: order_by,
     group_by_field: group_by_field,
     column_field: column_field,
@@ -340,6 +343,7 @@ function getParams() {
     filters: filters,
     order_by: order_by,
     default_filters: props.filters,
+    or_filters: or_filters,
     view: {
       custom_view_name: view_name,
       view_type: view_type,
@@ -366,6 +370,7 @@ list.value = createResource({
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
+      or_filters: params.or_filters,
       order_by: params.order_by,
       default_filters: props.filters,
       view: {
@@ -401,6 +406,7 @@ const export_all = ref(false)
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   let filters = JSON.stringify(list.value.params.filters)
+  let or_filters = JSON.stringify(list.value.params.or_filters)
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
   if (export_all.value) {
@@ -563,14 +569,16 @@ function applyQuickFilter(filter, value) {
   updateFilter(filters)
 }
 
-function updateFilter(filters) {
+function updateFilter(filters , or_filters) {
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
   list.value.params.filters = filters
+  list.value.params.or_filters = or_filters
   view.value.filters = filters
+  view, value.or_filters = or_filters
   list.value.reload()
 
   if (!route.query.view) {
@@ -960,30 +968,30 @@ function applyCustomQuickFilter(selectedFilter) {
 
   // event.stopPropagation()
   // event.preventDefault()
-  let filters = { ...list.value.params.filters }
+  let or_filters = { ...list.value.params.or_filters }
   if (selectedFilter == 'new') {
-    filters = []
-    filters['status'] = `New`
+    or_filters = []
+    or_filters['status'] = `New`
   }
   if (selectedFilter == 'today') {
-    filters = []
-    filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
+    or_filters = []
+    or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'newToday') {
-    filters = []
-    filters['status'] = `New`
-    filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
+    or_filters = []
+    or_filters['status'] = `New`
+    or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'today&beyond') {
-    filters = []
-    filters['status'] = `New`
-    filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
+    or_filters = []
+    or_filters['status'] = `New`
+    or_filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'all') {
-    filters = []
+    or_filters = []
   }
 
-  updateFilter(filters)
+  updateFilter(filters, or_filters)
 }
 
 function applyFilterByListHeader({ event, column, searchValue }) {
