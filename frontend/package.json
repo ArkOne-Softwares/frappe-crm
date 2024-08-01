@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --host 0.0.0.0",
     "build-watch": "vite build --base=/assets/crm/frontend/ && vite dev",
     "build": "vite build --base=/assets/crm/frontend/ && yarn copy-html-entry",
     "copy-html-entry": "cp ../crm/public/frontend/index.html ../crm/www/crm.html",

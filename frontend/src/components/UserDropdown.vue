@@ -82,12 +82,7 @@ let dropdownOptions = ref([
       {
         icon: 'life-buoy',
         label: computed(() => __('Support')),
-        onClick: () => window.open('https://t.me/frappecrm', '_blank'),
-      },
-      {
-        icon: 'book-open',
-        label: computed(() => __('Docs')),
-        onClick: () => window.open('https://docs.frappe.io/crm', '_blank'),
+        onClick: () => window.open('https://arkone.dev/help', '_blank'),
       },
     ],
   },
