@@ -61,6 +61,7 @@
   "contacted_by",
   "city",
   "state",
+  "country",
   "caste",
   "height",
   "qualification",
@@ -397,12 +398,17 @@
    "fieldname": "last_name",
    "fieldtype": "Data",
    "label": "Last Name"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-30 14:18:07.783134",
+ "modified": "2024-07-31 08:20:59.901060",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
