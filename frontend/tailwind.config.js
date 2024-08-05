@@ -14,4 +14,9 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  devServer: {
+    host: 'localhost',
+    hot: true,
+    liveReload: true,
+  },
 }

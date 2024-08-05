@@ -9,43 +9,32 @@
       <template #default="{ openFileSelector, error }">
         <div class="flex items-start justify-start gap-6 p-5 sm:items-center">
           <div class="group relative h-24 w-24">
-            <Avatar
-              size="3xl"
-              class="h-24 w-24"
-              :label="contact.data.full_name"
-              :image="contact.data.image"
-            />
-            <component
-              :is="contact.data.image ? Dropdown : 'div'"
-              v-bind="
-                contact.data.image
-                  ? {
-                      options: [
-                        {
-                          icon: 'upload',
-                          label: contact.data.image
-                            ? __('Change image')
-                            : __('Upload image'),
-                          onClick: openFileSelector,
-                        },
-                        {
-                          icon: 'trash-2',
-                          label: __('Remove image'),
-                          onClick: () => changeContactImage(''),
-                        },
-                      ],
-                    }
-                  : { onClick: openFileSelector }
-              "
-              class="!absolute bottom-0 left-0 right-0"
-            >
+            <Avatar size="3xl" class="h-24 w-24" :label="contact.data.full_name" :image="contact.data.image" />
+            <component :is="contact.data.image ? Dropdown : 'div'" v-bind="contact.data.image
+              ? {
+                options: [
+                  {
+                    icon: 'upload',
+                    label: contact.data.image
+                      ? __('Change image')
+                      : __('Upload image'),
+                    onClick: openFileSelector,
+                  },
+                  {
+                    icon: 'trash-2',
+                    label: __('Remove image'),
+                    onClick: () => changeContactImage(''),
+                  },
+                ],
+              }
+              : { onClick: openFileSelector }
+              " class="!absolute bottom-0 left-0 right-0">
               <div
                 class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                 style="
                   -webkit-clip-path: inset(12px 0 0 0);
                   clip-path: inset(12px 0 0 0);
-                "
-              >
+                ">
                 <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
               </div>
             </component>
@@ -57,102 +46,56 @@
               </span>
               <span>{{ contact.data.full_name }}</span>
             </div>
-            <div
-              class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2"
-            >
-              <div
-                v-if="contact.data.email_id"
-                class="flex items-center gap-1.5"
-              >
+            <div class="flex flex-col flex-wrap gap-3 text-base text-gray-700 sm:flex-row sm:items-center sm:gap-2">
+              <div v-if="contact.data.email_id" class="flex items-center gap-1.5">
                 <Email2Icon class="h-4 w-4" />
                 <span class="">{{ contact.data.email_id }}</span>
               </div>
-              <span
-                v-if="contact.data.email_id"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
+              <span v-if="contact.data.email_id" class="hidden text-3xl leading-[0] text-gray-600 sm:flex">
                 &middot;
               </span>
-              <component
-                :is="callEnabled ? Tooltip : 'div'"
-                :text="__('Make Call')"
-                v-if="contact.data.actual_mobile_no"
-              >
-                <div
-                  class="flex items-center gap-1.5"
-                  :class="callEnabled ? 'cursor-pointer' : ''"
-                  @click="
-                    callEnabled && makeCall(contact.data.actual_mobile_no)
-                  "
-                >
+              <component :is="callEnabled ? Tooltip : 'div'" :text="__('Make Call')"
+                v-if="contact.data.actual_mobile_no">
+                <div class="flex items-center gap-1.5" :class="callEnabled ? 'cursor-pointer' : ''" @click="
+                  callEnabled && makeCall(contact.data.actual_mobile_no)
+                  ">
                   <PhoneIcon class="h-4 w-4" />
                   <span class="">{{ contact.data.actual_mobile_no }}</span>
                 </div>
               </component>
-              <span
-                v-if="contact.data.actual_mobile_no"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
+              <span v-if="contact.data.actual_mobile_no" class="hidden text-3xl leading-[0] text-gray-600 sm:flex">
                 &middot;
               </span>
-              <div
-                v-if="contact.data.company_name"
-                class="flex items-center gap-1.5"
-              >
-                <Avatar
-                  size="xs"
-                  :label="contact.data.company_name"
-                  :image="
-                    getOrganization(contact.data.company_name)
-                      ?.organization_logo
-                  "
-                />
+              <div v-if="contact.data.company_name" class="flex items-center gap-1.5">
+                <Avatar size="xs" :label="contact.data.company_name" :image="getOrganization(contact.data.company_name)
+                  ?.organization_logo
+                  " />
                 <span class="">{{ contact.data.company_name }}</span>
               </div>
-              <span
-                v-if="contact.data.company_name"
-                class="hidden text-3xl leading-[0] text-gray-600 sm:flex"
-              >
+              <span v-if="contact.data.company_name" class="hidden text-3xl leading-[0] text-gray-600 sm:flex">
                 &middot;
               </span>
-              <Button
-                v-if="
-                  contact.data.email_id ||
-                  contact.data.mobile_no ||
-                  contact.data.company_name
-                "
-                variant="ghost"
-                :label="__('More')"
-                class="w-fit cursor-pointer hover:text-gray-900 sm:-ml-1"
-                @click="
-                  () => {
-                    detailMode = true
-                    showContactModal = true
-                  }
-                "
-              />
+              <Button v-if="
+                contact.data.email_id ||
+                contact.data.mobile_no ||
+                contact.data.company_name
+              " variant="ghost" :label="__('More')" class="w-fit cursor-pointer hover:text-gray-900 sm:-ml-1" @click="() => {
+                detailMode = true
+                showContactModal = true
+              }
+                " />
             </div>
             <div class="mt-2 flex gap-1.5">
-              <Button
-                :label="__('Edit')"
-                size="sm"
-                @click="
-                  () => {
-                    detailMode = false
-                    showContactModal = true
-                  }
-                "
-              >
+              <Button :label="__('Edit')" size="sm" @click="() => {
+                detailMode = false
+                showContactModal = true
+              }
+                ">
                 <template #prefix>
                   <EditIcon class="h-4 w-4" />
                 </template>
               </Button>
-              <Button
-                :label="__('Delete')"
-                theme="red"
-                size="sm"
-                @click="deleteContact"
-              >
+              <Button :label="__('Delete')" theme="red" size="sm" @click="deleteContact">
                 <template #prefix>
                   <FeatherIcon name="trash-2" class="h-4 w-4" />
                 </template>
@@ -167,33 +110,21 @@
       <template #tab="{ tab, selected }">
         <button
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-          :class="{ 'text-gray-900': selected }"
-        >
+          :class="{ 'text-gray-900': selected }">
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-gray-900"
-            :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
+          <Badge class="group-hover:bg-gray-900" :class="[selected ? 'bg-gray-900' : 'bg-gray-600']" variant="solid"
+            theme="gray" size="sm">
             {{ tab.count }}
           </Badge>
         </button>
       </template>
       <template #default="{ tab }">
-        <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <div
-          v-if="!rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-gray-500"
-        >
+        <Activities v-if="tab.label === 'Emails'" ref="activities" doctype="Contact" :title="tab.label" :tabs="tabs"
+          v-model:tabIndex="tabIndex" v-model="contact" />
+        <DealsListView v-if="tab.label === 'Deals' && rows.length" class="mt-4" :rows="rows" :columns="columns"
+          :options="{ selectable: false, showTooltip: false }" />
+        <div v-if="!rows.length && tab.label != 'Emails'" class="grid flex-1 place-items-center text-xl font-medium text-gray-500">
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
             <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
@@ -202,17 +133,9 @@
       </template>
     </Tabs>
   </div>
-  <ContactModal
-    v-model="showContactModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :contact="contact"
-    :options="{ detailMode }"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
+  <ContactModal v-model="showContactModal" v-model:quickEntry="showQuickEntryModal" :contact="contact"
+    :options="{ detailMode }" />
+  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" doctype="Contact" />
 </template>
 
 <script setup>
@@ -234,6 +157,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
+import Activities from '@/components/Activities/Activities.vue'
 import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
 import {
   dateFormat,
@@ -322,6 +246,11 @@ const tabs = [
     label: 'Deals',
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
+  },
+  {
+    label: 'Emails',
+    icon: h(Email2Icon, { class: 'h-4 w-4' }),
+    // count: computed(() => deals.data?.length),
   },
 ]
 
