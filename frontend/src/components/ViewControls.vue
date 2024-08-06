@@ -209,10 +209,6 @@ const props = defineProps({
     type: Object,
     default: {},
   },
-  or_filters: {
-    type: Object,
-    default: {},
-  },
   options: {
     type: Object,
     default: {
@@ -308,6 +304,7 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
+  console.log('getParams', _view);
   const view_name = _view?.name || ''
   const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
@@ -417,7 +414,7 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&or_filters=${or_filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
   showExportDialog.value = false
   export_all.value = false
   export_type.value = 'Excel'
@@ -573,7 +570,8 @@ function applyQuickFilter(filter, value) {
   updateFilter(filters)
 }
 
-function updateFilter(filters = [], or_filters = []) {
+function updateFilter(filters = {}, or_filters = {}) {
+  console.log('updateFilter', filters, or_filters);
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
@@ -582,7 +580,7 @@ function updateFilter(filters = [], or_filters = []) {
   list.value.params.filters = filters
   list.value.params.or_filters = or_filters
   view.value.filters = filters
-  view, value.or_filters = or_filters
+  view.value.or_filters = or_filters
   list.value.reload()
 
   if (!route.query.view) {
@@ -965,7 +963,7 @@ function applyCustomQuickFilter(selectedFilter) {
 
   console.log('applyCustomQuickFilter', selectedFilter);
 
-  if (!selectedFilter) updateFilter([], [])
+  if (!selectedFilter) updateFilter({}, {})
 
   // let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   // if (restrictedFieldtypes.includes(column.type)) return
@@ -975,25 +973,25 @@ function applyCustomQuickFilter(selectedFilter) {
   let or_filters = { ...list.value.params.or_filters }
   let filters = { ...list.value.params.filters }
   if (selectedFilter == 'new') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
   }
   if (selectedFilter == 'today') {
-    or_filters = []
+    or_filters = {}
     or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'newToday') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
     or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'today&beyond') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
     or_filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'all') {
-    or_filters = []
+    or_filters = {}
   }
 
   updateFilter(filters, or_filters)

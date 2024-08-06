@@ -307,6 +307,7 @@ def get_data(
 		if group_by_field and group_by_field not in rows:
 			rows.append(group_by_field)
 
+  # Added or_filters to the get_list function:
 		data = frappe.get_list(
 			doctype,
 			fields=rows,
