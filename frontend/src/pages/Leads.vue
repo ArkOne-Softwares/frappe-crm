@@ -25,6 +25,7 @@
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
     :filters="{ converted: 0 }"
+    :or_filters="{ status: 'New' }"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }"

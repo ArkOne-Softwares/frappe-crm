@@ -204,6 +204,7 @@ def get_quick_filters(doctype: str):
 def get_data(
 	doctype: str,
 	filters: dict,
+	or_filters: dict,
 	order_by: str,
 	page_length=20,
 	page_length_count=20,
@@ -218,6 +219,7 @@ def get_data(
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
+	or_filters = frappe._dict(or_filters)
 	rows = frappe.parse_json(rows or "[]")
 	columns = frappe.parse_json(columns or "[]")
 	kanban_fields = frappe.parse_json(kanban_fields or "[]")
@@ -237,7 +239,19 @@ def get_data(
 				for i in index:
 					value[i] = "%" + frappe.session.user + "%"
 		elif value == "@me":
-			filters[key] = frappe.session.user
+			filters[key] = frappe.session.user    
+
+	for key in or_filters:
+		value = or_filters[key]
+		if isinstance(value, list):
+			if "@me" in value:
+				value[value.index("@me")] = frappe.session.user
+			elif "%@me%" in value:
+				index = [i for i, v in enumerate(value) if v == "%@me%"]
+				for i in index:
+					value[i] = "%" + frappe.session.user + "%"
+		elif value == "@me":
+			or_filters[key] = frappe.session.user
 
 	if default_filters:
 		default_filters = frappe.parse_json(default_filters)
@@ -297,6 +311,7 @@ def get_data(
 			doctype,
 			fields=rows,
 			filters=filters,
+			or_filters=or_filters,
 			order_by=order_by,
 			page_length=page_length,
 		) or []

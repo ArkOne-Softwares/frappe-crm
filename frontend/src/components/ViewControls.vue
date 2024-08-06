@@ -209,6 +209,10 @@ const props = defineProps({
     type: Object,
     default: {},
   },
+  or_filters: {
+    type: Object,
+    default: {},
+  },
   options: {
     type: Object,
     default: {
@@ -569,7 +573,7 @@ function applyQuickFilter(filter, value) {
   updateFilter(filters)
 }
 
-function updateFilter(filters , or_filters) {
+function updateFilter(filters = [], or_filters = []) {
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
@@ -961,7 +965,7 @@ function applyCustomQuickFilter(selectedFilter) {
 
   console.log('applyCustomQuickFilter', selectedFilter);
 
-  if (!selectedFilter) updateFilter([])
+  if (!selectedFilter) updateFilter([], [])
 
   // let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   // if (restrictedFieldtypes.includes(column.type)) return
@@ -969,6 +973,7 @@ function applyCustomQuickFilter(selectedFilter) {
   // event.stopPropagation()
   // event.preventDefault()
   let or_filters = { ...list.value.params.or_filters }
+  let filters = { ...list.value.params.filters }
   if (selectedFilter == 'new') {
     or_filters = []
     or_filters['status'] = `New`
