@@ -33,7 +33,7 @@
             <Select
               variant="outline"
               v-model="_emailTemplate.reference_doctype"
-              :options="['CRM Deal', 'CRM Lead']"
+              :options="['CRM Deal', 'CRM Lead', 'Contact']"
               :placeholder="__('CRM Deal')"
             />
           </div>
