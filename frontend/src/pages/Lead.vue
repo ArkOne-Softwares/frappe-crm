@@ -2,106 +2,75 @@
   <LayoutHeader v-if="lead.data">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
+      <Button label="Previous" :class="prevLead ? getLeadStatus(lead.data.status).colorClass : ''"
+        :variant="prevLead ? 'solid' : ''" :disabled="!prevLead" @click="handlePrevClick">
+        < Previous </Button>
+          <Button label="Next" :class="nextLead ? getLeadStatus(lead.data.status).colorClass : ''"
+            :variant="nextLead ? 'solid' : ''" :disabled="!nextLead" @click="handleNextClick">
+            Next >
+          </Button>
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="lead.data._customActions"
-        :actions="lead.data._customActions"
-      />
+      <CustomActions v-if="lead.data._customActions" :actions="lead.data._customActions" />
       <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
-        <MultipleAvatar
-          :avatars="lead.data._assignedTo"
-          @click="showAssignmentModal = true"
-        />
+        <MultipleAvatar :avatars="lead.data._assignedTo" @click="showAssignmentModal = true" />
       </component>
       <Dropdown :options="statusOptions('lead', updateField)">
         <template #default="{ open }">
-          <Button
-            :label="lead.data.status"
-            :class="getLeadStatus(lead.data.status).colorClass"
-          >
+          <Button :label="lead.data.status" :class="getLeadStatus(lead.data.status).colorClass">
             <template #prefix>
               <IndicatorIcon />
             </template>
             <template #suffix>
-              <FeatherIcon
-                :name="open ? 'chevron-up' : 'chevron-down'"
-                class="h-4"
-              />
+              <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
             </template>
           </Button>
         </template>
       </Dropdown>
-      <Button
-        :label="__('Convert to Deal')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
+      <Button :label="__('Convert to Deal')" variant="solid" @click="showConvertToDealModal = true" />
     </template>
   </LayoutHeader>
   <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
-      <Activities
-        ref="activities"
-        doctype="CRM Lead"
-        :title="tab.name"
-        :tabs="tabs"
-        v-model:reload="reload"
-        v-model:tabIndex="tabIndex"
-        v-model="lead"
-      />
+      <Activities ref="activities" doctype="CRM Lead" :title="tab.name" :tabs="tabs" v-model:reload="reload"
+        v-model:tabIndex="tabIndex" v-model="lead" />
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
-      <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
-        @click="copyToClipboard(lead.data.name)"
-      >
+      <div class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
+        @click="copyToClipboard(lead.data.name)">
         {{ __(lead.data.name) }}
       </div>
-      <FileUploader
-        @success="(file) => updateField('image', file.file_url)"
-        :validateFile="validateFile"
-      >
+      <FileUploader @success="(file) => updateField('image', file.file_url)" :validateFile="validateFile">
         <template #default="{ openFileSelector, error }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative size-12">
-              <Avatar
-                size="3xl"
-                class="size-12"
-                :label="lead.data.lead_name || __('Untitled')"
-                :image="lead.data.image"
-              />
-              <component
-                :is="lead.data.image ? Dropdown : 'div'"
-                v-bind="
-                  lead.data.image
-                    ? {
-                        options: [
-                          {
-                            icon: 'upload',
-                            label: lead.data.image
-                              ? __('Change image')
-                              : __('Upload image'),
-                            onClick: openFileSelector,
-                          },
-                          {
-                            icon: 'trash-2',
-                            label: __('Remove image'),
-                            onClick: () => updateField('image', ''),
-                          },
-                        ],
-                      }
-                    : { onClick: openFileSelector }
-                "
-                class="!absolute bottom-0 left-0 right-0"
-              >
+              <Avatar size="3xl" class="size-12" :label="lead.data.lead_name || __('Untitled')"
+                :image="lead.data.image" />
+              <component :is="lead.data.image ? Dropdown : 'div'" v-bind="lead.data.image
+                ? {
+                  options: [
+                    {
+                      icon: 'upload',
+                      label: lead.data.image
+                        ? __('Change image')
+                        : __('Upload image'),
+                      onClick: openFileSelector,
+                    },
+                    {
+                      icon: 'trash-2',
+                      label: __('Remove image'),
+                      onClick: () => updateField('image', ''),
+                    },
+                  ],
+                }
+                : { onClick: openFileSelector }
+                " class="!absolute bottom-0 left-0 right-0">
                 <div
                   class="z-1 absolute bottom-0.5 left-0 right-0.5 flex h-9 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-3 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(12px 0 0 0);
                     clip-path: inset(12px 0 0 0);
-                  "
-                >
+                  ">
                   <CameraIcon class="size-4 cursor-pointer text-white" />
                 </div>
               </component>
@@ -114,40 +83,30 @@
               </Tooltip>
               <div class="flex gap-1.5">
                 <Tooltip v-if="callEnabled" :text="__('Make a call')">
-                  <Button
-                    class="h-7 w-7"
-                    @click="
-                      () =>
-                        lead.data.mobile_no
-                          ? makeCall(lead.data.mobile_no)
-                          : errorMessage(__('No phone number set'))
-                    "
-                  >
+                  <Button class="h-7 w-7" @click="() =>
+                    lead.data.mobile_no
+                      ? makeCall(lead.data.mobile_no)
+                      : errorMessage(__('No phone number set'))
+                    ">
                     <PhoneIcon class="h-4 w-4" />
                   </Button>
                 </Tooltip>
                 <Tooltip :text="__('Send an email')">
                   <Button class="h-7 w-7">
-                    <Email2Icon
-                      class="h-4 w-4"
-                      @click="
-                        lead.data.email
-                          ? openEmailBox()
-                          : errorMessage(__('No email set'))
-                      "
-                    />
+                    <Email2Icon class="h-4 w-4" @click="
+                      lead.data.email
+                        ? openEmailBox()
+                        : errorMessage(__('No email set'))
+                      " />
                   </Button>
                 </Tooltip>
                 <Tooltip :text="__('Go to website')">
                   <Button class="h-7 w-7">
-                    <LinkIcon
-                      class="h-4 w-4"
-                      @click="
-                        lead.data.website
-                          ? openWebsite(lead.data.website)
-                          : errorMessage(__('No website set'))
-                      "
-                    />
+                    <LinkIcon class="h-4 w-4" @click="
+                      lead.data.website
+                        ? openWebsite(lead.data.website)
+                        : errorMessage(__('No website set'))
+                      " />
                   </Button>
                 </Tooltip>
               </div>
@@ -156,34 +115,15 @@
           </div>
         </template>
       </FileUploader>
-      <SLASection
-        v-if="lead.data.sla_status"
-        v-model="lead.data"
-        @updateField="updateField"
-      />
-      <div
-        v-if="fieldsLayout.data"
-        class="flex flex-1 flex-col justify-between overflow-hidden"
-      >
+      <SLASection v-if="lead.data.sla_status" v-model="lead.data" @updateField="updateField" />
+      <div v-if="fieldsLayout.data" class="flex flex-1 flex-col justify-between overflow-hidden">
         <div class="flex flex-col overflow-y-auto">
-          <div
-            v-for="(section, i) in fieldsLayout.data"
-            :key="section.label"
-            class="flex flex-col p-3"
-            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }"
-          >
+          <div v-for="(section, i) in fieldsLayout.data" :key="section.label" class="flex flex-col p-3"
+            :class="{ 'border-b': i !== fieldsLayout.data.length - 1 }">
             <Section :is-opened="section.opened" :label="section.label">
-              <SectionFields
-                :fields="section.fields"
-                v-model="lead.data"
-                @update="updateField"
-              />
+              <SectionFields :fields="section.fields" v-model="lead.data" @update="updateField" />
               <template v-if="i == 0 && isManager()" #actions>
-                <Button
-                  variant="ghost"
-                  class="w-7 mr-2"
-                  @click="showSidePanelModal = true"
-                >
+                <Button variant="ghost" class="w-7 mr-2" @click="showSidePanelModal = true">
                   <EditIcon class="h-4 w-4" />
                 </Button>
               </template>
@@ -193,27 +133,19 @@
       </div>
     </Resizer>
   </div>
-  <AssignmentModal
-    v-if="showAssignmentModal"
-    v-model="showAssignmentModal"
-    v-model:assignees="lead.data._assignedTo"
-    :doc="lead.data"
-    doctype="CRM Lead"
-  />
-  <Dialog
-    v-model="showConvertToDealModal"
-    :options="{
-      title: __('Convert to Deal'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
-  >
+  <AssignmentModal v-if="showAssignmentModal" v-model="showAssignmentModal" v-model:assignees="lead.data._assignedTo"
+    :doc="lead.data" doctype="CRM Lead" />
+  <Dialog v-model="showConvertToDealModal" :options="{
+    title: __('Convert to Deal'),
+    size: 'xl',
+    actions: [
+      {
+        label: __('Convert'),
+        variant: 'solid',
+        onClick: convertToDeal,
+      },
+    ],
+  }">
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-gray-600">
         <OrganizationsIcon class="h-4 w-4" />
@@ -224,15 +156,8 @@
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
-        <Link
-          v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
-        />
+        <Link v-if="existingOrganizationChecked" class="form-control mt-2.5" variant="outline" size="md"
+          :value="existingOrganization" doctype="CRM Organization" @change="(data) => (existingOrganization = data)" />
         <div v-else class="mt-2.5 text-base">
           {{
             __(
@@ -251,15 +176,8 @@
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
+        <Link v-if="existingContactChecked" class="form-control mt-2.5" variant="outline" size="md"
+          :value="existingContact" doctype="Contact" @change="(data) => (existingContact = data)" />
         <div v-else class="mt-2.5 text-base">
           {{ __("New contact will be created based on the person's details") }}
         </div>
@@ -322,7 +240,7 @@ import {
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-const { $dialog, makeCall } = globalStore()
+const { $dialog, makeCall, getFilters } = globalStore()
 const { getContactByName, contacts } = contactsStore()
 const { organizations } = organizationsStore()
 const { statusOptions, getLeadStatus } = statusesStore()
@@ -334,8 +252,11 @@ const props = defineProps({
   leadId: {
     type: String,
     required: true,
-  },
+  }
 })
+
+const prevLead = ref("")
+const nextLead = ref("")
 
 const lead = createResource({
   url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
@@ -355,9 +276,31 @@ const lead = createResource({
   },
 })
 
+const prev = createResource({
+  url: 'crm.api.doc.get_next',
+  params: { value: props.leadId, prev: 1, doctype: "CRM Lead", ...getFilters() },
+  cache: ['prev', props.leadId],
+  onSuccess: (data) => {
+    console.log("prev", data)
+    prevLead.value = data
+  },
+})
+
+const next = createResource({
+  url: 'crm.api.doc.get_next',
+  params: { value: props.leadId, prev: 0, doctype: "CRM Lead", ...getFilters() },
+  cache: ['next', props.leadId],
+  onSuccess: (data) => {
+    console.log("next", data)
+    nextLead.value = data
+  },
+})
+
 onMounted(() => {
   if (lead.data) return
   lead.fetch()
+  next.fetch()
+  prev.fetch()
 })
 
 const reload = ref(false)
@@ -478,6 +421,12 @@ watch(tabs, (value) => {
   }
 })
 
+watch(() => props.leadId, (newVal) => {
+  if (newVal) {
+    window.location.reload()
+  }
+})
+
 function validateFile(file) {
   let extn = file.name.split('.').pop().toLowerCase()
   if (!['png', 'jpg', 'jpeg'].includes(extn)) {
@@ -588,4 +537,18 @@ const activities = ref(null)
 function openEmailBox() {
   activities.value.emailBox.show = true
 }
+
+const handlePrevClick = () => {
+  if (prevLead.value) {
+    router.push({ name: 'Lead', params: { leadId: prevLead.value } })
+  }
+}
+
+const handleNextClick = () => {
+  if (nextLead.value) {
+    router.push({ name: 'Lead', params: { leadId: nextLead.value } })
+  }
+}
+
+
 </script>

@@ -4,188 +4,111 @@
       <Breadcrumbs :items="breadcrumbs" />
     </template>
     <template #right-header>
-      <CustomActions
-      v-if="leadsListView?.customListActions"
-        :actions="leadsListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="showLeadModal = true"
-      >
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+      <CustomActions v-if="leadsListView?.customListActions" :actions="leadsListView.customListActions" />
+      <Button variant="solid" :label="__('Create')" @click="showLeadModal = true">
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
       </Button>
     </template>
   </LayoutHeader>
-  <ViewControls
-    ref="viewControls"
-    v-model="leads"
-    v-model:loadMore="loadMore"
-    v-model:resizeColumn="triggerResize"
-    v-model:updatedPageCount="updatedPageCount"
-    doctype="CRM Lead"
-    :filters="{ converted: 0 }"
-    :options="{
+  <ViewControls ref="viewControls" v-model="leads" v-model:loadMore="loadMore" v-model:resizeColumn="triggerResize"
+    v-model:updatedPageCount="updatedPageCount" doctype="CRM Lead" :filters="{ converted: 0 }" :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
-    }"
-  />
-  <KanbanView
-    v-if="route.params.viewType == 'kanban'"
-    v-model="leads"
-    :options="{
-      getRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
-      onNewClick: (column) => onNewClick(column),
-    }"
-    @update="(data) => viewControls.updateKanbanSettings(data)"
-    @loadMore="(columnName) => viewControls.loadMoreKanban(columnName)"
-  >
+    }"/>
+  <KanbanView v-if="route.params.viewType == 'kanban'" v-model="leads" :options="{
+    getRoute: (row) => ({ name: 'Lead', params: { leadId: row.name } }),
+    onNewClick: (column) => onNewClick(column),
+  }" @update="(data) => viewControls.updateKanbanSettings(data)"
+    @loadMore="(columnName) => viewControls.loadMoreKanban(columnName)">
     <template #title="{ titleField, itemName }">
       <div class="flex items-center gap-2">
         <div v-if="titleField === 'status'">
           <IndicatorIcon :class="getRow(itemName, titleField).color" />
         </div>
-        <div
-          v-else-if="
-            titleField === 'organization' && getRow(itemName, titleField).label
-          "
-        >
-          <Avatar
-            class="flex items-center"
-            :image="getRow(itemName, titleField).logo"
-            :label="getRow(itemName, titleField).label"
-            size="sm"
-          />
+        <div v-else-if="
+          titleField === 'organization' && getRow(itemName, titleField).label
+        ">
+          <Avatar class="flex items-center" :image="getRow(itemName, titleField).logo"
+            :label="getRow(itemName, titleField).label" size="sm" />
         </div>
-        <div
-          v-else-if="
-            titleField === 'lead_name' && getRow(itemName, titleField).label
-          "
-        >
-          <Avatar
-            class="flex items-center"
-            :image="getRow(itemName, titleField).image"
-            :label="getRow(itemName, titleField).image_label"
-            size="sm"
-          />
+        <div v-else-if="
+          titleField === 'lead_name' && getRow(itemName, titleField).label
+        ">
+          <Avatar class="flex items-center" :image="getRow(itemName, titleField).image"
+            :label="getRow(itemName, titleField).image_label" size="sm" />
         </div>
-        <div
-          v-else-if="
-            titleField === 'lead_owner' &&
-            getRow(itemName, titleField).full_name
-          "
-        >
-          <Avatar
-            class="flex items-center"
-            :image="getRow(itemName, titleField).user_image"
-            :label="getRow(itemName, titleField).full_name"
-            size="sm"
-          />
+        <div v-else-if="
+          titleField === 'lead_owner' &&
+          getRow(itemName, titleField).full_name
+        ">
+          <Avatar class="flex items-center" :image="getRow(itemName, titleField).user_image"
+            :label="getRow(itemName, titleField).full_name" size="sm" />
         </div>
         <div v-else-if="titleField === 'mobile_no'">
           <PhoneIcon class="h-4 w-4" />
         </div>
-        <div
-          v-if="
-            [
-              'modified',
-              'creation',
-              'first_response_time',
-              'first_responded_on',
-              'response_by',
-            ].includes(titleField)
-          "
-          class="truncate text-base"
-        >
+        <div v-if="
+          [
+            'modified',
+            'creation',
+            'first_response_time',
+            'first_responded_on',
+            'response_by',
+          ].includes(titleField)
+        " class="truncate text-base">
           <Tooltip :text="getRow(itemName, titleField).label">
             <div>{{ getRow(itemName, titleField).timeAgo }}</div>
           </Tooltip>
         </div>
         <div v-else-if="titleField === 'sla_status'" class="truncate text-base">
-          <Badge
-            v-if="getRow(itemName, titleField).value"
-            :variant="'subtle'"
-            :theme="getRow(itemName, titleField).color"
-            size="md"
-            :label="getRow(itemName, titleField).value"
-          />
+          <Badge v-if="getRow(itemName, titleField).value" :variant="'subtle'"
+            :theme="getRow(itemName, titleField).color" size="md" :label="getRow(itemName, titleField).value" />
         </div>
-        <div
-          v-else-if="getRow(itemName, titleField).label"
-          class="truncate text-base"
-        >
+        <div v-else-if="getRow(itemName, titleField).label" class="truncate text-base">
           {{ getRow(itemName, titleField).label }}
         </div>
         <div class="text-gray-500" v-else>{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
-      <div
-        v-if="getRow(itemName, fieldName).label"
-        class="truncate flex items-center gap-2"
-      >
+      <div v-if="getRow(itemName, fieldName).label" class="truncate flex items-center gap-2">
         <div v-if="fieldName === 'status'">
           <IndicatorIcon :class="getRow(itemName, fieldName).color" />
         </div>
-        <div
-          v-else-if="
-            fieldName === 'organization' && getRow(itemName, fieldName).label
-          "
-        >
-          <Avatar
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).logo"
-            :label="getRow(itemName, fieldName).label"
-            size="xs"
-          />
+        <div v-else-if="
+          fieldName === 'organization' && getRow(itemName, fieldName).label
+        ">
+          <Avatar class="flex items-center" :image="getRow(itemName, fieldName).logo"
+            :label="getRow(itemName, fieldName).label" size="xs" />
         </div>
         <div v-else-if="fieldName === 'lead_name'">
-          <Avatar
-            v-if="getRow(itemName, fieldName).label"
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).image"
-            :label="getRow(itemName, fieldName).image_label"
-            size="xs"
-          />
+          <Avatar v-if="getRow(itemName, fieldName).label" class="flex items-center"
+            :image="getRow(itemName, fieldName).image" :label="getRow(itemName, fieldName).image_label" size="xs" />
         </div>
         <div v-else-if="fieldName === 'lead_owner'">
-          <Avatar
-            v-if="getRow(itemName, fieldName).full_name"
-            class="flex items-center"
-            :image="getRow(itemName, fieldName).user_image"
-            :label="getRow(itemName, fieldName).full_name"
-            size="xs"
-          />
+          <Avatar v-if="getRow(itemName, fieldName).full_name" class="flex items-center"
+            :image="getRow(itemName, fieldName).user_image" :label="getRow(itemName, fieldName).full_name" size="xs" />
         </div>
-        <div
-          v-if="
-            [
-              'modified',
-              'creation',
-              'first_response_time',
-              'first_responded_on',
-              'response_by',
-            ].includes(fieldName)
-          "
-          class="truncate text-base"
-        >
+        <div v-if="
+          [
+            'modified',
+            'creation',
+            'first_response_time',
+            'first_responded_on',
+            'response_by',
+          ].includes(fieldName)
+        " class="truncate text-base">
           <Tooltip :text="getRow(itemName, fieldName).label">
             <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
           </Tooltip>
         </div>
         <div v-else-if="fieldName === 'sla_status'" class="truncate text-base">
-          <Badge
-            v-if="getRow(itemName, fieldName).value"
-            :variant="'subtle'"
-            :theme="getRow(itemName, fieldName).color"
-            size="md"
-            :label="getRow(itemName, fieldName).value"
-          />
+          <Badge v-if="getRow(itemName, fieldName).value" :variant="'subtle'" :theme="getRow(itemName, fieldName).color"
+            size="md" :label="getRow(itemName, fieldName).value" />
         </div>
         <div v-else-if="fieldName === '_assign'" class="flex items-center">
-          <MultipleAvatar
-            :avatars="getRow(itemName, fieldName).label"
-            size="xs"
-          />
+          <MultipleAvatar :avatars="getRow(itemName, fieldName).label" size="xs" />
         </div>
         <div v-else class="truncate text-base">
           {{ getRow(itemName, fieldName).label }}
@@ -215,69 +138,38 @@
             {{ getRow(itemName, '_comment_count').label }}
           </span>
         </div>
-        <Dropdown
-          class="flex items-center gap-2"
-          :options="actions(itemName)"
-          variant="ghost"
-          @click.stop.prevent
-        >
+        <Dropdown class="flex items-center gap-2" :options="actions(itemName)" variant="ghost" @click.stop.prevent>
           <Button icon="plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>
   </KanbanView>
-  <LeadsListView
-    ref="leadsListView"
-    v-else-if="leads.data && rows.length"
-    v-model="leads.data.page_length_count"
-    v-model:list="leads"
-    :rows="rows"
-    :columns="leads.data.columns"
+  <LeadsListView ref="leadsListView" v-else-if="leads.data && rows.length" v-model="leads.data.page_length_count"
+    v-model:list="leads" :rows="rows" :columns="leads.data.columns" :allFilters="getAllFilters"
     :options="{
       showTooltip: false,
       resizeColumn: true,
       rowCount: leads.data.row_count,
       totalCount: leads.data.total_count,
-    }"
-    @loadMore="() => loadMore++"
-    @columnWidthUpdated="() => triggerResize++"
-    @updatePageCount="(count) => (updatedPageCount = count)"
-    @applyFilter="(data) => viewControls.applyFilter(data)"
+    }" @loadMore="() => loadMore++" @columnWidthUpdated="() => triggerResize++"
+    @updatePageCount="(count) => (updatedPageCount = count)" @applyFilter="(data) => viewControls.applyFilter(data)"
     @applyFilterByListHeader="(data) => viewControls.applyFilterByListHeader(data)"
-    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
-    @likeDoc="(data) => viewControls.likeDoc(data)"
-  />
+    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)" @likeDoc="(data) => viewControls.likeDoc(data)" />
   <div v-else-if="leads.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500"
-    >
+    <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
       <LeadsIcon class="h-10 w-10" />
       <span>{{ __('No {0} Found', [__('Leads')]) }}</span>
       <Button :label="__('Create')" @click="showLeadModal = true">
-        <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+        <template #prefix>
+          <FeatherIcon name="plus" class="h-4" />
+        </template>
       </Button>
     </div>
   </div>
-  <LeadModal
-    v-if="showLeadModal"
-    v-model="showLeadModal"
-    v-model:quickEntry="showQuickEntryModal"
-    :defaults="defaults"
-  />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Lead"
-    :doc="docname"
-  />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    doctype="CRM Lead"
-    :doc="docname"
-  />
+  <LeadModal v-if="showLeadModal" v-model="showLeadModal" v-model:quickEntry="showQuickEntryModal"
+    :defaults="defaults" />
+  <NoteModal v-if="showNoteModal" v-model="showNoteModal" :note="note" doctype="CRM Lead" :doc="docname" />
+  <TaskModal v-if="showTaskModal" v-model="showTaskModal" :task="task" doctype="CRM Lead" :doc="docname" />
   <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" />
 </template>
 
@@ -311,7 +203,7 @@ import { ref, computed, reactive, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
-const { makeCall } = globalStore()
+const { makeCall, getFilters } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()

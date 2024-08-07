@@ -17,6 +17,8 @@
   "public",
   "filters_tab",
   "filters",
+  "or_filters_tab",
+  "or_filters",
   "order_by_tab",
   "order_by",
   "list_tab",
@@ -178,11 +180,21 @@
    "fieldname": "title_field",
    "fieldtype": "Data",
    "label": "Title Field"
+  },
+  {
+   "fieldname": "or_filters_tab",
+   "fieldtype": "Tab Break",
+   "label": "Or Filters"
+  },
+  {
+   "fieldname": "or_filters",
+   "fieldtype": "Code",
+   "label": "Or Filters"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-25 19:40:12.067788",
+ "modified": "2024-08-07 08:00:17.190755",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",

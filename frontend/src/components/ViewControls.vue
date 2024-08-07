@@ -219,7 +219,7 @@ const props = defineProps({
   },
 })
 
-const { $dialog } = globalStore()
+const { $dialog, updateAllFilters, updateAllOrFilters, updateAllSortOrder } = globalStore()
 const { reload: reloadView, getView } = viewsStore()
 const { isManager } = usersStore()
 
@@ -569,21 +569,38 @@ function applyQuickFilter(filter, value) {
   updateFilter(filters)
 }
 
-function updateFilter(filters , or_filters) {
+function updateFilter(filters) {
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
   list.value.params = defaultParams.value
   list.value.params.filters = filters
-  list.value.params.or_filters = or_filters
   view.value.filters = filters
-  view, value.or_filters = or_filters
   list.value.reload()
 
   if (!route.query.view) {
     create_or_update_default_view()
   }
+
+  updateAllFilters(filters)
+}
+
+function updateOrFilter(or_filters) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.or_filters = or_filters
+  view.value.or_filters = or_filters
+  list.value.reload()
+
+  if (!route.query.view) {
+    create_or_update_default_view()
+  }
+
+  updateAllOrFilters(or_filters)
 }
 
 function updateSort(order_by) {
@@ -599,6 +616,8 @@ function updateSort(order_by) {
   if (!route.query.view) {
     create_or_update_default_view()
   }
+
+  updateAllSortOrder(order_by)
 }
 
 function updateGroupBy(group_by_field) {
@@ -961,7 +980,7 @@ function applyCustomQuickFilter(selectedFilter) {
 
   console.log('applyCustomQuickFilter', selectedFilter);
 
-  if (!selectedFilter) updateFilter([])
+  if (!selectedFilter) updateOrFilter({})
 
   // let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
   // if (restrictedFieldtypes.includes(column.type)) return
@@ -970,28 +989,28 @@ function applyCustomQuickFilter(selectedFilter) {
   // event.preventDefault()
   let or_filters = { ...list.value.params.or_filters }
   if (selectedFilter == 'new') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
   }
   if (selectedFilter == 'today') {
-    or_filters = []
+    or_filters = {}
     or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'newToday') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
     or_filters['next_contact_date'] = ['=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'today&beyond') {
-    or_filters = []
+    or_filters = {}
     or_filters['status'] = `New`
     or_filters['next_contact_date'] = ['>=', new Date().toISOString().split('T')[0]]
   }
   if (selectedFilter == 'all') {
-    or_filters = []
+    or_filters = {}
   }
 
-  updateFilter(filters, or_filters)
+  updateOrFilter(or_filters)
 }
 
 function applyFilterByListHeader({ event, column, searchValue }) {

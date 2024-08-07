@@ -8,6 +8,13 @@ export const globalStore = defineStore('crm-global', () => {
   let twilioEnabled = ref(false)
   let callMethod = () => {}
 
+  // Define filters object
+  let filters = ref({
+    allFilters: [],
+    allOrFilters: [],
+    allSortOrder: ''
+  })
+
   function setTwilioEnabled(value) {
     twilioEnabled.value = value
   }
@@ -20,6 +27,27 @@ export const globalStore = defineStore('crm-global', () => {
     callMethod(number)
   }
 
+  // Functions to update filters
+  function updateAllFilters(data) {
+    console.log("Updating allFilters", data)
+    filters.value.allFilters = data
+  }
+
+  function updateAllOrFilters(data) {
+    console.log("Updating allOrFilters", data)
+    filters.value.allOrFilters = data
+  }
+
+  function updateAllSortOrder(data) {
+    console.log("Updating allSortOrder", data)
+    filters.value.allSortOrder = data
+  }
+
+  // Function to return filters
+  function getFilters() {
+    return filters.value
+  }
+
   return {
     $dialog,
     $socket,
@@ -27,5 +55,10 @@ export const globalStore = defineStore('crm-global', () => {
     makeCall,
     setTwilioEnabled,
     setMakeCall,
+    filters,
+    updateAllFilters,
+    updateAllOrFilters,
+    updateAllSortOrder,
+    getFilters
   }
 })
