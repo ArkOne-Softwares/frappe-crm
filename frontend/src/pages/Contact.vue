@@ -113,8 +113,8 @@
           :class="{ 'text-gray-900': selected }">
           <component v-if="tab.icon" :is="tab.icon" class="h-5" />
           {{ __(tab.label) }}
-          <Badge class="group-hover:bg-gray-900" :class="[selected ? 'bg-gray-900' : 'bg-gray-600']" variant="solid"
-            theme="gray" size="sm">
+          <Badge v-if="tab.count" class="group-hover:bg-gray-900" :class="[selected ? 'bg-gray-900' : 'bg-gray-600']"
+            variant="solid" theme="gray" size="sm">
             {{ tab.count }}
           </Badge>
         </button>
@@ -124,7 +124,8 @@
           v-model:tabIndex="tabIndex" v-model="contact" />
         <DealsListView v-if="tab.label === 'Deals' && rows.length" class="mt-4" :rows="rows" :columns="columns"
           :options="{ selectable: false, showTooltip: false }" />
-        <div v-if="!rows.length && tab.label != 'Emails'" class="grid flex-1 place-items-center text-xl font-medium text-gray-500">
+        <div v-if="!rows.length && tab.label != 'Emails'"
+          class="grid flex-1 place-items-center text-xl font-medium text-gray-500">
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
             <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
@@ -250,7 +251,6 @@ const tabs = [
   {
     label: 'Emails',
     icon: h(Email2Icon, { class: 'h-4 w-4' }),
-    // count: computed(() => deals.data?.length),
   },
 ]
 
