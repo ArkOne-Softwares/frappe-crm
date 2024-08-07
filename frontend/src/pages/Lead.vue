@@ -540,13 +540,13 @@ function openEmailBox() {
 
 const handlePrevClick = () => {
   if (prevLead.value) {
-    router.push({ name: 'Lead', params: { leadId: prevLead.value } })
+    router.push({ name: 'Lead', params: { leadId: nextLead.value } })
   }
 }
 
 const handleNextClick = () => {
   if (nextLead.value) {
-    router.push({ name: 'Lead', params: { leadId: nextLead.value } })
+    router.push({ name: 'Lead', params: { leadId: prevLead.value } })
   }
 }
 
