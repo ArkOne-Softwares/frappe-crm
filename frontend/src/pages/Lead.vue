@@ -2,11 +2,11 @@
   <LayoutHeader v-if="lead.data">
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs" />
-      <Button label="Previous" :class="prevLead ? getLeadStatus(lead.data.status).colorClass : ''"
-        :variant="prevLead ? 'solid' : ''" :disabled="!prevLead" @click="handlePrevClick">
+      <Button label="Previous" :class="nextLead ? getLeadStatus(lead.data.status).colorClass : ''"
+        :variant="nextLead ? 'solid' : ''" :disabled="!nextLead" @click="handleNextClick">
         < Previous </Button>
-          <Button label="Next" :class="nextLead ? getLeadStatus(lead.data.status).colorClass : ''"
-            :variant="nextLead ? 'solid' : ''" :disabled="!nextLead" @click="handleNextClick">
+          <Button label="Next" :class="prevLead ? getLeadStatus(lead.data.status).colorClass : ''"
+            :variant="prevLead ? 'solid' : ''" :disabled="!prevLead" @click="handlePrevClick">
             Next >
           </Button>
     </template>
@@ -540,13 +540,13 @@ function openEmailBox() {
 
 const handlePrevClick = () => {
   if (prevLead.value) {
-    router.push({ name: 'Lead', params: { leadId: nextLead.value } })
+    router.push({ name: 'Lead', params: { leadId: prevLead.value } })
   }
 }
 
 const handleNextClick = () => {
   if (nextLead.value) {
-    router.push({ name: 'Lead', params: { leadId: prevLead.value } })
+    router.push({ name: 'Lead', params: { leadId: nextLead.value } })
   }
 }
 
