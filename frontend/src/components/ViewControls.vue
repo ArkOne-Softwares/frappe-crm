@@ -304,6 +304,7 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
+  console.log('getParams', _view);
   const view_name = _view?.name || ''
   const view_type = _view?.type || route.params.viewType || 'list'
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
@@ -413,7 +414,7 @@ async function exportRows() {
     page_length = list.value.data.total_count
   }
 
-  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
+  window.location.href = `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}&title=${props.doctype}&doctype=${props.doctype}&fields=${fields}&filters=${filters}&or_filters=${or_filters}&order_by=${order_by}&page_length=${page_length}&start=0&view=Report&with_comment_count=1`
   showExportDialog.value = false
   export_all.value = false
   export_type.value = 'Excel'
@@ -988,6 +989,7 @@ function applyCustomQuickFilter(selectedFilter) {
   // event.stopPropagation()
   // event.preventDefault()
   let or_filters = { ...list.value.params.or_filters }
+  let filters = { ...list.value.params.filters }
   if (selectedFilter == 'new') {
     or_filters = {}
     or_filters['status'] = `New`

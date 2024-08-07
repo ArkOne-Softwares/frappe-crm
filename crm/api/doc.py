@@ -256,7 +256,7 @@ def get_data(
                 for i in index:
                     value[i] = "%" + frappe.session.user + "%"
         elif value == "@me":
-            filters[key] = frappe.session.user
+            filters[key] = frappe.session.user    
 
     for key in or_filters:
         value = or_filters[key]
