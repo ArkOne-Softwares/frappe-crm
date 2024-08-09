@@ -143,7 +143,7 @@ def create_or_update_default_view(view):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters) or {}
-	or_filters = parse_json(view.or_filters) or []
+	or_filters = parse_json(view.or_filters) or {}
 	columns = parse_json(view.columns or '[]')
 	rows = parse_json(view.rows or '[]')
 	kanban_columns = parse_json(view.kanban_columns or '[]')
