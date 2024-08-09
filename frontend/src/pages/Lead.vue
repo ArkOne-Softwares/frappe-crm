@@ -686,36 +686,43 @@ function openEmailBox() {
 const handlePrevClick = () => {
   if (prevLead.value) {
     router.push({
-      name: "Lead",
-      params: {
-        leadId: prevLead.value,
-        filters:
-          props.filters && Object.keys(props.filters).length ? props.filters : allFilters,
-        or_filters:
-          props.or_filters && Object.keys(props.or_filters).length
-            ? props.or_filters
-            : allOrFilters,
-        sort: props.sort || allSortOrder,
-      },
-    });
+          name: "Lead",
+          params: {
+            leadId: prevLead.value,
+          },
+          query: {
+            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
+            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
+            sort: props.sort || allSortOrder.value,
+          },
+        });
   }
 };
 
 const handleNextClick = () => {
   if (nextLead.value) {
-    router.push({
-      name: "Lead",
-      params: {
-        leadId: nextLead.value,
-        filters:
-          props.filters && Object.keys(props.filters).length ? props.filters : allFilters,
-        or_filters:
-          props.or_filters && Object.keys(props.or_filters).length
-            ? props.or_filters
-            : allOrFilters,
-        sort: props.sort || allSortOrder,
-      },
-    });
-  }
+        router.push({
+          name: "Lead",
+          params: {
+            leadId: nextLead.value,
+          },
+          query: {
+            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
+            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
+            sort: props.sort || allSortOrder.value,
+          },
+        });
+      }
 };
+
+const updatePropsFromQuery = (query) => {
+      props.filters = query.filters ? JSON.parse(query.filters) : allFilters.value;
+      props.or_filters = query.or_filters ? JSON.parse(query.or_filters) : allOrFilters.value;
+      props.sort = query.sort || allSortOrder.value;
+    };
+
+watch(() => route.query, (newQuery) => {
+      updatePropsFromQuery(newQuery);
+    }, { immediate: true });
+
 </script>
