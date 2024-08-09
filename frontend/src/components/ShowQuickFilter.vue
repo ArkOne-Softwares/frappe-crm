@@ -31,7 +31,7 @@
               :label="__('Reset to Default')"
             >
               <template #prefix>
-                <ReloadIcon class="h-4" />
+                <RefreshIcon class="h-4" />
               </template>
             </Button>
         </div>
@@ -45,6 +45,7 @@ import FileSpreadsheetIcon from '@/components/Icons/FileSpreadsheetIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
+import RefreshIcon from "@/components/Icons/RefreshIcon.vue";
 
 const props = defineProps({
   doctype: {

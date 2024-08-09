@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCurrentInstance, ref } from 'vue'
+import { getCurrentInstance, ref, computed } from 'vue'
 
 export const globalStore = defineStore('crm-global', () => {
   const app = getCurrentInstance()
@@ -10,8 +10,8 @@ export const globalStore = defineStore('crm-global', () => {
 
   // Define filters object
   let filters = ref({
-    allFilters: [],
-    allOrFilters: [],
+    allFilters: {},
+    allOrFilters: {},
     allSortOrder: ''
   })
 
@@ -43,10 +43,10 @@ export const globalStore = defineStore('crm-global', () => {
     filters.value.allSortOrder = data
   }
 
-  // Function to return filters
-  function getFilters() {
-    return filters.value
-  }
+  // Computed properties to return individual filters
+  const allFilters = computed(() => filters.value.allFilters)
+  const allOrFilters = computed(() => filters.value.allOrFilters)
+  const allSortOrder = computed(() => filters.value.allSortOrder)
 
   return {
     $dialog,
@@ -59,6 +59,8 @@ export const globalStore = defineStore('crm-global', () => {
     updateAllFilters,
     updateAllOrFilters,
     updateAllSortOrder,
-    getFilters
+    allFilters,
+    allOrFilters,
+    allSortOrder
   }
 })

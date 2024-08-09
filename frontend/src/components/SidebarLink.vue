@@ -68,6 +68,7 @@ const props = defineProps({
 
 function handleClick() {
   if (!props.to) return
+  console.log("props.to", props.to)
   if (typeof props.to === 'object') {
     router.push(props.to)
   } else {

@@ -145,7 +145,7 @@
     </template>
   </KanbanView>
   <LeadsListView ref="leadsListView" v-else-if="leads.data && rows.length" v-model="leads.data.page_length_count"
-    v-model:list="leads" :rows="rows" :columns="leads.data.columns" :allFilters="getAllFilters"
+    v-model:list="leads" :rows="rows" :columns="leads.data.columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -203,7 +203,7 @@ import { ref, computed, reactive, h } from 'vue'
 
 const breadcrumbs = [{ label: __('Leads'), route: { name: 'Leads' } }]
 
-const { makeCall, getFilters } = globalStore()
+const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getLeadStatus } = statusesStore()

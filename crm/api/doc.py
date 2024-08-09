@@ -579,7 +579,10 @@ def get_next(
         except json.JSONDecodeError:
             finalOrFilters.append({or_filters})
 
-    sort_field, sort_order = sort.split(" ")
+    if " " in sort:
+        sort_field, sort_order = sort.split(" ")
+    else:
+        sort_field, sort_order = "modified", "desc"  # or set to some default values
 
     # # condition based on sort order
     condition = ">" if sort_order.lower() == "asc" else "<"
@@ -592,9 +595,10 @@ def get_next(
     # # add condition for next or prev item
     if filters:
         finalFilters.append(filters)
-    finalFilters.append(
-        [doctype, sort_field, condition, frappe.get_value(doctype, value, sort_field)]
-    )
+    if sort_field == "creation" or sort_field == "lead_name" or sort_field == "name" or sort_field == "idx" or sort_field == "status" or sort_field == "converted":
+        filters.append([doctype, sort_field, condition, frappe.get_value(doctype, value, sort_field)])
+    else:
+        finalFilters.append([doctype, "modified", condition, frappe.get_value(doctype, value, "modified")])
 
     print(finalFilters)
     print(finalOrFilters)

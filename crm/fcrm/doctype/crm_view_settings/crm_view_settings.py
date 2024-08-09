@@ -14,6 +14,7 @@ def create(view):
 	view = frappe._dict(view)
 
 	view.filters = parse_json(view.filters) or {}
+	view.or_filters = parse_json(view.or_filters) or {}
 	view.columns = parse_json(view.columns or '[]')
 	view.rows = parse_json(view.rows or '[]')
 	view.kanban_columns = parse_json(view.kanban_columns or '[]')
@@ -38,6 +39,7 @@ def create(view):
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(view.filters)
+	doc.or_filters = json.dumps(view.or_filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
 	doc.column_field = view.column_field
@@ -54,6 +56,7 @@ def update(view):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters or {})
+	or_filters = parse_json(view.or_filters or {})
 	columns = parse_json(view.columns or [])
 	rows = parse_json(view.rows or [])
 	kanban_columns = parse_json(view.kanban_columns or [])
@@ -70,6 +73,7 @@ def update(view):
 	doc.route_name = view.route_name or ""
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
+	doc.or_filters = json.dumps(or_filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
 	doc.column_field = view.column_field
@@ -139,6 +143,7 @@ def create_or_update_default_view(view):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters) or {}
+	or_filters = parse_json(view.or_filters) or []
 	columns = parse_json(view.columns or '[]')
 	rows = parse_json(view.rows or '[]')
 	kanban_columns = parse_json(view.kanban_columns or '[]')
@@ -169,6 +174,7 @@ def create_or_update_default_view(view):
 		doc.route_name = view.route_name or ""
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
+		doc.or_filters = json.dumps(or_filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
 		doc.column_field = view.column_field
@@ -189,6 +195,7 @@ def create_or_update_default_view(view):
 		doc.route_name = view.route_name or ""
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
+		doc.or_filters = json.dumps(or_filters)
 		doc.order_by = view.order_by
 		doc.group_by_field = view.group_by_field
 		doc.column_field = view.column_field
