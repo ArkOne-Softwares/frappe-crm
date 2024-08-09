@@ -596,7 +596,7 @@ def get_next(
     if filters:
         finalFilters.append(filters)
     if sort_field == "creation" or sort_field == "lead_name" or sort_field == "name" or sort_field == "idx" or sort_field == "status" or sort_field == "converted":
-        filters.append([doctype, sort_field, condition, frappe.get_value(doctype, value, sort_field)])
+        finalFilters.append([doctype, sort_field, condition, frappe.get_value(doctype, value, sort_field)])
     else:
         finalFilters.append([doctype, "modified", condition, frappe.get_value(doctype, value, "modified")])
 
