@@ -416,7 +416,6 @@ const prev = createResource({
     sort: props.sort || allSortOrder,
   },
   onSuccess: (data) => {
-    console.log("prev", data);
     prevLead.value = data;
   },
 });
@@ -436,7 +435,6 @@ const next = createResource({
     sort: props.sort || allSortOrder,
   },
   onSuccess: (data) => {
-    console.log("next", data);
     nextLead.value = data;
   },
 });

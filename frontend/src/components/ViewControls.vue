@@ -405,7 +405,6 @@ watch(updatedPageCount, (value) => {
 
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype);
-  console.log("getParams", _view);
   const view_name = _view?.name || "";
   const view_type = _view?.type || route.params.viewType || "list";
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {};
@@ -468,7 +467,6 @@ list.value = createResource({
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   onSuccess(data) {
-    console.log("list.value.params", list.value.params);
     let cv = getView(route.query.view, route.params.viewType, props.doctype);
     let params = list.value.params ? list.value.params : getParams();
     defaultParams.value = {
@@ -491,7 +489,6 @@ list.value = createResource({
       page_length: params.page_length,
       page_length_count: params.page_length_count,
     };
-    console.log("updating 1");
     updateAllFilters(defaultParams.value.filters);
     updateAllSortOrder(defaultParams.value.order_by);
     updateAllOrFilters(defaultParams.value.or_filters);
@@ -688,7 +685,6 @@ function updateFilter(filters) {
     create_or_update_default_view();
   }
 
-  console.log("updateFilter2", filters);
   updateAllFilters(filters);
 }
 
@@ -882,7 +878,6 @@ function create_or_update_default_view() {
       route_name: route.name,
       load_default_columns: view.value.load_default_columns,
     };
-    console.log("updating 3");
     updateAllFilters(props.filters);
     updateAllSortOrder(params.order_by);
     updateAllOrFilters(params.or_filters);
@@ -1087,7 +1082,6 @@ function saveView() {
 }
 
 function applyCustomQuickFilter(selectedFilter) {
-  console.log("applyCustomQuickFilter", selectedFilter);
 
   if (!selectedFilter) updateOrFilter({})
 

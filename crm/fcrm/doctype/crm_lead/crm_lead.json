@@ -68,7 +68,8 @@
   "job",
   "lead_status",
   "first_name",
-  "last_name"
+  "last_name",
+  "remarks"
  ],
  "fields": [
   {
@@ -304,7 +305,7 @@
   },
   {
    "fieldname": "next_contact_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "label": "Next Contact Date"
   },
   {
@@ -403,12 +404,17 @@
    "fieldname": "country",
    "fieldtype": "Data",
    "label": "Country"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-31 08:20:59.901060",
+ "modified": "2024-08-12 07:06:20.699273",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
