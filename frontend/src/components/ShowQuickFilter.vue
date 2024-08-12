@@ -20,7 +20,7 @@
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('today', 'Today')" :label="__('Today')">
           </Button>
-          <Button class="w-full !justify-start" variant="ghost" @click="filter('todat&beyond', 'Today & Beyond')"
+          <Button class="w-full !justify-start" variant="ghost" @click="filter('today&beyond', 'Today & Beyond')"
             :label="__('Today & Beyond')">
           </Button>
           <Button class="w-full !justify-start" variant="ghost" @click="filter('all', 'All')" :label="__('All')">
@@ -63,11 +63,6 @@ function filter(val, label) {
   if (!val) return
   selectedFilter.value = val
   selectedFilterLabel.value = label
-  if (val == "new") { }
-  else if (val == "today") { }
-  else if (val == "newToday") { }
-  else if (val == "all") { }
-
   emit('update', val)
 }
 
@@ -95,12 +90,21 @@ watch(
 
     if (!val) return
     if (val.or_filters) {
+      if (val.or_filters == {}) {
+        resetToDefault();
+        return;
+      }
       var or_filters = val.or_filters;
       var prevFilter = '';
       var prevFilterLabel = '';
       if (or_filters.status === 'New' && or_filters.next_contact_date) {
-        prevFilter = 'newToday';
-        prevFilterLabel = 'New & Today';
+        if (or_filters.next_contact_date[0] === '>=') {
+          prevFilter = 'today&beyond';
+          prevFilterLabel = 'Today & Beyond';
+        } else {
+          prevFilter = 'newToday';
+          prevFilterLabel = 'New & Today';
+        }
       } else if (or_filters.status === 'New') {
         prevFilter = 'new';
         prevFilterLabel = 'New';
@@ -108,13 +112,15 @@ watch(
         prevFilter = 'today';
         prevFilterLabel = 'Today';
       } else {
-        prevFilter = 'today&beyond';
-        prevFilterLabel = 'Today & Beyond';
+        prevFilter = 'all';
+        prevFilterLabel = 'All';
       }
 
       if (prevFilter !== selectedFilter.value && prevFilterLabel !== selectedFilterLabel.value) {
         filter(prevFilter, prevFilterLabel);
       }
+    } else {
+      resetToDefault();
     }
 
     // or_filters = val.params.or_filters
