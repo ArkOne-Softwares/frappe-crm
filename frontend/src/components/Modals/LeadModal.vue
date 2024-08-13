@@ -141,6 +141,7 @@ function createNewLead() {
       // }
       if (!lead.lead_name) {
         lead.lead_name = 'EMPTY';
+        return "Your have not provided a name for the lead. We have set it to 'EMPTY'. Click on 'Create' again to proceed.";
       }
       if (lead.mobile_no && isNaN(lead.mobile_no.replace(/[-+() ]/g, ''))) {
         error.value = __('Mobile No should be a number')
