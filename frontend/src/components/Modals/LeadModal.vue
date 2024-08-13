@@ -103,6 +103,8 @@ const lead = reactive({
   lead_status: '',
   status: '',
   lead_owner: '',
+  first_name: '',
+  last_name: '',
 })
 
 const createLead = createResource({
@@ -133,9 +135,12 @@ function createNewLead() {
   createLead.submit(lead, {
     validate() {
       error.value = null
+      // if (!lead.lead_name) {
+      //   error.value = __('Name is mandatory')
+      //   return error.value
+      // }
       if (!lead.lead_name) {
-        error.value = __('Name is mandatory')
-        return error.value
+        lead.lead_name = 'EMPTY';
       }
       if (lead.mobile_no && isNaN(lead.mobile_no.replace(/[-+() ]/g, ''))) {
         error.value = __('Mobile No should be a number')
