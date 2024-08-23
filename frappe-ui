@@ -1,8 +1,0 @@
-diff --cc frappe-ui
-index b5cc6c0,cf4e7d3..0000000
---- a/frappe-ui
-+++ b/frappe-ui
-@@@ -1,1 -1,1 +1,1 @@@
-- Subproject commit b5cc6c0cd36ee25e8e945e8c91d8b5c035fb5e44
- -Subproject commit cf4e7d347237c23ebde5f5c890abdf7e81284961
-++Subproject commit 0000000000000000000000000000000000000000
