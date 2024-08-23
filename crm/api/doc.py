@@ -12,30 +12,30 @@ from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 
 @frappe.whitelist()
 def sort_options(doctype: str):
-    fields = frappe.get_meta(doctype).fields
-    fields = [field for field in fields if field.fieldtype not in no_value_fields]
-    fields = [
-        {
-            "label": _(field.label),
-            "value": field.fieldname,
-        }
-        for field in fields
-        if field.label and field.fieldname
-    ]
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields]
+	fields = [
+		{
+			"label": _(field.label),
+			"value": field.fieldname,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
 
-    standard_fields = [
-        {"label": "Name", "value": "name"},
-        {"label": "Created On", "value": "creation"},
-        {"label": "Last Modified", "value": "modified"},
-        {"label": "Modified By", "value": "modified_by"},
-        {"label": "Owner", "value": "owner"},
-    ]
+	standard_fields = [
+		{"label": "Name", "value": "name"},
+		{"label": "Created On", "value": "creation"},
+		{"label": "Last Modified", "value": "modified"},
+		{"label": "Modified By", "value": "modified_by"},
+		{"label": "Owner", "value": "owner"},
+	]
 
-    for field in standard_fields:
-        field["label"] = _(field["label"])
-        fields.append(field)
+	for field in standard_fields:
+		field["label"] = _(field["label"])
+		fields.append(field)
 
-    return fields
+	return fields
 
 
 @frappe.whitelist()

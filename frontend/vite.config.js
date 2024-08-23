@@ -22,8 +22,8 @@ export default defineConfig({
       },
       manifest: {
         display: 'standalone',
-        name: 'CRM',
-        short_name: 'CRM',
+        name: 'Arkone CRM',
+        short_name: 'Arkone CRM',
         start_url: '/crm',
         description:
           'Modern & 100% Open-source CRM tool to supercharge your sales operations',
@@ -74,13 +74,7 @@ export default defineConfig({
         return html
       },
     },
-    // react()
   ],
-  server: {
-    watch: {
-      usePolling: true,
-    },
-  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

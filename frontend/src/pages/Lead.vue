@@ -1,7 +1,11 @@
 <template>
   <LayoutHeader v-if="lead.data">
     <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
+      <Breadcrumbs :items="breadcrumbs">
+        <template #prefix="{ item }">
+          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+        </template>
+      </Breadcrumbs>
       <Button
         label="Previous"
         :class="prevLead ? getLeadStatus(lead.data.status).colorClass : ''"
@@ -279,7 +283,11 @@
       </div>
     </template>
   </Dialog>
-  <SidePanelModal v-if="showSidePanelModal" v-model="showSidePanelModal" />
+  <SidePanelModal
+  v-if="showSidePanelModal"
+  v-model="showSidePanelModal"
+  @reload="() => fieldsLayout.reload()"
+/>
 </template>
 <script setup>
 import Resizer from "@/components/Resizer.vue";

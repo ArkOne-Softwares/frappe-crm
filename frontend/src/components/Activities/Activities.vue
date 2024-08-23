@@ -164,7 +164,6 @@
             />
           </div>
         </div>
-        
         <div
           v-if="activity.activity_type == 'communication'"
           class="pb-5 mt-px"
@@ -438,6 +437,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { contactsStore } from '@/stores/contacts'
 import { whatsappEnabled } from '@/composables/settings'
+import { capture } from '@/telemetry'
 import { Button, Tooltip, createResource } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
@@ -553,6 +553,7 @@ onMounted(() => {
 
 function sendTemplate(template) {
   showWhatsappTemplates.value = false
+  capture('send_whatsapp_template', { doctype: props.doctype })
   createResource({
     url: 'crm.api.whatsapp.send_whatsapp_template',
     params: {

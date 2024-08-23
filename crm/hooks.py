@@ -8,7 +8,19 @@ app_icon_url = ""
 app_icon_title = "CRM"
 app_icon_route = "/crm"
 
+# Apps
+# ------------------
+
 # required_apps = []
+add_to_apps_screen = [
+	{
+		"name": "crm",
+		"logo": "/assets/crm/manifest/apple-icon-180.png",
+		"title": "CRM",
+		"route": "/crm",
+		# "has_permission": "crm.api.permission.has_app_permission"
+	}
+]
 
 # Includes in <head>
 # ------------------

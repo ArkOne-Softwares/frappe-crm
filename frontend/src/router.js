@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { usersStore } from '@/stores/users'
+import { userResource } from '@/stores/user'
 import { sessionStore } from '@/stores/session'
 
 const routes = [
@@ -40,7 +40,8 @@ const routes = [
     props: true,
   },
   {
-    path: '/notes',
+    alias: '/notes',
+    path: '/notes/view/:viewType?',
     name: 'Notes',
     component: () => import('@/pages/Notes.vue'),
   },
@@ -51,7 +52,8 @@ const routes = [
     component: () => import('@/pages/Tasks.vue'),
   },
   {
-    path: '/contacts',
+    alias: '/contacts',
+    path: '/contacts/view/:viewType?',
     name: 'Contacts',
     component: () => import('@/pages/Contacts.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -63,7 +65,8 @@ const routes = [
     props: true,
   },
   {
-    path: '/organizations',
+    alias: '/organizations',
+    path: '/organizations/view/:viewType?',
     name: 'Organizations',
     component: () => import('@/pages/Organizations.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -75,13 +78,15 @@ const routes = [
     props: true,
   },
   {
-    path: '/call-logs',
+    alias: '/call-logs',
+    path: '/call-logs/view/:viewType?',
     name: 'Call Logs',
     component: () => import('@/pages/CallLogs.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
   },
   {
-    path: '/email-templates',
+    alias: '/email-templates',
+    path: '/email-templates/view/:viewType?',
     name: 'Email Templates',
     component: () => import('@/pages/EmailTemplates.vue'),
     meta: { scrollPos: { top: 0, left: 0 } },
@@ -101,11 +106,6 @@ const routes = [
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/Login.vue'),
   },
 ]
 
@@ -139,19 +139,18 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const { users } = usersStore()
   const { isLoggedIn } = sessionStore()
 
-  isLoggedIn && (await users.promise)
+  isLoggedIn && (await userResource.promise)
 
   if (from.meta?.scrollPos) {
     from.meta.scrollPos.top = document.querySelector('#list-rows')?.scrollTop
   }
 
-  if (to.name === 'Login' && isLoggedIn) {
+  if (to.name === 'Home' && isLoggedIn) {
     next({ name: 'Leads' })
-  } else if (to.name !== 'Login' && !isLoggedIn) {
-    next({ name: 'Login' })
+  } else if (!isLoggedIn) {
+    window.location.href = "/login?redirect-to=/crm";
   } else if (to.matched.length === 0) {
     next({ name: 'Invalid Page' })
   } else {
