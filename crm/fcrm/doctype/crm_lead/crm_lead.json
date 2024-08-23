@@ -56,7 +56,6 @@
   "weight",
   "annual_income",
   "family_background",
-  "lead_source",
   "person_status",
   "contacted_by",
   "city",
@@ -334,12 +333,6 @@
    "label": "Family Background"
   },
   {
-   "fieldname": "lead_source",
-   "fieldtype": "Select",
-   "label": "Lead Source",
-   "options": "PANCHAL BOOK\nJD\nGUJARAT SAMACHAR\nSANDESH\nDIVYA BHASKAR\nSHAADI\nTIMES OF INDIA\nDIVYABHASKAR"
-  },
-  {
    "fieldname": "person_status",
    "fieldtype": "Data",
    "label": "Person Status"
@@ -414,7 +407,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-12 07:06:20.699273",
+ "modified": "2024-08-23 19:03:30.496334",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
