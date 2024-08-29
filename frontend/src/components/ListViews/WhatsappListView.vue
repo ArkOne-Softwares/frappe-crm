@@ -15,8 +15,8 @@
             <ListRow v-for="row in rows" :key="row.name" :row="row" :class="selected === row.name ? 'bg-gray-100 rounded-md' : ''">
                 <div class="flex flex-row justify-between items-center">
                     <div class="flex flex-row gap-3 justify-start items-center">
-                        <Avatar class="flex items-center" :image="row.image" :label="row.image_label" size="sm" />
-                        <div v-if="row.name">{{ row.name }}</div>
+                        <Avatar class="flex items-center" :image="row.image" :label="row.full_name.label ? row.full_name.label : row.mobile_no" size="sm" />
+                        <div v-if="row.full_name.label">{{ row.full_name.label }}</div>
                         <div v-else>{{ row.mobile_no }}</div>
                     </div>
                     <div v-if="true">

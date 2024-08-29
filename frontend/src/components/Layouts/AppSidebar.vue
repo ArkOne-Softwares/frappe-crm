@@ -77,59 +77,65 @@ import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-
+import { whatsappEnabled, callEnabled } from "@/composables/settings";
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
-const links = [
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'WhatsApp',
-    icon: WhatsAppIcon,
-    to: 'WhatsApp',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
-  },
-]
+
+const links = computed(() => {
+  let tabOptions = [
+    {
+      label: 'Leads',
+      icon: LeadsIcon,
+      to: 'Leads',
+    },
+    {
+      label: 'Deals',
+      icon: DealsIcon,
+      to: 'Deals',
+    },
+    {
+      label: 'Contacts',
+      icon: ContactsIcon,
+      to: 'Contacts',
+    },
+    {
+      label: 'WhatsApp',
+      icon: WhatsAppIcon,
+      to: 'WhatsApp',
+      condition: () => whatsappEnabled.value,
+    },
+    {
+      label: 'Organizations',
+      icon: OrganizationsIcon,
+      to: 'Organizations',
+    },
+    {
+      label: 'Notes',
+      icon: NoteIcon,
+      to: 'Notes',
+    },
+    {
+      label: 'Tasks',
+      icon: TaskIcon,
+      to: 'Tasks',
+    },
+    {
+      label: 'Call Logs',
+      icon: PhoneIcon,
+      to: 'Call Logs',
+    },
+    {
+      label: 'Email Templates',
+      icon: Email2Icon,
+      to: 'Email Templates',
+    },
+  ];
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true));
+});
+
 
 const allViews = computed(() => {
   let _views = [
@@ -137,7 +143,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links,
+      views: links.value,
     },
   ]
   if (getPublicViews().length) {
