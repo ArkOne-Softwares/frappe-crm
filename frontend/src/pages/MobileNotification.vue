@@ -1,19 +1,14 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <Breadcrumbs
-        :items="[
-          { label: __('Notifications'), route: { name: 'Notifications' } },
-        ]"
-      />
+      <Breadcrumbs :items="[
+        { label: __('Notifications'), route: { name: 'Notifications' } },
+      ]" />
     </template>
     <template #right-header>
       <Tooltip :text="__('Mark all as read')">
         <div>
-          <Button
-            :label="__('Mark all as read')"
-            @click="() => notificationsStore().mark_as_read.reload()"
-          >
+          <Button :label="__('Mark all as read')" @click="() => notificationsStore().mark_as_read.reload()">
             <template #prefix>
               <MarkAsDoneIcon class="h-4 w-4" />
             </template>
@@ -23,22 +18,12 @@
     </template>
   </LayoutHeader>
   <div class="flex flex-col overflow-hidden">
-    <div
-      v-if="notificationsStore().allNotifications?.length"
-      class="divide-y overflow-y-auto text-base"
-    >
-      <RouterLink
-        v-for="n in notificationsStore().allNotifications"
-        :key="n.comment"
-        :to="getRoute(n)"
+    <div v-if="notificationsStore().allNotifications?.length" class="divide-y overflow-y-auto text-base">
+      <RouterLink v-for="n in notificationsStore().allNotifications" :key="n.comment" :to="getRoute(n)"
         class="flex cursor-pointer items-start gap-3 px-2.5 py-3 hover:bg-gray-100"
-        @click="mark_as_read(n.comment || n.notification_type_doc)"
-      >
+        @click="mark_as_read(n.comment || n.notification_type_doc)">
         <div class="mt-1 flex items-center gap-2.5">
-          <div
-            class="size-[5px] rounded-full"
-            :class="[n.read ? 'bg-transparent' : 'bg-gray-900']"
-          />
+          <div class="size-[5px] rounded-full" :class="[n.read ? 'bg-transparent' : 'bg-gray-900']" />
           <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
           <UserAvatar v-else :user="n.from_user.name" size="lg" />
         </div>
@@ -99,11 +84,16 @@ onMounted(() => {
 
 function getRoute(notification) {
   let params = {
-    leadId: notification.reference_name,
+    leadId: notification.reference_name ?? "",
   }
   if (notification.route_name === 'Deal') {
     params = {
       dealId: notification.reference_name,
+    }
+  }
+  if (notification.route_name === 'Contact') {
+    params = {
+      contactId: notification.reference_name,
     }
   }
   return {

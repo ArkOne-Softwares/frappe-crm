@@ -1,19 +1,13 @@
 <template>
-  <div
-    v-if="notificationsStore().visible"
-    ref="target"
-    class="absolute z-20 h-screen bg-white transition-all duration-300 ease-in-out"
-    :style="{
+  <div v-if="notificationsStore().visible" ref="target"
+    class="absolute z-20 h-screen bg-white transition-all duration-300 ease-in-out" :style="{
       'box-shadow': '8px 0px 8px rgba(0, 0, 0, 0.1)',
       'max-width': '350px',
       'min-width': '350px',
       left: 'calc(100% + 1px)',
-    }"
-  >
+    }">
     <div class="flex h-screen flex-col">
-      <div
-        class="z-20 flex items-center justify-between border-b bg-white px-5 py-2.5"
-      >
+      <div class="z-20 flex items-center justify-between border-b bg-white px-5 py-2.5">
         <div class="text-base font-medium">{{ __('Notifications') }}</div>
         <div class="flex gap-1">
           <Tooltip :text="__('Mark all as read')">
@@ -36,22 +30,12 @@
           </Tooltip>
         </div>
       </div>
-      <div
-        v-if="notificationsStore().allNotifications?.length"
-        class="divide-y overflow-auto text-base"
-      >
-        <RouterLink
-          v-for="n in notificationsStore().allNotifications"
-          :key="n.comment"
-          :to="getRoute(n)"
+      <div v-if="notificationsStore().allNotifications?.length" class="divide-y overflow-auto text-base">
+        <RouterLink v-for="n in notificationsStore().allNotifications" :key="n.comment" :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-gray-100"
-          @click="markAsRead(n.comment || n.notification_type_doc)"
-        >
+          @click="markAsRead(n.comment || n.notification_type_doc)">
           <div class="mt-1 flex items-center gap-2.5">
-            <div
-              class="size-[5px] rounded-full"
-              :class="[n.read ? 'bg-transparent' : 'bg-gray-900']"
-            />
+            <div class="size-[5px] rounded-full" :class="[n.read ? 'bg-transparent' : 'bg-gray-900']" />
             <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
             <UserAvatar v-else :user="n.from_user.name" size="lg" />
           </div>
@@ -74,10 +58,7 @@
           </div>
         </RouterLink>
       </div>
-      <div
-        v-else
-        class="flex flex-1 flex-col items-center justify-center gap-2"
-      >
+      <div v-else class="flex flex-1 flex-col items-center justify-center gap-2">
         <NotificationsIcon class="h-20 w-20 text-gray-300" />
         <div class="text-lg font-medium text-gray-500">
           {{ __('No new notifications') }}
@@ -140,11 +121,16 @@ onMounted(() => {
 
 function getRoute(notification) {
   let params = {
-    leadId: notification.reference_name,
+    leadId: notification.reference_name ?? "",
   }
   if (notification.route_name === 'Deal') {
     params = {
       dealId: notification.reference_name,
+    }
+  }
+  if (notification.route_name === 'Contact') {
+    params = {
+      contactId: notification.reference_name,
     }
   }
   return {
@@ -154,5 +140,5 @@ function getRoute(notification) {
   }
 }
 
-onMounted(() => {})
+onMounted(() => { })
 </script>

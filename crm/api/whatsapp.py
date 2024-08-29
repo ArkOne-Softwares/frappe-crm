@@ -15,6 +15,10 @@ def on_update(doc, method):
     frappe.publish_realtime(
         "whatsapp_message",
         {
+            "message": doc.message,
+            "type": doc.type,
+            "from": getattr(doc, 'from'),
+            "content_type": doc.content_type,
             "reference_doctype": doc.reference_doctype,
             "reference_name": doc.reference_name,
         },

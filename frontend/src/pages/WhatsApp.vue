@@ -51,8 +51,9 @@
                     </button>
                 </template>
                 <template #default="{ tab }">
-                    <Activities v-if="tab.label === 'WhatsApp'" ref="activities" doctype="Contact" :title="tab.label" :header="contact.data.full_name"
-                        :tabs="tabs" v-model:tabIndex="tabIndex" v-model="contact" :key="contact.data.name"  />
+                    <Activities v-if="tab.label === 'WhatsApp'" ref="activities" doctype="Contact" :title="tab.label"
+                        :header="contact.data.full_name" :tabs="tabs" v-model:tabIndex="tabIndex" v-model="contact"
+                        :key="contact.data.name" />
                     <Activities v-if="tab.label === 'Emails'" ref="activities" doctype="Contact" :title="tab.label"
                         :tabs="tabs" v-model:tabIndex="tabIndex" v-model="contact" :key="contact.data.name" />
                 </template>
@@ -69,7 +70,10 @@
 </template>
 
 <script setup>
-import { ref, computed, h, watch } from 'vue'
+import {
+    ref, computed, h, watch, onMounted,
+    onBeforeUnmount,
+} from 'vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
@@ -95,6 +99,9 @@ import {
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import { globalStore } from '@/stores/global'
+
+const { $socket } = globalStore()
 
 const { getOrganization } = organizationsStore()
 
@@ -169,6 +176,22 @@ watch(selectedContact, (newContact) => {
         contact.params.name = newContact
         contact.fetch()
     }
+})
+
+onBeforeUnmount(() => {
+    $socket.off('whatsapp_message')
+})
+
+onMounted(() => {
+    $socket.on('whatsapp_message', (data) => {
+        console.log('whatsapp_message', data)
+        // if (
+        //   data.reference_doctype === props.doctype &&
+        //   data.reference_name === doc.value.data.name
+        // ) {
+        //   whatsappMessages.reload()
+        // }
+    })
 })
 
 
