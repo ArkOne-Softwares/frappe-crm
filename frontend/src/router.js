@@ -65,6 +65,13 @@ const routes = [
     props: true,
   },
   {
+    alias: '/whatsapp',
+    path: '/whatsapp/view/:viewType?',
+    name: 'WhatsApp',
+    component: () => import('@/pages/WhatsApp.vue'),
+    meta: { scrollPos: { top: 0, left: 0 } },
+  },
+  {
     alias: '/organizations',
     path: '/organizations/view/:viewType?',
     name: 'Organizations',

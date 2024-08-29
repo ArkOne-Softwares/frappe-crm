@@ -2,9 +2,9 @@ import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { useDateFormat, useTimeAgo } from '@vueuse/core'
 import { usersStore } from '@/stores/users'
-import { gemoji } from 'gemoji'
 import { toast } from 'frappe-ui'
 import { h } from 'vue'
+import { gemoji } from 'gemoji'
 
 export function createToast(options) {
   toast({
@@ -214,5 +214,5 @@ export function isEmoji(str) {
 }
 
 export function isTouchScreenDevice() {
-	return "ontouchstart" in document.documentElement;
+  return "ontouchstart" in document.documentElement;
 }

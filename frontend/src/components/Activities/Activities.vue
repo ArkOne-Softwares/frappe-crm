@@ -8,6 +8,7 @@
     :emailBox="emailBox"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
+    :header="header"
   />
   <FadedScrollableDiv
     :maskHeight="30"
@@ -460,6 +461,10 @@ const props = defineProps({
   title: {
     type: String,
     default: 'Activity',
+  },
+  header: {
+    type: String,
+    default: null,
   },
   doctype: {
     type: String,

@@ -1,92 +1,52 @@
 <template>
-  <div
-    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
-    :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
-  >
+  <div class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
+    :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'">
     <div>
       <UserDropdown class="p-2" :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
       <div class="mb-3 flex flex-col">
-        <SidebarLink
-          id="notifications-btn"
-          :label="__('Notifications')"
-          :icon="NotificationsIcon"
-          :isCollapsed="isSidebarCollapsed"
-          @click="() => toggleNotificationPanel()"
-          class="relative mx-2 my-0.5"
-        >
+        <SidebarLink id="notifications-btn" :label="__('Notifications')" :icon="NotificationsIcon"
+          :isCollapsed="isSidebarCollapsed" @click="() => toggleNotificationPanel()" class="relative mx-2 my-0.5">
           <template #right>
-            <Badge
-              v-if="
-                !isSidebarCollapsed &&
-                notificationsStore().unreadNotificationsCount
-              "
-              :label="notificationsStore().unreadNotificationsCount"
-              variant="subtle"
-            />
-            <div
-              v-else-if="notificationsStore().unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-gray-800 ring-1 ring-white"
-            />
+            <Badge v-if="
+              !isSidebarCollapsed &&
+              notificationsStore().unreadNotificationsCount
+            " :label="notificationsStore().unreadNotificationsCount" variant="subtle" />
+            <div v-else-if="notificationsStore().unreadNotificationsCount"
+              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-gray-800 ring-1 ring-white" />
           </template>
         </SidebarLink>
       </div>
       <div v-for="view in allViews" :key="view.label">
-        <div
-          v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-          class="mx-2 my-2 h-1 border-b"
-        />
-        <Section
-          :label="view.name"
-          :hideLabel="view.hideLabel"
-          :isOpened="view.opened"
-        >
+        <div v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length" class="mx-2 my-2 h-1 border-b" />
+        <Section :label="view.name" :hideLabel="view.hideLabel" :isOpened="view.opened">
           <template #header="{ opened, hide, toggle }">
-            <div
-              v-if="!hide"
+            <div v-if="!hide"
               class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-gray-600 transition-all duration-300 ease-in-out"
-              :class="
-                isSidebarCollapsed
-                  ? 'ml-0 h-0 overflow-hidden opacity-0'
-                  : 'ml-2 mt-4 h-7 w-auto opacity-100'
-              "
-              @click="toggle()"
-            >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
-                :class="{ 'rotate-90': opened }"
-              />
+              :class="isSidebarCollapsed
+                ? 'ml-0 h-0 overflow-hidden opacity-0'
+                : 'ml-2 mt-4 h-7 w-auto opacity-100'
+                " @click="toggle()">
+              <FeatherIcon name="chevron-right" class="h-4 text-gray-900 transition-all duration-300 ease-in-out"
+                :class="{ 'rotate-90': opened }" />
               <span>{{ __(view.name) }}</span>
             </div>
           </template>
           <nav class="flex flex-col">
-            <SidebarLink
-              v-for="link in view.views"
-              :icon="link.icon"
-              :label="__(link.label)"
-              :to="link.to"
-              :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-0.5"
-            />
+            <SidebarLink v-for="link in view.views" :icon="link.icon" :label="__(link.label)" :to="link.to"
+              :isCollapsed="isSidebarCollapsed" class="mx-2 my-0.5" />
           </nav>
         </Section>
       </div>
     </div>
     <div class="m-2 flex flex-col gap-1">
-      <SidebarLink
-        :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="isSidebarCollapsed = !isSidebarCollapsed"
-        class=""
-      >
+      <SidebarLink :label="isSidebarCollapsed ? __('Expand') : __('Collapse')" :isCollapsed="isSidebarCollapsed"
+        @click="isSidebarCollapsed = !isSidebarCollapsed" class="">
         <template #icon>
           <span class="grid h-4.5 w-4.5 flex-shrink-0 place-items-center">
-            <CollapseSidebar
-              class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
-              :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
-            />
+            <CollapseSidebar class="h-4.5 w-4.5 text-gray-700 duration-300 ease-in-out"
+              :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }" />
           </span>
         </template>
       </SidebarLink>
@@ -116,6 +76,7 @@ import { notificationsStore } from '@/stores/notifications'
 import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -137,6 +98,11 @@ const links = [
     label: 'Contacts',
     icon: ContactsIcon,
     to: 'Contacts',
+  },
+  {
+    label: 'WhatsApp',
+    icon: WhatsAppIcon,
+    to: 'WhatsApp',
   },
   {
     label: 'Organizations',
@@ -222,6 +188,8 @@ function getIcon(routeName, icon) {
       return NoteIcon
     case 'Call Logs':
       return PhoneIcon
+    case 'WhatsApp':
+      return WhatsAppIcon
     default:
       return PinIcon
   }

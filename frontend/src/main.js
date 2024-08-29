@@ -1,5 +1,4 @@
-import './index.css'
-
+import { createApp } from 'vue'
 import {
   FrappeUI,
   Button,
@@ -14,7 +13,6 @@ import {
   frappeRequest,
   FeatherIcon,
 } from 'frappe-ui'
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createDialog } from './utils/dialogs'
 import { initSocket } from './socket'
@@ -22,6 +20,8 @@ import router from './router'
 import translationPlugin from './translation'
 import { posthogPlugin } from './telemetry'
 import App from './App.vue'
+
+import './index.css'
 
 let globalComponents = {
   Button,
