@@ -35,7 +35,8 @@ def notify_agent(doc):
 				<span class="font-medium text-gray-900">{ doc.reference_name }</span>
 			</div>
 		"""
-        assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
+        assigned_users = get_assigned_users(
+            doc.reference_doctype, doc.reference_name)
         for user in assigned_users:
             values = frappe._dict(
                 doctype="CRM Notification",
@@ -78,7 +79,18 @@ def get_lead_or_deal_from_number(number):
         doc = find_record(doctype, number, "AND converted is not True")
         if not doc:
             doc = find_record(doctype, number)
+            if not doc:
+                doctype = "Contact"
+                doc = find_record(doctype, number)
+                if not doc:
+                    # Create a new Contact with the given number
+                    doc = frappe.new_doc(doctype)
+                    doc.name = number
+                    doc.append("phone_nos", {"phone": number})
+                    doc.insert(ignore_permissions=True)
+                    doc = doc.name
 
+    print(doc)
     return doc, doctype
 
 
@@ -95,6 +107,7 @@ def is_whatsapp_enabled():
     if not frappe.db.exists("DocType", "WhatsApp Settings"):
         return False
     return frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "enabled")
+
 
 @frappe.whitelist()
 def is_whatsapp_installed():
@@ -144,13 +157,15 @@ def get_whatsapp_messages(reference_doctype, reference_name):
     # Iterate through template messages
     for template_message in template_messages:
         # Find the template that this message is using
-        template = frappe.get_doc("WhatsApp Templates", template_message["template"])
+        template = frappe.get_doc(
+            "WhatsApp Templates", template_message["template"])
 
         # If the template is found, add the template details to the template message
         if template:
             template_message["template_name"] = template.template_name
             if template_message["template_parameters"]:
-                parameters = json.loads(template_message["template_parameters"])
+                parameters = json.loads(
+                    template_message["template_parameters"])
                 template.template = parse_template_parameters(
                     template.template, parameters
                 )
@@ -207,7 +222,8 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 
         # If the replied message is found, add the reply details to the reply message
         from_name = (
-            get_from_name(reply_message) if replied_message["from"] else _("You")
+            get_from_name(
+                reply_message) if replied_message["from"] else _("You")
         )
         if replied_message:
             message = replied_message["message"]
@@ -280,7 +296,8 @@ def send_whatsapp_template(reference_doctype, reference_name, template, to):
 @frappe.whitelist()
 def react_on_whatsapp_message(emoji, reply_to_name):
     reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
-    to = reply_to_doc.type == "Incoming" and reply_to_doc.get("from") or reply_to_doc.to
+    to = reply_to_doc.type == "Incoming" and reply_to_doc.get(
+        "from") or reply_to_doc.to
     doc = frappe.new_doc("WhatsApp Message")
     doc.update(
         {
@@ -305,7 +322,8 @@ def parse_template_parameters(string, parameters):
 
 
 def get_from_name(message):
-    doc = frappe.get_doc(message["reference_doctype"], message["reference_name"])
+    doc = frappe.get_doc(
+        message["reference_doctype"], message["reference_name"])
     from_name = ""
     if message["reference_doctype"] == "CRM Deal":
         if doc.get("contacts"):
