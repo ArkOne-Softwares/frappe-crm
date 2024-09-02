@@ -298,7 +298,6 @@ const { $dialog } = globalStore()
 const { organizations, getOrganization } = organizationsStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const route = useRoute()
-
 const router = useRouter()
 
 const props = defineProps({

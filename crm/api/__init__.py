@@ -47,6 +47,7 @@ def get_user_signature():
 		content = f'<br><p class="signature">{signature}</p>'
 	return content
 
+
 @frappe.whitelist()
 def get_posthog_settings():
 	return {
@@ -55,3 +56,14 @@ def get_posthog_settings():
 		"enable_telemetry": frappe.get_system_settings("enable_telemetry"),
 		"telemetry_site_age": frappe.utils.telemetry.site_age(),
 	}
+
+
+def check_app_permission():
+	if frappe.session.user == "Administrator":
+		return True
+
+	roles = frappe.get_roles()
+	if any(role in ["System Manager", "Sales User", "Sales Manager", "Sales Master Manager"] for role in roles):
+		return True
+
+	return False
