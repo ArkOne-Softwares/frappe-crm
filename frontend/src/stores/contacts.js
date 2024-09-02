@@ -7,6 +7,7 @@ export const contactsStore = defineStore('crm-contacts', () => {
   let contactsByName = reactive({})
   let leadContactsByPhone = reactive({})
   let allContacts = reactive([])
+  let allContactsWhatsapp = reactive([])
 
   const contacts = createResource({
     url: 'crm.api.session.get_contacts',
@@ -32,6 +33,30 @@ export const contactsStore = defineStore('crm-contacts', () => {
     },
   })
 
+  const contacts_sorted_whatsapp
+    = createResource({
+      url: 'crm.api.session.get_contacts_latest_whatsapp',
+      cache: 'contacts_whatsapp_latest',
+      initialData: [],
+      auto: true,
+      transform(whatsapp_latest_contacts) {
+        for (let contact of whatsapp_latest_contacts) {
+          // remove special characters from phone number to make it easier to search
+          // also remove spaces but keep + sign at the start
+          contact.actual_mobile_no = contact.mobile_no
+          contact.mobile_no = contact.mobile_no?.replace(/[^0-9+]/g, '')
+          contactsByPhone[contact.mobile_no] = contact
+          contactsByName[contact.name] = contact
+        }
+        allContactsWhatsapp = [...contacts]
+        return whatsapp_latest_contacts
+      },
+      onError(error) {
+        if (error && error.exc_type === 'AuthenticationError') {
+          router.push('/login')
+        }
+      },
+    })
   const leadContacts = createResource({
     url: 'crm.api.session.get_lead_contacts',
     cache: 'lead_contacts',
@@ -70,11 +95,17 @@ export const contactsStore = defineStore('crm-contacts', () => {
     return allContacts || contacts?.data || []
   }
 
+  function getContactsWhatsapp() {
+    return allContactsWhatsapp || []
+  }
+
   return {
     contacts,
+    contacts_sorted_whatsapp,
     getContacts,
     getContact,
     getContactByName,
     getLeadContact,
+    getContactsWhatsapp,
   }
 })

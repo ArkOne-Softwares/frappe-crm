@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from crm.api.doc import get_assigned_users
+from datetime import datetime
 
 
 def validate(doc, method):
@@ -75,6 +76,16 @@ def get_lead_or_deal_from_number(number):
         data = frappe.db.sql(query + where, as_dict=True)
         return data[0].name if data else None
 
+    # Create Contact By Default
+    doctype = "Contact"
+    doc = find_record(doctype, number)
+    if not doc:
+        # Create a new Contact with the given number
+        doc = frappe.new_doc(doctype)
+        doc.name = number
+        doc.append("phone_nos", {"phone": number})
+        doc.insert(ignore_permissions=True)
+
     doctype = "CRM Deal"
 
     doc = find_record(doctype, number) or None
@@ -94,7 +105,15 @@ def get_lead_or_deal_from_number(number):
                     doc.insert(ignore_permissions=True)
                     doc = doc.name
 
-    print(doc)
+    doc_name = find_record(doctype, number)
+    contact_doc = frappe.get_doc('Contact', doc_name)
+    contact_doc.last_msg_whatsapp = datetime.now()
+    print(contact_doc)
+    contact_doc.save(
+        ignore_permissions=True,  # ignore write permissions during insert
+        ignore_version=True  # do not create a version record
+    )
+    print(contact_doc)
     return doc, doctype
 
 
