@@ -495,10 +495,13 @@ const whatsappMessages = createResource({
   onSuccess: () =>
     nextTick(async () => {
       scroll();
-      await call("crm.api.whatsapp.mark_as_read", {
-        doc: "WhatsApp Message",
-        user: doc.value.data.name,
-      });
+      if (document.visibilityState === 'visible') {
+        await call("crm.api.whatsapp.mark_as_read", {
+          doc: "WhatsApp Message",
+          user: doc.value.data.name,
+        });
+        console.log(":notification");
+      }
       console.log(":notification");
     }),
 });

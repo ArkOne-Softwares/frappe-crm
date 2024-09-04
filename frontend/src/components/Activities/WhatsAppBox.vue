@@ -11,7 +11,7 @@
         class="mb-1 text-sm font-bold"
         :class="reply.type == 'Incoming' ? 'text-green-500' : 'text-blue-400'"
       >
-        {{ reply.from_name || __('You') }}
+        {{ reply.from_name || __("You") }}
       </div>
       <div class="max-h-12 overflow-hidden" v-html="reply.message" />
     </div>
@@ -24,10 +24,7 @@
         <template v-slot="{ openFileSelector }">
           <div class="flex items-center space-x-2">
             <Dropdown :options="uploadOptions(openFileSelector)">
-              <FeatherIcon
-                name="plus"
-                class="size-4.5 cursor-pointer text-gray-600"
-              />
+              <FeatherIcon name="plus" class="size-4.5 cursor-pointer text-gray-600" />
             </Dropdown>
           </div>
         </template>
@@ -37,9 +34,9 @@
         v-slot="{ togglePopover }"
         @update:modelValue="
           () => {
-            content += emoji
-            $refs.textarea.$el.focus()
-            capture('whatsapp_emoji_added')
+            content += emoji;
+            $refs.textarea.$el.focus();
+            capture('whatsapp_emoji_added');
           }
         "
       >
@@ -64,44 +61,44 @@
 </template>
 
 <script setup>
-import IconPicker from '@/components/IconPicker.vue'
-import SmileIcon from '@/components/Icons/SmileIcon.vue'
-import { capture } from '@/telemetry'
-import { createResource, Textarea, FileUploader, Dropdown } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import IconPicker from "@/components/IconPicker.vue";
+import SmileIcon from "@/components/Icons/SmileIcon.vue";
+import { capture } from "@/telemetry";
+import { createResource, Textarea, FileUploader, Dropdown } from "frappe-ui";
+import { ref, nextTick, watch } from "vue";
 
 const props = defineProps({
   doctype: String,
-})
+});
 
-const doc = defineModel()
-const whatsapp = defineModel('whatsapp')
-const reply = defineModel('reply')
-const rows = ref(1)
-const textarea = ref(null)
-const emoji = ref('')
+const doc = defineModel();
+const whatsapp = defineModel("whatsapp");
+const reply = defineModel("reply");
+const rows = ref(1);
+const textarea = ref(null);
+const emoji = ref("");
 
-const content = ref('')
-const placeholder = ref(__('Type your message here...'))
-const fileType = ref('')
+const content = ref("");
+const placeholder = ref(__("Type your message here..."));
+const fileType = ref("");
 
 function show() {
-  nextTick(() => textarea.value.$el.focus())
+  nextTick(() => textarea.value.$el.focus());
 }
 
 function uploadFile(file) {
-  whatsapp.value.attach = file.file_url
-  whatsapp.value.content_type = fileType.value
-  sendWhatsAppMessage()
-  capture('whatsapp_upload_file')
+  whatsapp.value.attach = file.file_url;
+  whatsapp.value.content_type = fileType.value;
+  sendWhatsAppMessage();
+  capture("whatsapp_upload_file");
 }
 
 function sendTextMessage(event) {
-  if (event.shiftKey) return
-  sendWhatsAppMessage()
-  textarea.value.$el.blur()
-  content.value = ''
-  capture('whatsapp_send_message')
+  if (event.shiftKey) return;
+  sendWhatsAppMessage();
+  textarea.value.$el.blur();
+  content.value = "";
+  capture("whatsapp_send_message");
 }
 
 async function sendWhatsAppMessage() {
@@ -110,56 +107,61 @@ async function sendWhatsAppMessage() {
     reference_name: doc.value.data.name,
     message: content.value,
     to: doc.value.data.mobile_no,
-    attach: whatsapp.value.attach || '',
-    reply_to: reply.value?.name || '',
+    attach: whatsapp.value.attach || "",
+    reply_to: reply.value?.name || "",
     content_type: whatsapp.value.content_type,
-  }
-  content.value = ''
-  fileType.value = ''
-  whatsapp.value.attach = ''
-  whatsapp.value.content_type = 'text'
-  reply.value = {}
+  };
+  content.value = "";
+  fileType.value = "";
+  whatsapp.value.attach = "";
+  whatsapp.value.content_type = "text";
+  reply.value = {};
   createResource({
-    url: 'crm.api.whatsapp.create_whatsapp_message',
+    url: "crm.api.whatsapp.create_whatsapp_message",
     params: args,
     auto: true,
-  })
+  });
+
+  await call("crm.api.whatsapp.mark_as_read", {
+    doc: "WhatsApp Message",
+    user: doc.value.data.name,
+  });
 }
 
 function uploadOptions(openFileSelector) {
   return [
     {
-      label: __('Upload Document'),
-      icon: 'file',
+      label: __("Upload Document"),
+      icon: "file",
       onClick: () => {
-        fileType.value = 'document'
-        openFileSelector()
+        fileType.value = "document";
+        openFileSelector();
       },
     },
     {
-      label: __('Upload Image'),
-      icon: 'image',
+      label: __("Upload Image"),
+      icon: "image",
       onClick: () => {
-        fileType.value = 'image'
-        openFileSelector('image/*')
+        fileType.value = "image";
+        openFileSelector("image/*");
       },
     },
     {
-      label: __('Upload Video'),
-      icon: 'video',
+      label: __("Upload Video"),
+      icon: "video",
       onClick: () => {
-        fileType.value = 'video'
-        openFileSelector('video/*')
+        fileType.value = "video";
+        openFileSelector("video/*");
       },
     },
-  ]
+  ];
 }
 
 watch(reply, (value) => {
   if (value?.message) {
-    show()
+    show();
   }
-})
+});
 
-defineExpose({ show })
+defineExpose({ show });
 </script>
