@@ -4,83 +4,49 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="WhatsApp" />
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="whatsappListView?.customListActions"
-        :actions="whatsappListView.customListActions"
-      />
-      <Button
-        variant="solid"
-        :label="__('Create')"
-        @click="
-          () => {
-            showContactModal = true;
-            quickEntryContact = true;
-            detailMode = false;
-          }
-        "
-      >
+      <CustomActions v-if="whatsappListView?.customListActions" :actions="whatsappListView.customListActions" />
+      <Button variant="solid" :label="__('Create')" @click="() => {
+        showContactModal = true;
+        quickEntryContact = true;
+        detailMode = false;
+      }
+        ">
         <template #prefix>
           <FeatherIcon name="plus" class="h-4" />
         </template>
       </Button>
     </template>
   </LayoutHeader>
-  <ViewControls
-    ref="viewControls"
-    v-model="contacts_sorted_whatsapp"
-    v-model:loadMore="loadMore"
-    v-model:resizeColumn="triggerResize"
-    v-model:updatedPageCount="updatedPageCount"
-    doctype="Contact"
-    :filters="{
+  <ViewControls ref="viewControls" v-model="contacts_sorted_whatsapp" v-model:loadMore="loadMore"
+    v-model:resizeColumn="triggerResize" v-model:updatedPageCount="updatedPageCount" doctype="Contact" :filters="{
       mobile_no: ['is', 'set'],
-    }"
-    url="crm.api.doc.get_whatsapp_contact_data"
-    order_by="last_msg_whatsapp desc,first_name asc"
-    :options="{
+    }" url="crm.api.doc.get_whatsapp_contact_data" order_by="last_msg_whatsapp desc,first_name asc" :options="{
       hideColumnsButton: true,
       hideQuickFilter: true,
-    }"
-  />
+    }" />
   <div class="flex flex-row justify-around items-stretch h-full border-t">
-    <div
-      class="flex flex-col w-full max-w-[400px] h-full flex-1 items-stretch border-r bg-gray-50"
-    >
+    <div class="flex flex-col w-full max-w-[400px] h-full flex-1 items-stretch border-r bg-blue-50">
       <h1 class="font-medium pl-8 mb-6 py-2 border-b-[1px] border-gray-300 text-gray-500">
         Your Contacts
       </h1>
-      <WhatsappListView
-        ref="whatsappListView"
-        v-if="contacts_sorted_whatsapp.data && rows.length"
-        v-model="contacts_sorted_whatsapp.data.page_length_count"
-        v-model:list="contacts_sorted_whatsapp"
-        :rows="rows"
+      <WhatsappListView ref="whatsappListView" v-if="contacts_sorted_whatsapp.data && rows.length"
+        v-model="contacts_sorted_whatsapp.data.page_length_count" v-model:list="contacts_sorted_whatsapp" :rows="rows"
         :options="{
           showTooltip: false,
           resizeColumn: false,
           rowCount: contacts_sorted_whatsapp.data.row_count,
           totalCount: contacts_sorted_whatsapp.data.total_count,
-        }"
-        @loadMore="() => loadMore++"
-        @updatePageCount="(count) => (updatedPageCount = count)"
-        @selectedContact="handleContactChange"
-      />
-      <div
-        v-else-if="contacts_sorted_whatsapp.data"
-        class="flex h-full items-center justify-center"
-      >
+        }" @loadMore="() => loadMore++" @updatePageCount="(count) => (updatedPageCount = count)"
+        @selectedContact="handleContactChange" />
+      <div v-else-if="contacts_sorted_whatsapp.data" class="flex h-full items-center justify-center">
         <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
           <ContactsIcon class="h-10 w-10" />
           <span>{{ __("No {0} Found", [__("Contacts")]) }}</span>
-          <Button
-            :label="__('Create')"
-            @click="
-              () => {
-                showContactModal = true;
-                quickEntryContact = null;
-              }
-            "
-          >
+          <Button :label="__('Create')" @click="() => {
+            showContactModal = true;
+            quickEntryContact = null;
+          }
+            ">
             <template #prefix>
               <FeatherIcon name="plus" class="h-4" />
             </template>
@@ -89,67 +55,33 @@
       </div>
     </div>
     <div class="flex w-full h-full flex-1 items-stretch">
-      <Tabs
-        v-if="selectedContact && contact.data"
-        class="overflow-hidden"
-        v-model="tabIndex"
-        :tabs="tabs"
-      >
+      <Tabs v-if="selectedContact && contact.data" class="overflow-hidden" v-model="tabIndex" :tabs="tabs">
         <template #tab="{ tab, selected }">
           <button
             class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
-            :class="{ 'text-gray-900': selected }"
-            @click="handleTabClick(tab.label)"
-          >
+            :class="{ 'text-gray-900': selected }" @click="handleTabClick(tab.label)">
             <component v-if="tab.icon" :is="tab.icon" class="h-5" />
             {{ __(tab.label) }}
           </button>
         </template>
         <template #default="{ tab }">
-          <Activities
-            v-if="tab.label === 'WhatsApp'"
-            ref="activities"
-            doctype="Contact"
-            :title="tab.label"
-            :header="contact.data.full_name"
-            :tabs="tabs"
-            v-model:tabIndex="tabIndex"
-            v-model="contact"
-            :key="contact.data.name"
-            :unreadCount="contact.data.unread"
-          />
-          <Activities
-            v-if="tab.label === 'Emails'"
-            ref="activities"
-            doctype="Contact"
-            :title="tab.label"
-            :tabs="tabs"
-            v-model:tabIndex="tabIndex"
-            v-model="contact"
-            :key="contact.data.name"
-          />
+          <Activities v-if="tab.label === 'WhatsApp'" ref="activities" doctype="Contact" :title="tab.label"
+            :header="contact.data.full_name" :tabs="tabs" v-model:tabIndex="tabIndex" v-model="contact"
+            :key="contact.data.name" :unreadCount="contact.data.unread" />
+          <Activities v-if="tab.label === 'Emails'" ref="activities" doctype="Contact" :title="tab.label" :tabs="tabs"
+            v-model:tabIndex="tabIndex" v-model="contact" :key="contact.data.name" />
         </template>
       </Tabs>
-      <div
-        v-else
-        class="flex flex-col items-center justify-center h-full w-full text-xl font-medium text-gray-500"
-      >
+      <div v-else class="flex flex-col items-center justify-center h-full w-full text-xl font-medium text-gray-500">
         <ContactsIcon class="h-10 w-10" />
         <span>{{ __("Select a contact to view details") }}</span>
       </div>
     </div>
   </div>
-  <ContactModal
-    v-model="showContactModal"
-    v-model:quickEntry="showQuickEntryModal"
+  <ContactModal v-model="showContactModal" v-model:quickEntry="showQuickEntryModal"
     :contact="!quickEntryContact ? contact : {}"
-    :options="{ detailMode, redirect: false, afterInsert: reloadContact }"
-  />
-  <QuickEntryModal
-    v-if="showQuickEntryModal"
-    v-model="showQuickEntryModal"
-    doctype="Contact"
-  />
+    :options="{ detailMode, redirect: false, afterInsert: reloadContact }" />
+  <QuickEntryModal v-if="showQuickEntryModal" v-model="showQuickEntryModal" doctype="Contact" />
 </template>
 
 <script setup>
@@ -281,9 +213,9 @@ onMounted(() => {
       if (Notification.permission === "granted") {
         const notification = new Notification(
           "Whatsapp Message received from contact " +
-            data.reference_name +
-            " : " +
-            data.message
+          data.reference_name +
+          " : " +
+          data.message
         );
         notification.onclick = () => {
           channel.postMessage('focus');
@@ -293,9 +225,9 @@ onMounted(() => {
           if (permission === "granted") {
             const notification = new Notification(
               "Whatsapp Message received from contact " +
-                data.reference_name +
-                " : " +
-                data.message
+              data.reference_name +
+              " : " +
+              data.message
             );
             notification.onclick = () => {
               channel.postMessage('focus');
