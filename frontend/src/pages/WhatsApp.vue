@@ -347,15 +347,15 @@ const tabs = [
     icon: h(Email2Icon, { class: "h-4 w-4" }),
   },
   {
-    label: "Edit",
+    label: "Profile",
     icon: h(EditIcon, { class: "h-4 w-4" }),
   },
 ];
 
 const handleTabClick = (label) => {
-  if (label === "Edit") {
+  if (label === "Profile") {
     previousTabIndex.value = tabIndex.value;
-    detailMode.value = false;
+    detailMode.value = true;
     showContactModal.value = true;
     quickEntryContact.value = false;
   } else {
