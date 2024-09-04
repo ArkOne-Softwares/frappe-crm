@@ -8,8 +8,8 @@ from datetime import datetime
 def validate(doc, method):
     print(method)
     if doc.type == "Incoming" and doc.get("from"):
-        print("doc ", json.dumps(doc))
-        name, doctype = get_lead_or_deal_from_number(doc.get("from"))
+        name, doctype = get_lead_or_deal_from_number(
+            doc.get("from"), doc.get("is_read"))
         doc.reference_doctype = doctype
         doc.reference_name = name
 
@@ -63,7 +63,7 @@ def notify_agent(doc):
             frappe.get_doc(values).insert(ignore_permissions=True)
 
 
-def get_lead_or_deal_from_number(number):
+def get_lead_or_deal_from_number(number, is_read):
     """Get lead/deal from the given number."""
 
     def find_record(doctype, mobile_no, where=""):
@@ -108,12 +108,22 @@ def get_lead_or_deal_from_number(number):
                     doc = doc.name
 
     doc_name = find_record(doctype, number)
-    contact_doc = frappe.get_doc('Contact', doc_name)
-    contact_doc.last_msg_whatsapp = datetime.now()
-    contact_doc.save(
-        ignore_permissions=True,  # ignore write permissions during insert
-        ignore_version=True  # do not create a version record
+    last_message = frappe.get_list(
+        "WhatsApp Message",
+        fields=["modified"],
+        filters={"reference_name": doc_name, },
+        limit_page_length=1,
+        as_list=False,
+        order_by="creation desc"
     )
+    if last_message:
+        last_message = last_message[0].modified
+        contact_doc = frappe.get_doc('Contact', doc_name)
+        contact_doc.last_msg_whatsapp = last_message
+        contact_doc.save(
+            ignore_permissions=True,  # ignore write permissions during insert
+            ignore_version=True  # do not create a version record
+        )
     return doc, doctype
 
 
