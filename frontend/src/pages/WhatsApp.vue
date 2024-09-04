@@ -15,6 +15,7 @@
           () => {
             showContactModal = true;
             quickEntryContact = true;
+            detailMode = false;
           }
         "
       >
