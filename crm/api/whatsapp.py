@@ -6,7 +6,9 @@ from datetime import datetime
 
 
 def validate(doc, method):
+    print(method)
     if doc.type == "Incoming" and doc.get("from"):
+        print("doc ", json.dumps(doc))
         name, doctype = get_lead_or_deal_from_number(doc.get("from"))
         doc.reference_doctype = doctype
         doc.reference_name = name
