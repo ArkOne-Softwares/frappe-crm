@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-04 09:55:36.382185",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "lead_visible",
+  "deal_visible",
+  "contacts_visible",
+  "organizations_visible",
+  "notes_visible",
+  "tasks_visible",
+  "call_logs_visible",
+  "email_templates_visible"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "deal_visible",
+   "fieldtype": "Check",
+   "label": "View Deal"
+  },
+  {
+   "default": "1",
+   "fieldname": "contacts_visible",
+   "fieldtype": "Check",
+   "label": "View Contacts"
+  },
+  {
+   "default": "1",
+   "fieldname": "organizations_visible",
+   "fieldtype": "Check",
+   "label": "View Organizations"
+  },
+  {
+   "default": "1",
+   "fieldname": "notes_visible",
+   "fieldtype": "Check",
+   "label": "View Notes"
+  },
+  {
+   "default": "1",
+   "fieldname": "tasks_visible",
+   "fieldtype": "Check",
+   "label": "View Tasks"
+  },
+  {
+   "default": "1",
+   "fieldname": "call_logs_visible",
+   "fieldtype": "Check",
+   "label": "View Call Logs"
+  },
+  {
+   "default": "1",
+   "fieldname": "email_templates_visible",
+   "fieldtype": "Check",
+   "label": "View Email Templates"
+  },
+  {
+   "default": "1",
+   "fieldname": "lead_visible",
+   "fieldtype": "Check",
+   "label": "View Lead"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-09-04 10:09:18.973276",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "FCRM Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

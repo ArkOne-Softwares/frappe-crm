@@ -30,6 +30,17 @@ createResource({
   },
 })
 
+export const crmSettings = ref({})
+createResource({
+  url: 'crm.api.doc.get_crm_settings',
+  cache: 'CRM Settings',
+  auto: true,
+  onSuccess: (data) => {
+    console.log('settings', data)
+    crmSettings.value = data
+  },
+})
+
 export const mobileSidebarOpened = ref(false)
 
 export const isMobileView = computed(() => window.innerWidth < 768)

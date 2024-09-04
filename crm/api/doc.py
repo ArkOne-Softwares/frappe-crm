@@ -219,6 +219,12 @@ def get_quick_filters(doctype: str):
 
 
 @frappe.whitelist()
+def get_crm_settings():
+    meta = frappe.get_doc("FCRM Settings")
+    return meta
+
+
+@frappe.whitelist()
 def get_data(
     doctype: str,
     filters: dict,

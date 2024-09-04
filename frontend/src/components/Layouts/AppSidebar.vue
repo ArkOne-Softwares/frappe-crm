@@ -77,7 +77,8 @@ import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import { whatsappEnabled, callEnabled } from "@/composables/settings";
+import { whatsappEnabled, callEnabled,crmSettings  } from "@/composables/settings";
+import { cond } from 'lodash'
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
@@ -85,21 +86,25 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 
 const links = computed(() => {
+  console.log("crmSettings", crmSettings.value)
   let tabOptions = [
     {
       label: 'Leads',
       icon: LeadsIcon,
       to: 'Leads',
+      condition: () => crmSettings.value.lead_visible,
     },
     {
       label: 'Deals',
       icon: DealsIcon,
       to: 'Deals',
+      condition: () => crmSettings.value.deal_visible,
     },
     {
       label: 'Contacts',
       icon: ContactsIcon,
       to: 'Contacts',
+      condition: () => crmSettings.value.contacts_visible,
     },
     {
       label: 'WhatsApp',
@@ -111,26 +116,31 @@ const links = computed(() => {
       label: 'Organizations',
       icon: OrganizationsIcon,
       to: 'Organizations',
+      condition: () => crmSettings.value.organizations_visible,
     },
     {
       label: 'Notes',
       icon: NoteIcon,
       to: 'Notes',
+      condition: () => crmSettings.value.notes_visible,
     },
     {
       label: 'Tasks',
       icon: TaskIcon,
       to: 'Tasks',
+      condition: () => crmSettings.value.tasks_visible,
     },
     {
       label: 'Call Logs',
       icon: PhoneIcon,
       to: 'Call Logs',
+      condition: () => crmSettings.value.call_logs_visible,
     },
     {
       label: 'Email Templates',
       icon: Email2Icon,
       to: 'Email Templates',
+      condition: () => crmSettings.value.email_templates_visible,
     },
   ];
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true));
