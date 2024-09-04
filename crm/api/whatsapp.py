@@ -108,12 +108,10 @@ def get_lead_or_deal_from_number(number):
     doc_name = find_record(doctype, number)
     contact_doc = frappe.get_doc('Contact', doc_name)
     contact_doc.last_msg_whatsapp = datetime.now()
-    print(contact_doc)
     contact_doc.save(
         ignore_permissions=True,  # ignore write permissions during insert
         ignore_version=True  # do not create a version record
     )
-    print(contact_doc)
     return doc, doctype
 
 
@@ -291,9 +289,18 @@ def create_whatsapp_message(
             "to": to,
             "attach": attach,
             "content_type": content_type,
+            "is_read": True,
         }
     )
     doc.insert(ignore_permissions=True)
+
+    contact_doc = frappe.get_doc('Contact', reference_name)
+    contact_doc.last_msg_whatsapp = datetime.now()
+    contact_doc.save(
+        ignore_permissions=True,  # ignore write permissions during insert
+        ignore_version=True  # do not create a version record
+    )
+
     return doc.name
 
 
@@ -342,6 +349,27 @@ def parse_template_parameters(string, parameters):
         string = string.replace(placeholder, parameter)
 
     return string
+
+
+@frappe.whitelist()
+def mark_as_read(user=None, doc=None):
+    filters = {"is_read": 0, "reference_name": user}
+    all_doc = frappe.get_all(
+        doc, filters=filters, as_list=False, order_by="creation desc")
+    for n in all_doc:
+        d = frappe.get_doc(doc, n.name)
+        d.is_read = 1
+        d.save(
+            ignore_permissions=True,  # ignore write permissions during insert
+            ignore_version=True  # do not create a version record
+        )
+    frappe.publish_realtime(
+        "updated_mark_as_read",
+        {
+            "reference_doctype": doc,
+            "reference_name": user,
+        },
+    )
 
 
 def get_from_name(message):

@@ -10,21 +10,17 @@
     :modalRef="modalRef"
     :header="header"
   />
-  <FadedScrollableDiv
-    :maskHeight="30"
-    class="flex flex-col flex-1 overflow-y-auto"
-  >
+  <FadedScrollableDiv :maskHeight="30" class="flex flex-col flex-1 overflow-y-auto">
     <div
       v-if="all_activities?.loading"
       class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-gray-500"
     >
       <LoadingIndicator class="h-6 w-6" />
-      <span>{{ __('Loading...') }}</span>
+      <span>{{ __("Loading...") }}</span>
     </div>
     <div
       v-else-if="
-        activities?.length ||
-        (whatsappMessages.data?.length && title == 'WhatsApp')
+        activities?.length || (whatsappMessages.data?.length && title == 'WhatsApp')
       "
       class="activities"
     >
@@ -53,9 +49,7 @@
               class="relative flex justify-center after:absolute after:left-[50%] after:top-0 after:-z-10 after:border-l after:border-gray-200"
               :class="i != activities.length - 1 ? 'after:h-full' : 'after:h-4'"
             >
-              <div
-                class="z-10 flex h-8 w-7 items-center justify-center bg-white"
-              >
+              <div class="z-10 flex h-8 w-7 items-center justify-center bg-white">
                 <CommentIcon class="text-gray-800" />
               </div>
             </div>
@@ -87,16 +81,11 @@
               <div
                 class="z-10 flex h-8 w-7 items-center justify-center bg-white text-gray-800"
               >
-                <MissedCallIcon
-                  v-if="call.status == 'No Answer'"
-                  class="text-red-600"
-                />
+                <MissedCallIcon v-if="call.status == 'No Answer'" class="text-red-600" />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
                   v-else
-                  :is="
-                    call.type == 'Incoming' ? InboundCallIcon : OutboundCallIcon
-                  "
+                  :is="call.type == 'Incoming' ? InboundCallIcon : OutboundCallIcon"
                 />
               </div>
             </div>
@@ -124,7 +113,7 @@
             :class="{
               'mt-2.5': ['communication'].includes(activity.activity_type),
               'bg-white': ['added', 'removed', 'changed'].includes(
-                activity.activity_type,
+                activity.activity_type
               ),
               'h-8': [
                 'comment',
@@ -141,17 +130,15 @@
             />
             <MissedCallIcon
               v-else-if="
-                ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
-                ) && activity.status == 'No Answer'
+                ['incoming_call', 'outgoing_call'].includes(activity.activity_type) &&
+                activity.status == 'No Answer'
               "
               class="text-red-600"
             />
             <DeclinedCallIcon
               v-else-if="
-                ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
-                ) && activity.status == 'Busy'
+                ['incoming_call', 'outgoing_call'].includes(activity.activity_type) &&
+                activity.status == 'Busy'
               "
             />
             <component
@@ -165,10 +152,7 @@
             />
           </div>
         </div>
-        <div
-          v-if="activity.activity_type == 'communication'"
-          class="pb-5 mt-px"
-        >
+        <div v-if="activity.activity_type == 'communication'" class="pb-5 mt-px">
           <EmailArea :activity="activity" :emailBox="emailBox" />
         </div>
         <div
@@ -193,9 +177,9 @@
               v-if="activity.other_versions"
               class="inline-flex flex-wrap gap-1.5 text-gray-800 font-medium"
             >
-              <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
+              <span>{{ activity.show_others ? __("Hide") : __("Show") }}</span>
               <span> +{{ activity.other_versions.length + 1 }} </span>
-              <span>{{ __('changes from') }}</span>
+              <span>{{ __("changes from") }}</span>
               <span>{{ activity.owner_name }}</span>
               <Button
                 class="!size-4"
@@ -207,10 +191,7 @@
                 </template>
               </Button>
             </div>
-            <div
-              v-else
-              class="inline-flex items-center flex-wrap gap-1 text-gray-600"
-            >
+            <div v-else class="inline-flex items-center flex-wrap gap-1 text-gray-600">
               <span class="font-medium text-gray-800">
                 {{ activity.owner_name }}
               </span>
@@ -226,10 +207,7 @@
                 v-if="activity.data.old_value"
                 class="max-w-xs font-medium text-gray-800"
               >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
+                <div class="flex items-center gap-1" v-if="activity.options == 'User'">
                   <UserAvatar :user="activity.data.old_value" size="xs" />
                   {{ getUser(activity.data.old_value).full_name }}
                 </div>
@@ -237,15 +215,9 @@
                   {{ activity.data.old_value }}
                 </div>
               </span>
-              <span v-if="activity.to">{{ __('to') }}</span>
-              <span
-                v-if="activity.data.value"
-                class="max-w-xs font-medium text-gray-800"
-              >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
+              <span v-if="activity.to">{{ __("to") }}</span>
+              <span v-if="activity.data.value" class="max-w-xs font-medium text-gray-800">
+                <div class="flex items-center gap-1" v-if="activity.options == 'User'">
                   <UserAvatar :user="activity.data.value" size="xs" />
                   {{ getUser(activity.data.value).full_name }}
                 </div>
@@ -278,10 +250,7 @@
                 >
                   {{ __(activity.data.field_label) }}
                 </span>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-gray-600"
-                />
+                <FeatherIcon name="arrow-right" class="mx-1 h-4 w-4 text-gray-600" />
                 <span v-if="activity.type">
                   {{ startCase(__(activity.type)) }}
                 </span>
@@ -289,10 +258,7 @@
                   v-if="activity.data.old_value"
                   class="max-w-xs font-medium text-gray-800"
                 >
-                  <div
-                    class="flex items-center gap-1"
-                    v-if="activity.options == 'User'"
-                  >
+                  <div class="flex items-center gap-1" v-if="activity.options == 'User'">
                     <UserAvatar :user="activity.data.old_value" size="xs" />
                     {{ getUser(activity.data.old_value).full_name }}
                   </div>
@@ -300,15 +266,12 @@
                     {{ activity.data.old_value }}
                   </div>
                 </span>
-                <span v-if="activity.to">{{ __('to') }}</span>
+                <span v-if="activity.to">{{ __("to") }}</span>
                 <span
                   v-if="activity.data.value"
                   class="max-w-xs font-medium text-gray-800"
                 >
-                  <div
-                    class="flex items-center gap-1"
-                    v-if="activity.options == 'User'"
-                  >
+                  <div class="flex items-center gap-1" v-if="activity.options == 'User'">
                     <UserAvatar :user="activity.data.value" size="xs" />
                     {{ getUser(activity.data.value).full_name }}
                   </div>
@@ -319,9 +282,7 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip
-                  :text="dateFormat(activity.creation, dateTooltipFormat)"
-                >
+                <Tooltip :text="dateFormat(activity.creation, dateTooltipFormat)">
                   <div class="text-sm text-gray-600">
                     {{ __(timeAgo(activity.creation)) }}
                   </div>
@@ -390,57 +351,52 @@
     :doctype="doctype"
     @send="(t) => sendTemplate(t)"
   />
-  <AllModals
-    ref="modalRef"
-    v-model="all_activities"
-    :doctype="doctype"
-    :doc="doc"
-  />
+  <AllModals ref="modalRef" v-model="all_activities" :doctype="doctype" :doc="doc" />
 </template>
 <script setup>
-import ActivityHeader from '@/components/Activities/ActivityHeader.vue'
-import EmailArea from '@/components/Activities/EmailArea.vue'
-import CommentArea from '@/components/Activities/CommentArea.vue'
-import CallArea from '@/components/Activities/CallArea.vue'
-import NoteArea from '@/components/Activities/NoteArea.vue'
-import TaskArea from '@/components/Activities/TaskArea.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
-import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
-import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
-import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import DotIcon from '@/components/Icons/DotIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import SelectIcon from '@/components/Icons/SelectIcon.vue'
-import MissedCallIcon from '@/components/Icons/MissedCallIcon.vue'
-import DeclinedCallIcon from '@/components/Icons/DeclinedCallIcon.vue'
-import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
-import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
-import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
-import CommunicationArea from '@/components/CommunicationArea.vue'
-import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
-import AllModals from '@/components/Activities/AllModals.vue'
+import ActivityHeader from "@/components/Activities/ActivityHeader.vue";
+import EmailArea from "@/components/Activities/EmailArea.vue";
+import CommentArea from "@/components/Activities/CommentArea.vue";
+import CallArea from "@/components/Activities/CallArea.vue";
+import NoteArea from "@/components/Activities/NoteArea.vue";
+import TaskArea from "@/components/Activities/TaskArea.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
+import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
+import Email2Icon from "@/components/Icons/Email2Icon.vue";
+import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
+import NoteIcon from "@/components/Icons/NoteIcon.vue";
+import TaskIcon from "@/components/Icons/TaskIcon.vue";
+import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
+import WhatsAppArea from "@/components/Activities/WhatsAppArea.vue";
+import WhatsAppBox from "@/components/Activities/WhatsAppBox.vue";
+import LoadingIndicator from "@/components/Icons/LoadingIndicator.vue";
+import LeadsIcon from "@/components/Icons/LeadsIcon.vue";
+import DealsIcon from "@/components/Icons/DealsIcon.vue";
+import DotIcon from "@/components/Icons/DotIcon.vue";
+import CommentIcon from "@/components/Icons/CommentIcon.vue";
+import SelectIcon from "@/components/Icons/SelectIcon.vue";
+import MissedCallIcon from "@/components/Icons/MissedCallIcon.vue";
+import DeclinedCallIcon from "@/components/Icons/DeclinedCallIcon.vue";
+import InboundCallIcon from "@/components/Icons/InboundCallIcon.vue";
+import OutboundCallIcon from "@/components/Icons/OutboundCallIcon.vue";
+import FadedScrollableDiv from "@/components/FadedScrollableDiv.vue";
+import CommunicationArea from "@/components/CommunicationArea.vue";
+import WhatsappTemplateSelectorModal from "@/components/Modals/WhatsappTemplateSelectorModal.vue";
+import AllModals from "@/components/Activities/AllModals.vue";
 import {
   timeAgo,
   dateFormat,
   dateTooltipFormat,
   secondsToDuration,
   startCase,
-} from '@/utils'
-import { globalStore } from '@/stores/global'
-import { usersStore } from '@/stores/users'
-import { contactsStore } from '@/stores/contacts'
-import { whatsappEnabled } from '@/composables/settings'
-import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
-import { useElementVisibility } from '@vueuse/core'
+} from "@/utils";
+import { globalStore } from "@/stores/global";
+import { usersStore } from "@/stores/users";
+import { contactsStore } from "@/stores/contacts";
+import { whatsappEnabled } from "@/composables/settings";
+import { capture } from "@/telemetry";
+import { Button, Tooltip, createResource, call } from "frappe-ui";
+import { useElementVisibility } from "@vueuse/core";
 import {
   ref,
   computed,
@@ -450,17 +406,17 @@ import {
   nextTick,
   onMounted,
   onBeforeUnmount,
-} from 'vue'
-import { useRoute } from 'vue-router'
+} from "vue";
+import { useRoute } from "vue-router";
 
-const { makeCall, $socket } = globalStore()
-const { getUser } = usersStore()
-const { getContact, getLeadContact } = contactsStore()
+const { makeCall, $socket } = globalStore();
+const { getUser } = usersStore();
+const { getContact, getLeadContact } = contactsStore();
 
 const props = defineProps({
   title: {
     type: String,
-    default: 'Activity',
+    default: "Activity",
   },
   header: {
     type: String,
@@ -468,99 +424,105 @@ const props = defineProps({
   },
   doctype: {
     type: String,
-    default: 'CRM Lead',
+    default: "CRM Lead",
   },
   tabs: {
     type: Array,
     default: () => [],
   },
-})
+});
 
-const doc = defineModel()
-const reload = defineModel('reload')
-const tabIndex = defineModel('tabIndex')
+const doc = defineModel();
+const reload = defineModel("reload");
+const tabIndex = defineModel("tabIndex");
 
-const reload_email = ref(false)
-const modalRef = ref(null)
+const reload_email = ref(false);
+const modalRef = ref(null);
 
 const all_activities = createResource({
-  url: 'crm.api.activities.get_activities',
+  url: "crm.api.activities.get_activities",
   params: { name: doc.value.data.name },
-  cache: ['activity', doc.value.data.name],
+  cache: ["activity", doc.value.data.name],
   auto: true,
   transform: ([versions, calls, notes, tasks]) => {
     if (calls?.length) {
       calls.forEach((doc) => {
-        doc.show_recording = false
-        doc.activity_type =
-          doc.type === 'Incoming' ? 'incoming_call' : 'outgoing_call'
-        doc.duration = secondsToDuration(doc.duration)
-        if (doc.type === 'Incoming') {
+        doc.show_recording = false;
+        doc.activity_type = doc.type === "Incoming" ? "incoming_call" : "outgoing_call";
+        doc.duration = secondsToDuration(doc.duration);
+        if (doc.type === "Incoming") {
           doc.caller = {
             label:
               getContact(doc.from)?.full_name ||
               getLeadContact(doc.from)?.full_name ||
-              'Unknown',
-            image:
-              getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
-          }
+              "Unknown",
+            image: getContact(doc.from)?.image || getLeadContact(doc.from)?.image,
+          };
           doc.receiver = {
             label: getUser(doc.receiver).full_name,
             image: getUser(doc.receiver).user_image,
-          }
+          };
         } else {
           doc.caller = {
             label: getUser(doc.caller).full_name,
             image: getUser(doc.caller).user_image,
-          }
+          };
           doc.receiver = {
             label:
               getContact(doc.to)?.full_name ||
               getLeadContact(doc.to)?.full_name ||
-              'Unknown',
+              "Unknown",
             image: getContact(doc.to)?.image || getLeadContact(doc.to)?.image,
-          }
+          };
         }
-      })
+      });
     }
-    return { versions, calls, notes, tasks }
+    return { versions, calls, notes, tasks };
   },
-})
+});
 
-const showWhatsappTemplates = ref(false)
+const showWhatsappTemplates = ref(false);
 
 const whatsappMessages = createResource({
-  url: 'crm.api.whatsapp.get_whatsapp_messages',
-  cache: ['whatsapp_messages', doc.value.data.name],
+  url: "crm.api.whatsapp.get_whatsapp_messages",
+  cache: ["whatsapp_messages", doc.value.data.name],
   params: {
     reference_doctype: props.doctype,
     reference_name: doc.value.data.name,
   },
   auto: true,
   transform: (data) => sortByCreation(data),
-  onSuccess: () => nextTick(() => scroll()),
-})
+  onSuccess: () =>
+    nextTick(async () => {
+      scroll();
+      await call("crm.api.whatsapp.mark_as_read", {
+        doc: "WhatsApp Message",
+        user: doc.value.data.name,
+      });
+      console.log(":notification");
+    }),
+});
 
 onBeforeUnmount(() => {
-  $socket.off('whatsapp_message')
-})
+  $socket.off("whatsapp_message");
+});
 
 onMounted(() => {
-  $socket.on('whatsapp_message', (data) => {
+  $socket.on("whatsapp_message", (data) => {
     if (
       data.reference_doctype === props.doctype &&
       data.reference_name === doc.value.data.name
     ) {
-      whatsappMessages.reload()
+      whatsappMessages.reload();
     }
-  })
-})
+  });
+});
 
 function sendTemplate(template) {
-  showWhatsappTemplates.value = false
-  capture('send_whatsapp_template', { doctype: props.doctype })
+  showWhatsappTemplates.value = false;
+  capture("send_whatsapp_template", { doctype: props.doctype });
   createResource({
-    url: 'crm.api.whatsapp.send_whatsapp_template',
+    url: "crm.api.whatsapp.send_whatsapp_template",
     params: {
       reference_doctype: props.doctype,
       reference_name: doc.value.data.name,
@@ -568,184 +530,183 @@ function sendTemplate(template) {
       template,
     },
     auto: true,
-  })
+  });
 }
 
-const replyMessage = ref({})
+const replyMessage = ref({});
 
 function get_activities() {
-  if (!all_activities.data?.versions) return []
-  if (!all_activities.data?.calls.length)
-    return all_activities.data.versions || []
-  return [...all_activities.data.versions, ...all_activities.data.calls]
+  if (!all_activities.data?.versions) return [];
+  if (!all_activities.data?.calls.length) return all_activities.data.versions || [];
+  return [...all_activities.data.versions, ...all_activities.data.calls];
 }
 
 const activities = computed(() => {
-  let activities = []
-  if (props.title == 'Activity') {
-    activities = get_activities()
-  } else if (props.title == 'Emails') {
-    if (!all_activities.data?.versions) return []
+  let activities = [];
+  if (props.title == "Activity") {
+    activities = get_activities();
+  } else if (props.title == "Emails") {
+    if (!all_activities.data?.versions) return [];
     activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'communication',
-    )
-  } else if (props.title == 'Comments') {
-    if (!all_activities.data?.versions) return []
+      (activity) => activity.activity_type === "communication"
+    );
+  } else if (props.title == "Comments") {
+    if (!all_activities.data?.versions) return [];
     activities = all_activities.data.versions.filter(
-      (activity) => activity.activity_type === 'comment',
-    )
-  } else if (props.title == 'Calls') {
-    if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
-  } else if (props.title == 'Tasks') {
-    if (!all_activities.data?.tasks) return []
-    return sortByCreation(all_activities.data.tasks)
-  } else if (props.title == 'Notes') {
-    if (!all_activities.data?.notes) return []
-    return sortByCreation(all_activities.data.notes)
+      (activity) => activity.activity_type === "comment"
+    );
+  } else if (props.title == "Calls") {
+    if (!all_activities.data?.calls) return [];
+    return sortByCreation(all_activities.data.calls);
+  } else if (props.title == "Tasks") {
+    if (!all_activities.data?.tasks) return [];
+    return sortByCreation(all_activities.data.tasks);
+  } else if (props.title == "Notes") {
+    if (!all_activities.data?.notes) return [];
+    return sortByCreation(all_activities.data.notes);
   }
 
   activities.forEach((activity) => {
-    activity.icon = timelineIcon(activity.activity_type, activity.is_lead)
+    activity.icon = timelineIcon(activity.activity_type, activity.is_lead);
 
     if (
-      activity.activity_type == 'incoming_call' ||
-      activity.activity_type == 'outgoing_call' ||
-      activity.activity_type == 'communication'
+      activity.activity_type == "incoming_call" ||
+      activity.activity_type == "outgoing_call" ||
+      activity.activity_type == "communication"
     )
-      return
+      return;
 
-    update_activities_details(activity)
+    update_activities_details(activity);
 
     if (activity.other_versions) {
-      activity.show_others = false
+      activity.show_others = false;
       activity.other_versions.forEach((other_version) => {
-        update_activities_details(other_version)
-      })
+        update_activities_details(other_version);
+      });
     }
-  })
-  return sortByCreation(activities)
-})
+  });
+  return sortByCreation(activities);
+});
 
 function sortByCreation(list) {
-  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation));
 }
 
 function update_activities_details(activity) {
-  activity.owner_name = getUser(activity.owner).full_name
-  activity.type = ''
-  activity.value = ''
-  activity.to = ''
+  activity.owner_name = getUser(activity.owner).full_name;
+  activity.type = "";
+  activity.value = "";
+  activity.to = "";
 
-  if (activity.activity_type == 'creation') {
-    activity.type = activity.data
-  } else if (activity.activity_type == 'added') {
-    activity.type = 'added'
-    activity.value = 'as'
-  } else if (activity.activity_type == 'removed') {
-    activity.type = 'removed'
-    activity.value = 'value'
-  } else if (activity.activity_type == 'changed') {
-    activity.type = 'changed'
-    activity.value = 'from'
-    activity.to = 'to'
+  if (activity.activity_type == "creation") {
+    activity.type = activity.data;
+  } else if (activity.activity_type == "added") {
+    activity.type = "added";
+    activity.value = "as";
+  } else if (activity.activity_type == "removed") {
+    activity.type = "removed";
+    activity.value = "value";
+  } else if (activity.activity_type == "changed") {
+    activity.type = "changed";
+    activity.value = "from";
+    activity.to = "to";
   }
 }
 
 const emptyText = computed(() => {
-  let text = 'No Activities'
-  if (props.title == 'Emails') {
-    text = 'No Email Communications'
-  } else if (props.title == 'Comments') {
-    text = 'No Comments'
-  } else if (props.title == 'Calls') {
-    text = 'No Call Logs'
-  } else if (props.title == 'Notes') {
-    text = 'No Notes'
-  } else if (props.title == 'Tasks') {
-    text = 'No Tasks'
-  } else if (props.title == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+  let text = "No Activities";
+  if (props.title == "Emails") {
+    text = "No Email Communications";
+  } else if (props.title == "Comments") {
+    text = "No Comments";
+  } else if (props.title == "Calls") {
+    text = "No Call Logs";
+  } else if (props.title == "Notes") {
+    text = "No Notes";
+  } else if (props.title == "Tasks") {
+    text = "No Tasks";
+  } else if (props.title == "WhatsApp") {
+    text = "No WhatsApp Messages";
   }
-  return text
-})
+  return text;
+});
 
 const emptyTextIcon = computed(() => {
-  let icon = ActivityIcon
-  if (props.title == 'Emails') {
-    icon = Email2Icon
-  } else if (props.title == 'Comments') {
-    icon = CommentIcon
-  } else if (props.title == 'Calls') {
-    icon = PhoneIcon
-  } else if (props.title == 'Notes') {
-    icon = NoteIcon
-  } else if (props.title == 'Tasks') {
-    icon = TaskIcon
-  } else if (props.title == 'WhatsApp') {
-    icon = WhatsAppIcon
+  let icon = ActivityIcon;
+  if (props.title == "Emails") {
+    icon = Email2Icon;
+  } else if (props.title == "Comments") {
+    icon = CommentIcon;
+  } else if (props.title == "Calls") {
+    icon = PhoneIcon;
+  } else if (props.title == "Notes") {
+    icon = NoteIcon;
+  } else if (props.title == "Tasks") {
+    icon = TaskIcon;
+  } else if (props.title == "WhatsApp") {
+    icon = WhatsAppIcon;
   }
-  return h(icon, { class: 'text-gray-500' })
-})
+  return h(icon, { class: "text-gray-500" });
+});
 
 function timelineIcon(activity_type, is_lead) {
-  let icon
+  let icon;
   switch (activity_type) {
-    case 'creation':
-      icon = is_lead ? LeadsIcon : DealsIcon
-      break
-    case 'deal':
-      icon = DealsIcon
-      break
-    case 'comment':
-      icon = CommentIcon
-      break
-    case 'incoming_call':
-      icon = InboundCallIcon
-      break
-    case 'outgoing_call':
-      icon = OutboundCallIcon
-      break
+    case "creation":
+      icon = is_lead ? LeadsIcon : DealsIcon;
+      break;
+    case "deal":
+      icon = DealsIcon;
+      break;
+    case "comment":
+      icon = CommentIcon;
+      break;
+    case "incoming_call":
+      icon = InboundCallIcon;
+      break;
+    case "outgoing_call":
+      icon = OutboundCallIcon;
+      break;
     default:
-      icon = DotIcon
+      icon = DotIcon;
   }
 
-  return markRaw(icon)
+  return markRaw(icon);
 }
 
-const emailBox = ref(null)
-const whatsappBox = ref(null)
+const emailBox = ref(null);
+const whatsappBox = ref(null);
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
-    all_activities.reload()
-    reload.value = false
-    reload_email.value = false
+    all_activities.reload();
+    reload.value = false;
+    reload_email.value = false;
   }
-})
+});
 
 function scroll(hash) {
   setTimeout(() => {
-    let el
+    let el;
     if (!hash) {
-      let e = document.getElementsByClassName('activity')
-      el = e[e.length - 1]
+      let e = document.getElementsByClassName("activity");
+      el = e[e.length - 1];
     } else {
-      el = document.getElementById(hash)
+      el = document.getElementById(hash);
     }
     if (el && !useElementVisibility(el).value) {
-      el.scrollIntoView({ behavior: 'smooth' })
-      el.focus()
+      el.scrollIntoView({ behavior: "smooth" });
+      el.focus();
     }
-  }, 500)
+  }, 500);
 }
 
-defineExpose({ emailBox })
+defineExpose({ emailBox });
 
-const route = useRoute()
+const route = useRoute();
 
 nextTick(() => {
-  const hash = route.hash.slice(1) || null
-  scroll(hash)
-})
+  const hash = route.hash.slice(1) || null;
+  scroll(hash);
+});
 </script>

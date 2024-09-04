@@ -8,7 +8,16 @@
         v-if="whatsappListView?.customListActions"
         :actions="whatsappListView.customListActions"
       />
-      <Button variant="solid" :label="__('Create')" @click="showContactModal = true">
+      <Button
+        variant="solid"
+        :label="__('Create')"
+        @click="
+          () => {
+            showContactModal = true;
+            quickEntryContact = true;
+          }
+        "
+      >
         <template #prefix>
           <FeatherIcon name="plus" class="h-4" />
         </template>
@@ -22,6 +31,10 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="Contact"
+    :filters="{
+      mobile_no: ['is', 'set'],
+    }"
+    url="crm.api.doc.get_whatsapp_contact_data"
     order_by="last_msg_whatsapp desc,first_name asc"
     :options="{
       hideColumnsButton: true,
@@ -58,7 +71,15 @@
         <div class="flex flex-col items-center gap-3 text-xl font-medium text-gray-500">
           <ContactsIcon class="h-10 w-10" />
           <span>{{ __("No {0} Found", [__("Contacts")]) }}</span>
-          <Button :label="__('Create')" @click="showContactModal = true">
+          <Button
+            :label="__('Create')"
+            @click="
+              () => {
+                showContactModal = true;
+                quickEntryContact = null;
+              }
+            "
+          >
             <template #prefix>
               <FeatherIcon name="plus" class="h-4" />
             </template>
@@ -77,6 +98,7 @@
           <button
             class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-gray-600 duration-300 ease-in-out hover:border-gray-400 hover:text-gray-900"
             :class="{ 'text-gray-900': selected }"
+            @click="handleTabClick(tab.label)"
           >
             <component v-if="tab.icon" :is="tab.icon" class="h-5" />
             {{ __(tab.label) }}
@@ -93,6 +115,7 @@
             v-model:tabIndex="tabIndex"
             v-model="contact"
             :key="contact.data.name"
+            :unreadCount="contact.data.unread"
           />
           <Activities
             v-if="tab.label === 'Emails'"
@@ -118,7 +141,8 @@
   <ContactModal
     v-model="showContactModal"
     v-model:quickEntry="showQuickEntryModal"
-    :contact="{}"
+    :contact="!quickEntryContact ? contact : {}"
+    :options="{ detailMode, redirect: false, afterInsert: reloadContact }"
   />
   <QuickEntryModal
     v-if="showQuickEntryModal"
@@ -131,6 +155,7 @@
 import { ref, computed, h, watch, onMounted, onBeforeUnmount } from "vue";
 import ViewBreadcrumbs from "@/components/ViewBreadcrumbs.vue";
 import CustomActions from "@/components/CustomActions.vue";
+import EditIcon from "@/components/Icons/EditIcon.vue";
 import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
 import LayoutHeader from "@/components/LayoutHeader.vue";
 import ContactModal from "@/components/Modals/ContactModal.vue";
@@ -162,8 +187,10 @@ const { getOrganization } = organizationsStore();
 
 const showContactModal = ref(false);
 const showQuickEntryModal = ref(false);
-
+const detailMode = ref(false);
+const previousTabIndex = ref(0);
 const whatsappListView = ref(null);
+const quickEntryContact = ref(false);
 
 // contacts_sorted_whatsapp data is loaded in the ViewControls component
 const contacts_sorted_whatsapp = ref({});
@@ -171,6 +198,15 @@ const loadMore = ref(1);
 const triggerResize = ref(1);
 const updatedPageCount = ref(20);
 const viewControls = ref(null);
+
+onMounted(() => {
+  if (!localStorage.getItem("notificationUrl")) {
+    localStorage.setItem("notificationUrl", window.location.href);
+  }
+});
+
+const savedUrl = localStorage.getItem("notificationUrl");
+const channel = new BroadcastChannel('notification_channel');
 
 const rows = computed(() => {
   if (
@@ -182,7 +218,6 @@ const rows = computed(() => {
     let _rows = {};
     contacts_sorted_whatsapp.value?.data.rows.forEach((row) => {
       _rows[row] = contact[row];
-
       if (row == "full_name") {
         _rows[row] = {
           label: contact.full_name,
@@ -200,6 +235,8 @@ const rows = computed(() => {
           timeAgo: __(timeAgo(contact[row])),
         };
       }
+      _rows["last_message"] = contact.last_message ? contact.last_message : "";
+      _rows["unread"] = contact.unread ? contact.unread : 0;
     });
     return _rows;
   });
@@ -238,7 +275,47 @@ onBeforeUnmount(() => {
 
 onMounted(() => {
   $socket.on("whatsapp_message", (data) => {
-    console.log("whatsapp_message", data);
+    if (data.reference_name !== selectedContact.value) {
+      reloadViewControls();
+      if (Notification.permission === "granted") {
+        const notification = new Notification(
+          "Whatsapp Message received from contact " +
+            data.reference_name +
+            " : " +
+            data.message
+        );
+        notification.onclick = () => {
+          channel.postMessage('focus');
+        };
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            const notification = new Notification(
+              "Whatsapp Message received from contact " +
+                data.reference_name +
+                " : " +
+                data.message
+            );
+            notification.onclick = () => {
+              channel.postMessage('focus');
+            };
+          }
+        });
+      }
+    }
+  });
+
+  channel.onmessage = (event) => {
+    if (event.data === 'focus') {
+      if (document.visibilityState === 'visible') {
+        window.focus();
+      } else {
+        window.open(savedUrl, '_blank');
+      }
+    }
+  };
+
+  $socket.on("updated_mark_as_read", () => {
     reloadViewControls();
   });
 });
@@ -251,8 +328,12 @@ const handleContactChange = (event) => {
 
 const reloadViewControls = () => {
   if (viewControls.value) {
-    contacts_sorted_whatsapp.value.reload();
+    reloadContact();
   }
+};
+
+const reloadContact = () => {
+  contacts_sorted_whatsapp.value.reload();
 };
 
 const tabIndex = ref(0);
@@ -265,5 +346,27 @@ const tabs = [
     label: "Emails",
     icon: h(Email2Icon, { class: "h-4 w-4" }),
   },
+  {
+    label: "Edit",
+    icon: h(EditIcon, { class: "h-4 w-4" }),
+  },
 ];
+
+const handleTabClick = (label) => {
+  if (label === "Edit") {
+    previousTabIndex.value = tabIndex.value;
+    detailMode.value = false;
+    showContactModal.value = true;
+    quickEntryContact.value = false;
+  } else {
+    tabIndex.value = tabs.findIndex((tab) => tab.label === label);
+  }
+};
+
+watch(showContactModal, (newValue) => {
+  console.log("showContactModal", newValue);
+  if (!newValue) {
+    tabIndex.value = previousTabIndex.value;
+  }
+});
 </script>

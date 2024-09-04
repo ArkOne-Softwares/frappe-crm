@@ -252,6 +252,10 @@ const props = defineProps({
   order_by: {
     type: String,
   },
+  url: {
+    type: String,
+    default: "crm.api.doc.get_data",
+  },
   options: {
     type: Object,
     default: {
@@ -347,6 +351,7 @@ const view = ref({
   load_default_columns: false,
   pinned: false,
   public: false,
+  extras: {},
 });
 const pageLength = computed(() => list.value?.data?.page_length);
 const pageLengthCount = computed(() => list.value?.data?.page_length_count);
@@ -421,7 +426,7 @@ function getParams() {
 }
 
 list.value = createResource({
-  url: "crm.api.doc.get_data",
+  url: props.url,
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   onSuccess(data) {
@@ -446,6 +451,7 @@ list.value = createResource({
       rows: data.rows,
       page_length: params.page_length,
       page_length_count: params.page_length_count,
+      extras: data.extras,
     };
     updateAllFilters(defaultParams.value.filters);
     updateAllSortOrder(defaultParams.value.order_by);

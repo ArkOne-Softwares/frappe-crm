@@ -18,20 +18,16 @@
           @click="() => scrollToMessage(whatsapp.reply_to)"
           class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-gray-200 p-2 text-gray-600"
           :class="
-            whatsapp.reply_to_type == 'Incoming'
-              ? 'border-green-500'
-              : 'border-blue-400'
+            whatsapp.reply_to_type == 'Incoming' ? 'border-green-500' : 'border-blue-400'
           "
         >
           <div
             class="mb-1 text-sm font-bold"
             :class="
-              whatsapp.reply_to_type == 'Incoming'
-                ? 'text-green-500'
-                : 'text-blue-400'
+              whatsapp.reply_to_type == 'Incoming' ? 'text-green-500' : 'text-blue-400'
             "
           >
-            {{ whatsapp.reply_to_from || __('You') }}
+            {{ whatsapp.reply_to_from || __("You") }}
           </div>
           <div class="flex flex-col gap-2 max-h-12 overflow-hidden">
             <div v-if="whatsapp.header" class="text-base font-semibold">
@@ -63,10 +59,7 @@
               {{ whatsapp.reaction }}
             </div>
           </div>
-          <div
-            class="flex flex-col gap-2"
-            v-if="whatsapp.message_type == 'Template'"
-          >
+          <div class="flex flex-col gap-2" v-if="whatsapp.message_type == 'Template'">
             <div v-if="whatsapp.header" class="text-base font-semibold">
               {{ whatsapp.header }}
             </div>
@@ -125,7 +118,11 @@
           <div class="-mb-1 flex shrink-0 items-end gap-1 text-gray-600">
             <Tooltip :text="dateFormat(whatsapp.creation, 'ddd, MMM D, YYYY')">
               <div class="text-2xs">
-                {{ dateFormat(whatsapp.creation, 'hh:mm a') }}
+                {{
+                  new Date(whatsapp.creation).toDateString() === new Date().toDateString()
+                    ? dateFormat(whatsapp.creation, "hh:mm a")
+                    : dateFormat(whatsapp.creation, "MMM D, YYYY hh:mm a")
+                }}
               </div>
             </Tooltip>
             <div v-if="whatsapp.type == 'Outgoing'">
@@ -164,80 +161,80 @@
 </template>
 
 <script setup>
-import IconPicker from '@/components/IconPicker.vue'
-import CheckIcon from '@/components/Icons/CheckIcon.vue'
-import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
-import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
-import ReactIcon from '@/components/Icons/ReactIcon.vue'
-import { dateFormat } from '@/utils'
-import { capture } from '@/telemetry'
-import { Tooltip, Dropdown, createResource } from 'frappe-ui'
-import { ref } from 'vue'
+import IconPicker from "@/components/IconPicker.vue";
+import CheckIcon from "@/components/Icons/CheckIcon.vue";
+import DoubleCheckIcon from "@/components/Icons/DoubleCheckIcon.vue";
+import DocumentIcon from "@/components/Icons/DocumentIcon.vue";
+import ReactIcon from "@/components/Icons/ReactIcon.vue";
+import { dateFormat } from "@/utils";
+import { capture } from "@/telemetry";
+import { Tooltip, Dropdown, createResource } from "frappe-ui";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   messages: Array,
-})
+});
 
-const list = defineModel()
+const list = defineModel();
 
 function openFileInAnotherTab(url) {
-  window.open(url, '_blank')
+  window.open(url, "_blank");
 }
 
 function formatWhatsAppMessage(message) {
   // if message contains _text_, make it italic
-  message = message.replace(/_(.*?)_/g, '<i>$1</i>')
+  message = message.replace(/_(.*?)_/g, "<i>$1</i>");
   // if message contains *text*, make it bold
-  message = message.replace(/\*(.*?)\*/g, '<b>$1</b>')
+  message = message.replace(/\*(.*?)\*/g, "<b>$1</b>");
   // if message contains ~text~, make it strikethrough
-  message = message.replace(/~(.*?)~/g, '<s>$1</s>')
+  message = message.replace(/~(.*?)~/g, "<s>$1</s>");
   // if message contains ```text```, make it monospace
-  message = message.replace(/```(.*?)```/g, '<code>$1</code>')
+  message = message.replace(/```(.*?)```/g, "<code>$1</code>");
   // if message contains `text`, make it inline code
-  message = message.replace(/`(.*?)`/g, '<code>$1</code>')
+  message = message.replace(/`(.*?)`/g, "<code>$1</code>");
   // if message contains > text, make it a blockquote
-  message = message.replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
+  message = message.replace(/^> (.*)$/gm, "<blockquote>$1</blockquote>");
   // if contain /n, make it a new line
-  message = message.replace(/\n/g, '<br>')
+  message = message.replace(/\n/g, "<br>");
   // if contains *<space>text, make it a bullet point
-  message = message.replace(/\* (.*?)(?=\s*\*|$)/g, '<li>$1</li>')
-  message = message.replace(/- (.*?)(?=\s*-|$)/g, '<li>$1</li>')
-  message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
+  message = message.replace(/\* (.*?)(?=\s*\*|$)/g, "<li>$1</li>");
+  message = message.replace(/- (.*?)(?=\s*-|$)/g, "<li>$1</li>");
+  message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, "<li>$2</li>");
 
-  return message
+  return message;
 }
 
-const emoji = ref('')
-const reaction = ref(true)
+const emoji = ref("");
+const reaction = ref(true);
 
 function reactOnMessage(name, emoji) {
   createResource({
-    url: 'crm.api.whatsapp.react_on_whatsapp_message',
+    url: "crm.api.whatsapp.react_on_whatsapp_message",
     params: {
       emoji,
       reply_to_name: name,
     },
     auto: true,
     onSuccess() {
-      capture('whatsapp_react_on_message')
-      list.value.reload()
+      capture("whatsapp_react_on_message");
+      list.value.reload();
     },
-  })
+  });
 }
 
-const reply = defineModel('reply')
-const replyMode = ref(false)
+const reply = defineModel("reply");
+const replyMode = ref(false);
 
 function messageOptions(message) {
   return [
     {
-      label: 'Reply',
+      label: "Reply",
       onClick: () => {
-        replyMode.value = true
+        replyMode.value = true;
         reply.value = {
           ...message,
-          message: formatWhatsAppMessage(message.message)
-        }
+          message: formatWhatsAppMessage(message.message),
+        };
       },
     },
     // {
@@ -248,17 +245,25 @@ function messageOptions(message) {
     //   label: 'Delete',
     //   onClick: () => console.log('Delete'),
     // },
-  ]
+  ];
 }
 
 function scrollToMessage(name) {
-  const element = document.getElementById(name)
-  element.scrollIntoView({ behavior: 'smooth' })
+  const element = document.getElementById(name);
+  element.scrollIntoView({ behavior: "smooth" });
 
   // Highlight the message
-  element.classList.add('bg-yellow-100')
+  element.classList.add("bg-yellow-100");
   setTimeout(() => {
-    element.classList.remove('bg-yellow-100')
-  }, 1000)
+    element.classList.remove("bg-yellow-100");
+  }, 1000);
+
+  watch(
+    () => messages,
+    (value) => {
+      console.log(value);
+    },
+    { immediate: true }
+  );
 }
 </script>
