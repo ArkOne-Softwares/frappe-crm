@@ -363,13 +363,14 @@ def mark_as_read(user=None, doc=None):
             ignore_permissions=True,  # ignore write permissions during insert
             ignore_version=True  # do not create a version record
         )
-    frappe.publish_realtime(
-        "updated_mark_as_read",
-        {
-            "reference_doctype": doc,
-            "reference_name": user,
-        },
-    )
+    if all_doc:
+        frappe.publish_realtime(
+            "updated_mark_as_read",
+            {
+                "reference_doctype": doc,
+                "reference_name": user,
+            },
+        )
 
 
 def get_from_name(message):
