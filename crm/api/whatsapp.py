@@ -173,12 +173,17 @@ def get_whatsapp_messages(reference_doctype, reference_name):
             "is_reply",
             "reply_to_message_id",
             "creation",
+            "modified",
+            "modified_by",
+            "owner",
+            "idx",
             "message",
             "status",
             "reference_doctype",
             "reference_name",
             "template_parameters",
             "template_header_parameters",
+            "is_read"
         ],
     )
 

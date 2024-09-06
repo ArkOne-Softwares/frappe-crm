@@ -491,7 +491,10 @@ const whatsappMessages = createResource({
     reference_name: doc.value.data.name,
   },
   auto: true,
-  transform: (data) => sortByCreation(data),
+  transform: (data) => {
+    console.log("whatsappMessages", data);
+   return sortByCreation(data);
+  },
   onSuccess: () =>
     nextTick(async () => {
       scroll();

@@ -62,11 +62,11 @@ const tabs = computed(() => {
           icon: ContactsIcon,
           component: markRaw(ProfileSettings),
         },
-        {
-          label: __('Invite Members'),
-          icon: 'user-plus',
-          component: markRaw(InviteMemberPage),
-        },
+        //{
+        //   label: __('Invite Members'),
+        //   icon: 'user-plus',
+        //   component: markRaw(InviteMemberPage),
+        // },
       ],
     },
     {
