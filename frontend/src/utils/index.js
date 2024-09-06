@@ -241,7 +241,3 @@ export function isTouchScreenDevice() {
 export function convertArrayToString(array) {
   return array.map((item) => item).join(',')
 }
-
-export function convertArrayToString(array) {
-  return array.map((item) => item).join(',')
-}
