@@ -41,7 +41,6 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
-import InviteMemberPage from '@/components/Settings/InviteMemberPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import TwilioSettings from '@/components/Settings/TwilioSettings.vue'
@@ -56,11 +55,9 @@ const tabs = computed(() => {
   let _tabs = [
     {
       label: __('Settings'),
-      label: __('Settings'),
       hideLabel: true,
       items: [
         {
-          label: __('Profile'),
           label: __('Profile'),
           icon: ContactsIcon,
           component: markRaw(ProfileSettings),
@@ -74,16 +71,13 @@ const tabs = computed(() => {
     },
     {
       label: __('Integrations'),
-      label: __('Integrations'),
       items: [
         {
-          label: __('Twilio'),
           label: __('Twilio'),
           icon: PhoneIcon,
           component: markRaw(TwilioSettings),
         },
         {
-          label: __('WhatsApp'),
           label: __('WhatsApp'),
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),

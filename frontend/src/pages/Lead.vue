@@ -37,7 +37,6 @@
         />
       </component>
       <Dropdown :options="statusOptions('lead', updateField, lead.data._customStatuses)">
-      <Dropdown :options="statusOptions('lead', updateField, lead.data._customStatuses)">
         <template #default="{ open }">
           <Button
             :label="lead.data.status"
@@ -400,7 +399,6 @@ const lead = createResource({
   cache: ["lead", props.leadId],
   onSuccess: (data) => {
     let obj = {
-    let obj = {
       doc: data,
       $dialog,
       router,
@@ -408,10 +406,6 @@ const lead = createResource({
       createToast,
       deleteDoc: deleteLead,
       call,
-    }
-    setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
     }
     setupAssignees(data)
     setupCustomStatuses(data, obj)
