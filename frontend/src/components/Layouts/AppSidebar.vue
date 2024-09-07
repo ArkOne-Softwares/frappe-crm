@@ -77,8 +77,8 @@ import { FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed, h } from 'vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import { whatsappEnabled, callEnabled,crmSettings  } from "@/composables/settings";
-import { cond } from 'lodash'
+import { whatsappEnabled, callEnabled, crmSettings } from "@/composables/settings";
+// import { cond } from 'lodash'
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
@@ -88,6 +88,12 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 const links = computed(() => {
   console.log("crmSettings", crmSettings.value)
   let tabOptions = [
+    {
+      label: 'Communication',
+      icon: ContactsIcon,
+      to: 'WhatsApp',
+      condition: () => whatsappEnabled.value,
+    },
     {
       label: 'Leads',
       icon: LeadsIcon,
@@ -100,18 +106,12 @@ const links = computed(() => {
       to: 'Deals',
       condition: () => crmSettings.value.deal_visible,
     },
-    {
-      label: 'Contacts',
-      icon: ContactsIcon,
-      to: 'Contacts',
-      condition: () => crmSettings.value.contacts_visible,
-    },
-    {
-      label: 'WhatsApp',
-      icon: WhatsAppIcon,
-      to: 'WhatsApp',
-      condition: () => whatsappEnabled.value,
-    },
+    // {
+    //   label: 'Contacts',
+    //   icon: ContactsIcon,
+    //   to: 'Contacts',
+    //   condition: () => crmSettings.value.contacts_visible,
+    // },
     {
       label: 'Organizations',
       icon: OrganizationsIcon,

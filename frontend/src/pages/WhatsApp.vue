@@ -360,16 +360,16 @@ const tabs = [
     label: "Emails",
     icon: h(Email2Icon, { class: "h-4 w-4" }),
   },
-  // {
-  //   name: "Comments",
-  //   label: __("Comments"),
-  //   icon: h(CommentIcon, { class: "h-4 w-4" }),
-  // },
-  // {
-  //   name: "Notes",
-  //   label: __("Notes"),
-  //   icon: h(NoteIcon, { class: "h-4 w-4" }),
-  // },
+  {
+    name: "Comments",
+    label: __("Comments"),
+    icon: h(CommentIcon, { class: "h-4 w-4" }),
+  },
+  {
+    name: "Notes",
+    label: __("Notes"),
+    icon: h(NoteIcon, { class: "h-4 w-4" }),
+  },
   {
     label: "Profile",
     icon: h(EditIcon, { class: "h-4 w-4" }),

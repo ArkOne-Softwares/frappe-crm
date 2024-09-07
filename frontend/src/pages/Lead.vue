@@ -321,7 +321,6 @@ import {
   setupAssignees,
   setupCustomActions,
   setupCustomStatuses,
-  setupCustomStatuses,
   errorMessage,
   copyToClipboard,
 } from "@/utils";
