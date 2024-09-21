@@ -7,7 +7,7 @@ app_license = "AGPLv3"
 app_icon_url = ""
 app_icon_title = "CRM"
 app_icon_route = "/crm"
-
+app_home = "/app/crm-pro"
 # Apps
 # ------------------
 
@@ -17,7 +17,7 @@ add_to_apps_screen = [
 		"name": "crm",
 		"logo": "/assets/crm/manifest/apple-icon-180.png",
 		"title": "CRM",
-		"route": "/crm",
+		"route": "/app/crm-pro"
 		# "has_permission": "crm.api.check_app_permission",
 	}
 ]
