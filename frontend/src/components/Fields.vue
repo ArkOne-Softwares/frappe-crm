@@ -3,7 +3,7 @@
     <div
       v-for="section in sections"
       :key="section.label"
-      class="first:border-t-0 first:pt-0"
+      class="section first:border-t-0 first:pt-0"
       :class="section.hideBorder ? '' : 'border-t pt-4'"
     >
       <div
@@ -22,10 +22,13 @@
       >
         <div v-for="field in section.fields" :key="field.name">
           <div
+            class="settings-field"
             v-if="
-              field.type == 'Check' ||
-              (field.read_only && data[field.name]) ||
-              !field.read_only || !field.hidden
+              (field.type == 'Check' ||
+                (field.read_only && data[field.name]) ||
+                !field.read_only ||
+                !field.hidden) &&
+              (!field.depends_on || field.display_via_depends_on)
             "
           >
             <div
@@ -33,7 +36,14 @@
               class="mb-2 text-sm text-gray-600"
             >
               {{ __(field.label) }}
-              <span class="text-red-500" v-if="field.mandatory">*</span>
+              <span
+                class="text-red-500"
+                v-if="
+                  field.mandatory ||
+                  (field.mandatory_depends_on && field.mandatory_via_depends_on)
+                "
+                >*</span
+              >
             </div>
             <FormControl
               v-if="field.read_only && field.type !== 'Check'"
@@ -74,15 +84,27 @@
                 <span class="text-red-500" v-if="field.mandatory">*</span>
               </label>
             </div>
-            <Link
-              v-else-if="field.type === 'Link'"
-              class="form-control"
-              :value="data[field.name]"
-              :doctype="field.options"
-              @change="(v) => (data[field.name] = v)"
-              :placeholder="__(field.placeholder || field.label)"
-              :onCreate="field.create"
-            />
+            <div class="flex gap-1" v-else-if="field.type === 'Link'">
+              <Link
+                class="form-control flex-1"
+                :value="data[field.name]"
+                :doctype="field.options"
+                @change="(v) => (data[field.name] = v)"
+                :placeholder="__(field.placeholder || field.label)"
+                :onCreate="field.create"
+              />
+              <Button
+                v-if="data[field.name] && field.edit"
+                class="shrink-0"
+                :label="__('Edit')"
+                @click="field.edit(data[field.name])"
+              >
+                <template #prefix>
+                  <EditIcon class="h-4 w-4" />
+                </template>
+              </Button>
+            </div>
+
             <Link
               v-else-if="field.type === 'User'"
               class="form-control"
@@ -196,6 +218,7 @@
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import NestedPopover from '@/components/NestedPopover.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
@@ -215,5 +238,13 @@ const props = defineProps({
 <style scoped>
 :deep(.form-control.prefix select) {
   padding-left: 2rem;
+}
+
+.section {
+  display: none;
+}
+
+.section:has(.settings-field) {
+  display: block;
 }
 </style>

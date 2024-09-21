@@ -154,7 +154,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Activities from '@/components/Activities/Activities.vue'
-import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import {
   dateFormat,
   dateTooltipFormat,

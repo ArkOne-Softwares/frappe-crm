@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full flex-col gap-8">
     <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-      <div>{{ __(doctype) }}</div>
+      <div>{{ title || __(doctype) }}</div>
       <Badge
         v-if="data.isDirty"
         :label="__('Not Saved')"
@@ -15,6 +15,7 @@
         :sections="sections"
         :data="data.doc"
       />
+      <ErrorMessage class="mt-2" :message="error" />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
@@ -36,13 +37,23 @@ import {
   createResource,
   Spinner,
   Badge,
+  ErrorMessage,
 } from 'frappe-ui'
-import { computed } from 'vue'
+import { evaluate_depends_on_value, createToast } from '@/utils'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   doctype: {
     type: String,
     required: true,
+  },
+  title: {
+    type: String,
+    default: '',
+  },
+  successMessage: {
+    type: String,
+    default: 'Updated Successfully',
   },
 })
 
@@ -56,12 +67,33 @@ const fields = createResource({
   auto: true,
 })
 
+const error = ref(null)
+
 const data = createDocumentResource({
   doctype: props.doctype,
   name: props.doctype,
   fields: ['*'],
   cache: props.doctype,
   auto: true,
+  setValue: {
+    onSuccess: () => {
+      error.value = null
+      createToast({
+        title: __('Success'),
+        text: __(props.successMessage),
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: __('Error'),
+        text: err.message + ': ' + err.messages[0],
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  },
 })
 
 const sections = computed(() => {
@@ -90,6 +122,14 @@ const sections = computed(() => {
     } else {
       _sections[_sections.length - 1].fields.push({
         ...field,
+        display_via_depends_on: evaluate_depends_on_value(
+          field.depends_on,
+          data.doc,
+        ),
+        mandatory_via_depends_on: evaluate_depends_on_value(
+          field.mandatory_depends_on,
+          data.doc,
+        ),
         name: field.value,
       })
     }
@@ -99,6 +139,24 @@ const sections = computed(() => {
 })
 
 function update() {
+  error.value = null
+  if (validateMandatoryFields()) return
   data.save.submit()
+}
+
+function validateMandatoryFields() {
+  for (let section of sections.value) {
+    for (let field of section.fields) {
+      if (
+        (field.mandatory ||
+          (field.mandatory_depends_on && field.mandatory_via_depends_on)) &&
+        !data.doc[field.name]
+      ) {
+        error.value = __('{0} is mandatory', [__(field.label)])
+        return true
+      }
+    }
+  }
+  return false
 }
 </script>

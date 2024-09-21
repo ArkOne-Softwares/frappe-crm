@@ -265,38 +265,42 @@
 </template>
 
 <script setup>
-import ViewBreadcrumbs from "@/components/ViewBreadcrumbs.vue";
-import MultipleAvatar from "@/components/MultipleAvatar.vue";
-import CustomActions from "@/components/CustomActions.vue";
-import EmailAtIcon from "@/components/Icons/EmailAtIcon.vue";
-import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
-import NoteIcon from "@/components/Icons/NoteIcon.vue";
-import TaskIcon from "@/components/Icons/TaskIcon.vue";
-import CommentIcon from "@/components/Icons/CommentIcon.vue";
-import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
-import LeadsIcon from "@/components/Icons/LeadsIcon.vue";
-import LayoutHeader from "@/components/LayoutHeader.vue";
-import LeadsListView from "@/components/ListViews/LeadsListView.vue";
-import KanbanView from "@/components/Kanban/KanbanView.vue";
-import LeadModal from "@/components/Modals/LeadModal.vue";
-import NoteModal from "@/components/Modals/NoteModal.vue";
-import TaskModal from "@/components/Modals/TaskModal.vue";
-import QuickEntryModal from "@/components/Settings/QuickEntryModal.vue";
-import ViewControls from "@/components/ViewControls.vue";
-import { globalStore } from "@/stores/global";
-import { usersStore } from "@/stores/users";
-import { organizationsStore } from "@/stores/organizations";
-import { statusesStore } from "@/stores/statuses";
-import { callEnabled } from "@/composables/settings";
-import { dateFormat, dateTooltipFormat, timeAgo, formatTime } from "@/utils";
-import { Avatar, Tooltip, Dropdown } from "frappe-ui";
-import { useRoute } from "vue-router";
-import { ref, computed, reactive, h } from "vue";
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import CustomActions from '@/components/CustomActions.vue'
+import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import LayoutHeader from '@/components/LayoutHeader.vue'
+import LeadsListView from '@/components/ListViews/LeadsListView.vue'
+import KanbanView from '@/components/Kanban/KanbanView.vue'
+import LeadModal from '@/components/Modals/LeadModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
+import ViewControls from '@/components/ViewControls.vue'
+import { globalStore } from '@/stores/global'
+import { usersStore } from '@/stores/users'
+import { statusesStore } from '@/stores/statuses'
+import { callEnabled } from '@/composables/settings'
+import {
+  dateFormat,
+  dateTooltipFormat,
+  timeAgo,
+  website,
+  formatTime,
+} from '@/utils'
+import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
+import { useRoute } from 'vue-router'
+import { ref, computed, reactive, h } from 'vue'
 
-const { makeCall } = globalStore();
-const { getUser } = usersStore();
-const { getOrganization } = organizationsStore();
-const { getLeadStatus } = statusesStore();
+const { makeCall } = globalStore()
+const { getUser } = usersStore()
+const { getLeadStatus } = statusesStore()
 
 const route = useRoute();
 
@@ -387,13 +391,12 @@ function parseRows(rows) {
           label: lead.lead_name,
           image: lead.image,
           image_label: lead.first_name,
-        };
-      } else if (row == "organization") {
-        _rows[row] = {
-          label: lead.organization,
-          logo: getOrganization(lead.organization)?.organization_logo,
-        };
-      } else if (row == "status") {
+        }
+      } else if (row == 'organization') {
+        _rows[row] = lead.organization
+      } else if (row === 'website') {
+        _rows[row] = website(lead.website)
+      } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
           color: getLeadStatus(lead.status)?.iconColorClass,
@@ -423,9 +426,9 @@ function parseRows(rows) {
         _rows[row] = {
           label: lead.lead_owner && getUser(lead.lead_owner).full_name,
           ...(lead.lead_owner && getUser(lead.lead_owner)),
-        };
-      } else if (row == "_assign") {
-        let assignees = JSON.parse(lead._assign) || [];
+        }
+      } else if (row == '_assign') {
+        let assignees = JSON.parse(lead._assign || '[]')
         if (!assignees.length && lead.lead_owner) {
           assignees = [lead.lead_owner];
         }
