@@ -26,17 +26,14 @@
       </Button>
     </template>
     <template #right-header>
-      <CustomActions
-        v-if="lead.data._customActions"
-        :actions="lead.data._customActions"
-      />
+      <CustomActions v-if="customActions" :actions="customActions" />
       <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
           :avatars="lead.data._assignedTo"
           @click="showAssignmentModal = true"
         />
       </component>
-      <Dropdown :options="statusOptions('lead', updateField, lead.data._customStatuses)">
+      <Dropdown :options="statusOptions('lead', updateField, customStatuses)">
         <template #default="{ open }">
           <Button
             :label="lead.data.status"
@@ -194,6 +191,7 @@
             <Section :is-opened="section.opened" :label="section.label">
               <SectionFields
                 :fields="section.fields"
+                :isLastSection="i == fieldsLayout.data.length - 1"
                 v-model="lead.data"
                 @update="updateField"
               />
@@ -319,17 +317,17 @@ import {
   openWebsite,
   createToast,
   setupAssignees,
-  setupCustomActions,
-  setupCustomStatuses,
+  setupCustomizations,
   errorMessage,
   copyToClipboard,
-} from "@/utils";
-import { globalStore } from "@/stores/global";
-import { contactsStore } from "@/stores/contacts";
-import { organizationsStore } from "@/stores/organizations";
-import { statusesStore } from "@/stores/statuses";
-import { usersStore } from "@/stores/users";
-import { whatsappEnabled, callEnabled } from "@/composables/settings";
+} from '@/utils'
+import { getView } from '@/utils/view'
+import { globalStore } from '@/stores/global'
+import { contactsStore } from '@/stores/contacts'
+import { statusesStore } from '@/stores/statuses'
+import { usersStore } from '@/stores/users'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { capture } from '@/telemetry'
 import {
   createResource,
   FileUploader,
@@ -344,9 +342,8 @@ import {
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-const { $dialog, makeCall, allFilters, allOrFilters, allSortOrder } = globalStore();
+const { $dialog, makeCall,$socket, allFilters, allOrFilters, allSortOrder } = globalStore();
 const { getContactByName, contacts } = contactsStore();
-const { organizations } = organizationsStore();
 const { statusOptions, getLeadStatus } = statusesStore();
 const { isManager } = usersStore();
 const route = useRoute();
@@ -370,7 +367,8 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-
+const customActions = ref([])
+const customStatuses = ref([])
 const prevLead = ref("");
 const nextLead = ref("");
 
@@ -396,19 +394,27 @@ const lead = createResource({
   url: "crm.fcrm.doctype.crm_lead.api.get_lead",
   params: { name: props.leadId },
   cache: ["lead", props.leadId],
-  onSuccess: (data) => {
+  onSuccess: async (data) => {
     let obj = {
       doc: data,
       $dialog,
+      $socket,
       router,
       updateField,
       createToast,
       deleteDoc: deleteLead,
+      resource: {
+        lead,
+        fieldsLayout,
+      },
       call,
     }
     setupAssignees(data)
-    setupCustomStatuses(data, obj)
-    setupCustomActions(data, obj)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
   },
 });
 
@@ -511,13 +517,29 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: __("Leads"), route: { name: "Leads" } }];
+  let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
+
+  if (route.query.view || route.query.viewType) {
+    let view = getView(route.query.view, route.query.viewType, 'CRM Lead')
+    if (view) {
+      items.push({
+        label: __(view.label),
+        icon: view.icon,
+        route: {
+          name: 'Leads',
+          params: { viewType: route.query.viewType },
+          query: { view: route.query.view },
+        },
+      })
+    }
+  }
+
   items.push({
-    label: lead.data.lead_name || __("Untitled"),
-    route: { name: "Lead", params: { leadId: lead.data.name } },
-  });
-  return items;
-});
+    label: lead.data.lead_name || __('Untitled'),
+    route: { name: 'Lead', params: { leadId: lead.data.name } },
+  })
+  return items
+})
 
 const tabIndex = ref(0);
 
@@ -678,8 +700,7 @@ async function convertToDeal(updated) {
     });
     if (deal) {
       if (updated) {
-        await organizations.reload();
-        await contacts.reload();
+        await contacts.reload()
       }
       router.push({ name: "Deal", params: { dealId: deal } });
     }

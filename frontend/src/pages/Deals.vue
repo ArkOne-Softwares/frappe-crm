@@ -279,7 +279,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
-import QuickEntryModal from '@/components/Settings/QuickEntryModal.vue'
+import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -290,6 +290,7 @@ import {
   dateFormat,
   dateTooltipFormat,
   timeAgo,
+  website,
   formatNumberIntoCurrency,
   formatTime,
 } from '@/utils'
@@ -394,6 +395,8 @@ function parseRows(rows) {
           label: deal.organization,
           logo: getOrganization(deal.organization)?.organization_logo,
         }
+      } else if (row === 'website') {
+        _rows[row] = website(deal.website)
       } else if (row == 'annual_revenue') {
         _rows[row] = formatNumberIntoCurrency(
           deal.annual_revenue,
@@ -431,7 +434,7 @@ function parseRows(rows) {
           ...(deal.deal_owner && getUser(deal.deal_owner)),
         }
       } else if (row == '_assign') {
-        let assignees = JSON.parse(deal._assign) || []
+        let assignees = JSON.parse(deal._assign || '[]')
         if (!assignees.length && deal.deal_owner) {
           assignees = [deal.deal_owner]
         }
