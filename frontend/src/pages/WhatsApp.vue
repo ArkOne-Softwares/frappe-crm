@@ -173,7 +173,7 @@ import CommentIcon from "@/components/Icons/CommentIcon.vue";
 import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
 import LayoutHeader from "@/components/LayoutHeader.vue";
 import ContactModal from "@/components/Modals/ContactModal.vue";
-import QuickEntryModal from "@/components/Settings/QuickEntryModal.vue";
+import QuickEntryModal from "@/components/Modals/QuickEntryModal.vue";
 import WhatsappListView from "@/components/ListViews/WhatsappListView.vue";
 import ViewControls from "@/components/ViewControls.vue";
 import Activities from "@/components/Activities/Activities.vue";
