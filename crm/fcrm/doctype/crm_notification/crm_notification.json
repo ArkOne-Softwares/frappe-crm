@@ -9,9 +9,11 @@
   "section_break_hace",
   "from_user",
   "type",
+  "read",
   "column_break_dduu",
   "to_user",
-  "read",
+  "notification_time",
+  "notified",
   "section_break_pbvx",
   "reference_doctype",
   "reference_name",
@@ -34,7 +36,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Mention\nTask\nAssignment\nWhatsApp",
+   "options": "Mention\nWhatsApp\nLead\nDeal\nContact\nTask",
    "reqd": 1
   },
   {
@@ -112,11 +114,22 @@
   {
    "fieldname": "section_break_hace",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "notification_time",
+   "fieldtype": "Datetime",
+   "label": "Notification Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "notified",
+   "fieldtype": "Check",
+   "label": "Notified"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 19:34:08.635305",
+ "modified": "2024-10-03 23:12:29.162812",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",

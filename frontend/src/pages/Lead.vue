@@ -177,6 +177,18 @@
         v-model="lead.data"
         @updateField="updateField"
       />
+      <div>
+        <div class="flex items-center justify-between p-5 border-b">
+          <div class="text-lg font-medium">{{ __("Follow Up") }}</div>
+          <Button
+            variant="ghost"
+            class="w-7"
+            @click="showFollowUpModal = true"
+          >
+            <NotificationsIcon class="h-4 w-4 text-yellow-700" />
+          </Button>
+        </div>
+      </div>
       <div
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -217,6 +229,32 @@
     :doc="lead.data"
     doctype="CRM Lead"
   />
+  <Dialog
+    v-model="showFollowUpModal"
+    :options="{
+      title: __('Follow Up'),
+      size: 'md',
+      actions: [
+        {
+          label: __('Create Follow Up'),
+          variant: 'solid',
+          onClick: () => {
+            createFollowUpCRMNotification();
+            showFollowUpModal = false;
+          },
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <div class="flex items-center gap-2 text-gray-600">
+        <CalendarIcon class="h-4 w-4" />
+        <label class="block text-base">{{ __("Follow Up Date") }}</label>
+      </div>
+      <DateTimePicker v-model="followUpDateTime" />
+    </template>
+  </Dialog>
+
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
@@ -290,6 +328,7 @@
 <script setup>
 import Resizer from "@/components/Resizer.vue";
 import EditIcon from "@/components/Icons/EditIcon.vue";
+import NotificationsIcon from "@/components/Icons/NotificationsIcon.vue";
 import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
 import EmailIcon from "@/components/Icons/EmailIcon.vue";
 import Email2Icon from "@/components/Icons/Email2Icon.vue";
@@ -338,6 +377,7 @@ import {
   Switch,
   Breadcrumbs,
   call,
+  DateTimePicker,
 } from "frappe-ui";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -466,6 +506,39 @@ onMounted(() => {
 const reload = ref(false);
 const showAssignmentModal = ref(false);
 const showSidePanelModal = ref(false);
+
+// ArkOne - Follow Up
+const showFollowUpModal = ref(false);
+const followUpDateTime = ref('');
+function createFollowUpCRMNotification() {
+  createResource({
+    url: "crm.api.followup.add_followup",
+    params: {
+      type: "Lead", 
+      notification_text: "You have a follow up for " + lead.data.lead_name,
+      reference_type: "CRM Lead",
+      reference_name: props.leadId,
+      notification_time: followUpDateTime.value,
+    },
+    auto: true,
+    onSuccess: () => {
+      createToast({
+        title: __("Follow Up Notification Created"),
+        icon: "check",
+        iconClasses: "text-green-600",
+      });
+    },
+    onError: (err) => {
+      createToast({
+        title: __("Error Creating Follow Up Notification"),
+        text: __(err.messages?.[0]),
+        icon: "x",
+        iconClasses: "text-red-600",
+      });
+    },
+  });
+}
+// Ends; ArkOne - Follow Up
 
 function updateLead(fieldname, value, callback) {
   value = Array.isArray(fieldname) ? "" : value;

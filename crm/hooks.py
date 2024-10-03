@@ -165,6 +165,14 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
+scheduler_events = {
+    "cron": {
+        "* * * * *": [  # This runs the check every minute. Adjust as needed.
+            "crm.fcrm.doctype.crm_notification.crm_notification.check_and_send_notifications"
+        ]
+    }
+}
+
 # scheduler_events = {
 #	"all": [
 #		"crm.tasks.all"

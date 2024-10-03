@@ -8,7 +8,7 @@ def get_notifications():
     query = (
         frappe.qb.from_(Notification)
         .select("*")
-        .where(Notification.to_user == frappe.session.user)
+        .where(Notification.to_user == frappe.session.user and Notification.notification_time <= frappe.utils.now() and Notification.read == False)
         .orderby("creation", order=Order.desc)
     )
     notifications = query.run(as_dict=True)
@@ -28,6 +28,7 @@ def get_notifications():
                 "to_user": notification.to_user,
                 "read": notification.read,
                 "hash": get_hash(notification),
+                "notification_time": notification.notification_time,
                 "notification_text": notification.notification_text,
                 "notification_type_doctype": notification.notification_type_doctype,
                 "notification_type_doc": notification.notification_type_doc,
