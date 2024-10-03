@@ -4,7 +4,7 @@ app_publisher = "ArkOne Softwares"
 app_description = "Kick-ass Open Source CRM"
 app_email = "arkonesoft@gmail.com"
 app_license = "AGPLv3"
-app_icon_url = ""
+app_icon_url = "/assets/crm/images/logo.svg"
 app_icon_title = "CRM"
 app_icon_route = "/crm"
 app_home = "/app/crm-pro"
@@ -15,7 +15,7 @@ app_home = "/app/crm-pro"
 add_to_apps_screen = [
 	{
 		"name": "crm",
-		"logo": "/assets/crm/manifest/apple-icon-180.png",
+		"logo": "/assets/crm/images/logo.svg",
 		"title": "CRM",
 		"route": "/app/crm-pro"
 		# "has_permission": "crm.api.check_app_permission",
@@ -132,6 +132,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+	"User": "crm.overrides.user.CustomUser",
 }
 
 # Document Events
@@ -144,6 +145,7 @@ doc_events = {
 	},
 	"ToDo": {
 		"after_insert": ["crm.api.todo.after_insert"],
+		"on_update": ["crm.api.todo.on_update"],
 	},
 	"Comment": {
 		"on_update": ["crm.api.comment.on_update"],
@@ -152,9 +154,12 @@ doc_events = {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},
-    "CRM Deal": {
-        "on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
+	"CRM Deal": {
+		"on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
 	},
+	"User": {
+		"before_validate": ["crm.api.demo.validate_user"],
+	}
 }
 
 # Scheduled Tasks

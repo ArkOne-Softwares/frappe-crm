@@ -149,11 +149,12 @@ function getRoute(notification) {
     params = {};
     hash = "";
   }
+
   return {
     name: route,
     params: params,
-    hash: hash,
-  };
+    hash: notification.hash,
+  }
 }
 
 onMounted(() => {});

@@ -1130,15 +1130,14 @@ def get_field_obj(field):
         "all_properties": field,
     }
 
-    obj["placeholder"] = "Add " + field.label + "..."
+    obj["placeholder"] = field.get("placeholder") or "Add " + field.label + "..."
 
     if field.fieldtype == "Link":
-        obj["placeholder"] = "Select " + field.label + "..."
+        obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
         obj["doctype"] = field.options
     elif field.fieldtype == "Select" and field.options:
-        obj["options"] = [
-            {"label": option, "value": option} for option in field.options.split("\n")
-        ]
+        obj["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
+        obj["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
 
     if field.read_only:
         obj["tooltip"] = "This field is read only and cannot be edited."
@@ -1207,6 +1206,26 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
  				"mandatory_depends_on": field.mandatory_depends_on,
  				"read_only_depends_on": field.read_only_depends_on,
  			})
+
+    for field in fields:
+        if (
+            field.fieldtype not in not_allowed_fieldtypes
+            and field.fieldname
+        ):
+            _fields.append({
+                "label": field.label,
+                "type": field.fieldtype,
+                "value": field.fieldname,
+                "options": field.options,
+                "mandatory": field.reqd,
+                "read_only": field.read_only,
+                "hidden": field.hidden,
+                "depends_on": field.depends_on,
+                "mandatory_depends_on": field.mandatory_depends_on,
+                "read_only_depends_on": field.read_only_depends_on,
+                "link_filters": field.get("link_filters"),
+                "placeholder": field.get("placeholder"),
+            })
 
     return _fields
 

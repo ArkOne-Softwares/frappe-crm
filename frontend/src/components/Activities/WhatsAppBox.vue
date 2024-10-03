@@ -34,9 +34,9 @@
         v-slot="{ togglePopover }"
         @update:modelValue="
           () => {
-            content += emoji;
-            $refs.textarea.$el.focus();
-            capture('whatsapp_emoji_added');
+            content += emoji
+            $refs.textareaRef.el.focus()
+            capture('whatsapp_emoji_added')
           }
         "
       >
@@ -47,7 +47,7 @@
       </IconPicker>
     </div>
     <Textarea
-      ref="textarea"
+      ref="textareaRef"
       type="textarea"
       class="min-h-8 w-full"
       :rows="rows"
@@ -55,7 +55,7 @@
       :placeholder="placeholder"
       @focus="rows = 6"
       @blur="rows = 1"
-      @keydown.enter="(e) => sendTextMessage(e)"
+      @keydown.enter.stop="(e) => sendTextMessage(e)"
     />
   </div>
 </template>
@@ -71,19 +71,19 @@ const props = defineProps({
   doctype: String,
 });
 
-const doc = defineModel();
-const whatsapp = defineModel("whatsapp");
-const reply = defineModel("reply");
-const rows = ref(1);
-const textarea = ref(null);
-const emoji = ref("");
+const doc = defineModel()
+const whatsapp = defineModel('whatsapp')
+const reply = defineModel('reply')
+const rows = ref(1)
+const textareaRef = ref(null)
+const emoji = ref('')
 
 const content = ref("");
 const placeholder = ref(__("Type your message here..."));
 const fileType = ref("");
 
 function show() {
-  nextTick(() => textarea.value.$el.focus());
+  nextTick(() => textareaRef.value.el.focus())
 }
 
 function uploadFile(file) {
@@ -94,11 +94,11 @@ function uploadFile(file) {
 }
 
 function sendTextMessage(event) {
-  if (event.shiftKey) return;
-  sendWhatsAppMessage();
-  textarea.value.$el.blur();
-  content.value = "";
-  capture("whatsapp_send_message");
+  if (event.shiftKey) return
+  sendWhatsAppMessage()
+  textareaRef.value.el?.blur()
+  content.value = ''
+  capture('whatsapp_send_message')
 }
 
 async function sendWhatsAppMessage() {
