@@ -25,7 +25,7 @@
         Next >
       </Button>
     </template>
-    <template #right-header></template>
+    <template #right-header>
       <CustomActions v-if="customActions" :actions="customActions" />
       <component :is="lead.data._assignedTo?.length == 1 ? 'Button' : 'div'">
         <MultipleAvatar
@@ -54,7 +54,8 @@
         @click="showConvertToDealModal = true"
       />
     </template>
-      <div v-if="lead?.data" class="flex h-full overflow-hidden">
+  </LayoutHeader>
+  <div v-if="lead?.data" class="flex h-full overflow-hidden">
     <Tabs v-model="tabIndex" v-slot="{ tab }" :tabs="tabs">
       <Activities
         ref="activities"
@@ -66,7 +67,7 @@
         v-model="lead"
       />
     </Tabs>
-    <Resizer class="flex flex-col justify-between border-l" side="right"></Resizer>
+    <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
         class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium"
         @click="copyToClipboard(lead.data.name)"
@@ -286,118 +287,137 @@
   @reload="() => fieldsLayout.reload()"
 />
 </template>
-
 <script setup>
-  import Resizer from "@/components/Resizer.vue";
-  import EditIcon from "@/components/Icons/EditIcon.vue";
-  import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
-  import EmailIcon from "@/components/Icons/EmailIcon.vue";
-  import Email2Icon from "@/components/Icons/Email2Icon.vue";
-  import CommentIcon from "@/components/Icons/CommentIcon.vue";
-  import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
-  import TaskIcon from "@/components/Icons/TaskIcon.vue";
-  import NoteIcon from "@/components/Icons/NoteIcon.vue";
-  import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
-  import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
-  import CameraIcon from "@/components/Icons/CameraIcon.vue";
-  import LinkIcon from "@/components/Icons/LinkIcon.vue";
-  import OrganizationsIcon from "@/components/Icons/OrganizationsIcon.vue";
-  import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
-  import LayoutHeader from "@/components/LayoutHeader.vue";
-  import Activities from "@/components/Activities/Activities.vue";
-  import AssignmentModal from "@/components/Modals/AssignmentModal.vue";
-  import SidePanelModal from "@/components/Settings/SidePanelModal.vue";
-  import MultipleAvatar from "@/components/MultipleAvatar.vue";
-  import Link from "@/components/Controls/Link.vue";
-  import Section from "@/components/Section.vue";
-  import SectionFields from "@/components/SectionFields.vue";
-  import SLASection from "@/components/SLASection.vue";
-  import CustomActions from "@/components/CustomActions.vue";
-  import {
-    openWebsite,
-    createToast,
-    setupAssignees,
-    setupCustomizations,
-    errorMessage,
-    copyToClipboard,
-  } from '@/utils'
-  import { getView } from '@/utils/view'
-  import { globalStore } from '@/stores/global'
-  import { contactsStore } from '@/stores/contacts'
-  import { statusesStore } from '@/stores/statuses'
-  import { usersStore } from '@/stores/users'
-  import { whatsappEnabled, callEnabled } from '@/composables/settings'
-  import { capture } from '@/telemetry'
-  import {
-    createResource,
-    FileUploader,
-    Dropdown,
-    Tooltip,
-    Avatar,
-    Tabs,
-    Switch,
-    Breadcrumbs,
-    call,
-  } from "frappe-ui";
-  import { ref, computed, onMounted, watch } from "vue";
-  import { useRouter, useRoute } from "vue-router";
-  import { useActiveTabManager } from '@/composables/useActiveTabManager'
-  const { $dialog, makeCall,$socket, allFilters, allOrFilters, allSortOrder } = globalStore();
-  const { getContactByName, contacts } = contactsStore();
-  const { statusOptions, getLeadStatus } = statusesStore();
-  const { isManager } = usersStore();
-  const route = useRoute();
-  const router = useRouter();
-  const props = defineProps({
-    leadId: {
-      type: String,
-      required: true,
-    },
-    sort: {
-      type: String,
-      default: "",
-    },
-    or_filters: {
-      type: Object,
-      default: () => ({}),
-    },
-    filters: {
-      type: Object,
-      default: () => ({}),
-    },
-  });
-  const customActions = ref([])
-  const customStatuses = ref([])
-  const prevLead = ref("");
-  const nextLead = ref("");
+import Resizer from "@/components/Resizer.vue";
+import EditIcon from "@/components/Icons/EditIcon.vue";
+import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
+import EmailIcon from "@/components/Icons/EmailIcon.vue";
+import Email2Icon from "@/components/Icons/Email2Icon.vue";
+import CommentIcon from "@/components/Icons/CommentIcon.vue";
+import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
+import TaskIcon from "@/components/Icons/TaskIcon.vue";
+import NoteIcon from "@/components/Icons/NoteIcon.vue";
+import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
+import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
+import CameraIcon from "@/components/Icons/CameraIcon.vue";
+import LinkIcon from "@/components/Icons/LinkIcon.vue";
+import OrganizationsIcon from "@/components/Icons/OrganizationsIcon.vue";
+import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
+import LayoutHeader from "@/components/LayoutHeader.vue";
+import Activities from "@/components/Activities/Activities.vue";
+import AssignmentModal from "@/components/Modals/AssignmentModal.vue";
+import SidePanelModal from "@/components/Settings/SidePanelModal.vue";
+import MultipleAvatar from "@/components/MultipleAvatar.vue";
+import Link from "@/components/Controls/Link.vue";
+import Section from "@/components/Section.vue";
+import SectionFields from "@/components/SectionFields.vue";
+import SLASection from "@/components/SLASection.vue";
+import CustomActions from "@/components/CustomActions.vue";
+import {
+  openWebsite,
+  createToast,
+  setupAssignees,
+  setupCustomizations,
+  errorMessage,
+  copyToClipboard,
+} from '@/utils'
+import { getView } from '@/utils/view'
+import { globalStore } from '@/stores/global'
+import { contactsStore } from '@/stores/contacts'
+import { statusesStore } from '@/stores/statuses'
+import { usersStore } from '@/stores/users'
+import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { capture } from '@/telemetry'
+import {
+  createResource,
+  FileUploader,
+  Dropdown,
+  Tooltip,
+  Avatar,
+  Tabs,
+  Switch,
+  Breadcrumbs,
+  call,
+} from "frappe-ui";
+import { ref, computed, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
-  const lead = createResource({
-    url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
-    params: { name: props.leadId },
-    cache: ['lead', props.leadId],
-    onSuccess: async (data) => {
-      let obj = {
-        doc: data,
-        $dialog,
-        $socket,
-        router,
-        updateField,
-        createToast,
-        deleteDoc: deleteLead,
-        resource: {
-          lead,
-          fieldsLayout,
-        },
-        call,
-      }
-      setupAssignees(data)
-      let customization = await setupCustomizations(data, obj)
-      customActions.value = customization.actions || []
-      customStatuses.value = customization.statuses || []
-    },
-  })
+const { $dialog, makeCall,$socket, allFilters, allOrFilters, allSortOrder } = globalStore();
+const { getContactByName, contacts } = contactsStore();
+const { statusOptions, getLeadStatus } = statusesStore();
+const { isManager } = usersStore();
+const route = useRoute();
+const router = useRouter();
 
-  
+const props = defineProps({
+  leadId: {
+    type: String,
+    required: true,
+  },
+  sort: {
+    type: String,
+    default: "",
+  },
+  or_filters: {
+    type: Object,
+    default: () => ({}),
+  },
+  filters: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+const customActions = ref([])
+const customStatuses = ref([])
+const prevLead = ref("");
+const nextLead = ref("");
+
+// const filters = computed(() => {
+//   console.log('props.filters:', props.filters);
+//   console.log('store.allFilters:', allFilters);
+//   return props.filters && Object.keys(props.filters).length ? props.filters : allFilters;
+// });
+
+// const or_filters = computed(() => {
+//   console.log('props.or_filters:', props.or_filters);
+//   console.log('store.allOrFilters:', allOrFilters);
+//   return props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters;
+// });
+
+// const sort = computed(() => {
+//   console.log('props.sort:', props.sort);
+//   console.log('store.allSortOrder:', allSortOrder);
+//   return props.sort || allSortOrder;
+// });
+
+const lead = createResource({
+  url: "crm.fcrm.doctype.crm_lead.api.get_lead",
+  params: { name: props.leadId },
+  cache: ["lead", props.leadId],
+  onSuccess: async (data) => {
+    let obj = {
+      doc: data,
+      $dialog,
+      $socket,
+      router,
+      updateField,
+      createToast,
+      deleteDoc: deleteLead,
+      resource: {
+        lead,
+        fieldsLayout,
+      },
+      call,
+    }
+    setupAssignees(data)
+    let customization = await setupCustomizations(data, obj)
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
+    customActions.value = customization.actions || []
+    customStatuses.value = customization.statuses || []
+  },
+});
+
 const prev = createResource({
   url: "crm.api.doc.get_next",
   params: {
@@ -435,7 +455,6 @@ const next = createResource({
     nextLead.value = data;
   },
 });
-
 
 onMounted(() => {
   next.fetch();
@@ -492,11 +511,10 @@ function validateRequired(fieldname, value) {
       icon: "x",
       iconClasses: "text-red-600",
     });
-    return true
+    return true;
   }
-  return false
+  return false;
 }
-
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
@@ -523,6 +541,7 @@ const breadcrumbs = computed(() => {
   return items
 })
 
+const tabIndex = ref(0);
 
 const tabs = computed(() => {
   let tabOptions = [
@@ -567,19 +586,16 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true));
 });
 
-
-const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
-
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
     let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
-    )
+      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase()
+    );
     if (index !== -1) {
-      tabIndex.value = index
+      tabIndex.value = index;
     }
   }
-})
+});
 
 watch(
   () => props.leadId,
@@ -591,65 +607,65 @@ watch(
 );
 
 function validateFile(file) {
-  let extn = file.name.split('.').pop().toLowerCase()
-  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
-    return __('Only PNG and JPG images are allowed')
+  let extn = file.name.split(".").pop().toLowerCase();
+  if (!["png", "jpg", "jpeg"].includes(extn)) {
+    return __("Only PNG and JPG images are allowed");
   }
 }
 
 const fieldsLayout = createResource({
-  url: 'crm.api.doc.get_sidebar_fields',
-  cache: ['fieldsLayout', props.leadId],
-  params: { doctype: 'CRM Lead', name: props.leadId },
+  url: "crm.api.doc.get_sidebar_fields",
+  cache: ["fieldsLayout", props.leadId],
+  params: { doctype: "CRM Lead", name: props.leadId },
   auto: true,
-})
+});
 
 function updateField(name, value, callback) {
   updateLead(name, value, () => {
-    lead.data[name] = value
-    callback?.()
-  })
+    lead.data[name] = value;
+    callback?.();
+  });
 }
 
 async function deleteLead(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Lead',
+  await call("frappe.client.delete", {
+    doctype: "CRM Lead",
     name,
-  })
-  router.push({ name: 'Leads' })
+  });
+  router.push({ name: "Leads" });
 }
 
 // Convert to Deal
-const showConvertToDealModal = ref(false)
-const existingContactChecked = ref(false)
-const existingOrganizationChecked = ref(false)
+const showConvertToDealModal = ref(false);
+const existingContactChecked = ref(false);
+const existingOrganizationChecked = ref(false);
 
-const existingContact = ref('')
-const existingOrganization = ref('')
+const existingContact = ref("");
+const existingOrganization = ref("");
 
 async function convertToDeal(updated) {
-  let valueUpdated = false
+  let valueUpdated = false;
 
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
-      title: __('Error'),
-      text: __('Please select an existing contact'),
-      icon: 'x',
-      iconClasses: 'text-red-600',
-    })
-    return
+      title: __("Error"),
+      text: __("Please select an existing contact"),
+      icon: "x",
+      iconClasses: "text-red-600",
+    });
+    return;
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
     createToast({
-      title: __('Error'),
-      text: __('Please select an existing organization'),
-      icon: 'x',
-      iconClasses: 'text-red-600',
-    })
-    return
+      title: __("Error"),
+      text: __("Please select an existing organization"),
+      icon: "x",
+      iconClasses: "text-red-600",
+    });
+    return;
   }
-  
+
   if (existingContactChecked.value && existingContact.value) {
     lead.data.salutation = getContactByName(existingContact.value).salutation;
     lead.data.lead_name = getContactByName(existingContact.value).lead_name;
@@ -664,6 +680,7 @@ async function convertToDeal(updated) {
     existingOrganizationChecked.value = false;
     valueUpdated = true;
   }
+
   if (valueUpdated) {
     updateLead(
       {
@@ -682,7 +699,6 @@ async function convertToDeal(updated) {
       lead: lead.data.name,
     });
     if (deal) {
-      capture('convert_lead_to_deal')
       if (updated) {
         await contacts.reload()
       }
@@ -696,7 +712,6 @@ const activities = ref(null);
 function openEmailBox() {
   activities.value.emailBox.show = true;
 }
-
 
 const handlePrevClick = () => {
   if (prevLead.value) {
