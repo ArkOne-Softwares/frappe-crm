@@ -20,7 +20,7 @@ def notify_assigned_user(doc, is_cancelled=False):
 	_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
 	owner = frappe.get_cached_value("User", frappe.session.user, "full_name")
 	notification_text = get_notification_text(owner, doc, _doc, is_cancelled)
-
+ 
 	message = _("Your assignment on {0} {1} has been removed by {2}").format(
 		doc.reference_type,
 		doc.reference_name,
@@ -43,6 +43,7 @@ def notify_assigned_user(doc, is_cancelled=False):
 		"reference_docname": doc.reference_name,
 		"redirect_to_doctype": redirect_to_doctype,
 		"redirect_to_docname": redirect_to_name,
+		"description": doc.description,
 	})
 
 def get_notification_text(owner, doc, reference_doc, is_cancelled=False):

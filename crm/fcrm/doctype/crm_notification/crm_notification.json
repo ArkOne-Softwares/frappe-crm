@@ -36,7 +36,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Mention\nWhatsApp\nLead\nDeal\nContact\nTask",
+   "options": "Mention\nWhatsApp\nLead\nDeal\nContact\nTask\nAssignment",
    "reqd": 1
   },
   {
@@ -129,7 +129,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-03 23:12:29.162812",
+ "modified": "2024-10-04 06:36:20.984680",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",

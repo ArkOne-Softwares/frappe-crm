@@ -44,13 +44,13 @@
             :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
           />
-          <ShowQuickFilter
+          <!-- <ShowQuickFilter
             v-if="!options.hideQuickFilter"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
-          />
+          /> -->
         </div>
       </div>
       <div
@@ -119,13 +119,13 @@
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
-        <ShowQuickFilter
+        <!-- <ShowQuickFilter
           v-if="!options.hideQuickFilter"
           v-model="list"
           :doctype="doctype"
           :hideLabel="isMobileView"
           @update="applyCustomQuickFilter"
-        />
+        /> -->
         <Dropdown
           v-if="!options.hideColumnsButton && route.params.viewType !== 'kanban'"
           :options="[
@@ -601,7 +601,7 @@ const viewsDropdownOptions = computed(() => {
 });
 
 const quickFilterList = computed(() => {
-  let filters = [{ name: "name", label: __("ID") }];
+  let filters = [{ name: "title", label: __("Title") }];
   if (quickFilters.data) {
     filters.push(...quickFilters.data);
   }
@@ -1108,8 +1108,10 @@ function applyFilterByListHeader({ event, column, searchValue }) {
   let restrictedFieldtypes = ["Duration", "Datetime", "Time"];
   if (restrictedFieldtypes.includes(column.type)) return;
 
-  event.stopPropagation();
-  event.preventDefault();
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
 
   let filters = { ...list.value.params.filters };
 

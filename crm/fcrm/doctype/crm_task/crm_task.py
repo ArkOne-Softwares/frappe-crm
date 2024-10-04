@@ -29,7 +29,7 @@ class CRMTask(Document):
 				"assign_to": [self.assigned_to],
 				"doctype": self.doctype,
 				"name": self.name,
-				"description": self.title or self.description,
+				"description": f"{self.title or self.description} | DUE_DATE:{self.due_date}",
 			})
 
 

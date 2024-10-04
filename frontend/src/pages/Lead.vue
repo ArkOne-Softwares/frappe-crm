@@ -180,11 +180,7 @@
       <div>
         <div class="flex items-center justify-between p-5 border-b">
           <div class="text-lg font-medium">{{ __("Follow Up") }}</div>
-          <Button
-            variant="ghost"
-            class="w-7"
-            @click="showFollowUpModal = true"
-          >
+          <Button variant="ghost" class="w-7" @click="showTaskModal = true">
             <NotificationsIcon class="h-4 w-4 text-yellow-700" />
           </Button>
         </div>
@@ -320,10 +316,17 @@
     </template>
   </Dialog>
   <SidePanelModal
-  v-if="showSidePanelModal"
-  v-model="showSidePanelModal"
-  @reload="() => fieldsLayout.reload()"
-/>
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    @reload="() => fieldsLayout.reload()"
+  />
+  <TaskModal
+    v-if="showTaskModal"
+    v-model="showTaskModal"
+    :task="task"
+    doctype="CRM Lead"
+    :doc="docname"
+  />
 </template>
 <script setup>
 import Resizer from "@/components/Resizer.vue";
@@ -332,6 +335,8 @@ import NotificationsIcon from "@/components/Icons/NotificationsIcon.vue";
 import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
 import EmailIcon from "@/components/Icons/EmailIcon.vue";
 import Email2Icon from "@/components/Icons/Email2Icon.vue";
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import Icon from '@/components/Icon.vue'
 import CommentIcon from "@/components/Icons/CommentIcon.vue";
 import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
 import TaskIcon from "@/components/Icons/TaskIcon.vue";
@@ -343,6 +348,7 @@ import LinkIcon from "@/components/Icons/LinkIcon.vue";
 import OrganizationsIcon from "@/components/Icons/OrganizationsIcon.vue";
 import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
 import LayoutHeader from "@/components/LayoutHeader.vue";
+import TaskModal from "@/components/Modals/TaskModal.vue";
 import Activities from "@/components/Activities/Activities.vue";
 import AssignmentModal from "@/components/Modals/AssignmentModal.vue";
 import SidePanelModal from "@/components/Settings/SidePanelModal.vue";
@@ -359,14 +365,14 @@ import {
   setupCustomizations,
   errorMessage,
   copyToClipboard,
-} from '@/utils'
-import { getView } from '@/utils/view'
-import { globalStore } from '@/stores/global'
-import { contactsStore } from '@/stores/contacts'
-import { statusesStore } from '@/stores/statuses'
-import { usersStore } from '@/stores/users'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
-import { capture } from '@/telemetry'
+} from "@/utils";
+import { getView } from "@/utils/view";
+import { globalStore } from "@/stores/global";
+import { contactsStore } from "@/stores/contacts";
+import { statusesStore } from "@/stores/statuses";
+import { usersStore } from "@/stores/users";
+import { whatsappEnabled, callEnabled } from "@/composables/settings";
+import { capture } from "@/telemetry";
 import {
   createResource,
   FileUploader,
@@ -382,7 +388,14 @@ import {
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-const { $dialog, makeCall,$socket, allFilters, allOrFilters, allSortOrder } = globalStore();
+const {
+  $dialog,
+  makeCall,
+  $socket,
+  allFilters,
+  allOrFilters,
+  allSortOrder,
+} = globalStore();
 const { getContactByName, contacts } = contactsStore();
 const { statusOptions, getLeadStatus } = statusesStore();
 const { isManager } = usersStore();
@@ -407,10 +420,21 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const customActions = ref([])
-const customStatuses = ref([])
+const customActions = ref([]);
+const customStatuses = ref([]);
 const prevLead = ref("");
 const nextLead = ref("");
+const showTaskModal = ref(false);
+const docname = ref("");
+
+const task = ref({
+  title: "",
+  description: "",
+  assigned_to: "",
+  due_date: "",
+  priority: "Low",
+  status: "Backlog",
+});
 
 // const filters = computed(() => {
 //   console.log('props.filters:', props.filters);
@@ -448,13 +472,13 @@ const lead = createResource({
         fieldsLayout,
       },
       call,
-    }
-    setupAssignees(data)
-    let customization = await setupCustomizations(data, obj)
-    customActions.value = customization.actions || []
-    customStatuses.value = customization.statuses || []
-    customActions.value = customization.actions || []
-    customStatuses.value = customization.statuses || []
+    };
+    setupAssignees(data);
+    let customization = await setupCustomizations(data, obj);
+    customActions.value = customization.actions || [];
+    customStatuses.value = customization.statuses || [];
+    customActions.value = customization.actions || [];
+    customStatuses.value = customization.statuses || [];
   },
 });
 
@@ -509,12 +533,12 @@ const showSidePanelModal = ref(false);
 
 // ArkOne - Follow Up
 const showFollowUpModal = ref(false);
-const followUpDateTime = ref('');
+const followUpDateTime = ref("");
 function createFollowUpCRMNotification() {
   createResource({
     url: "crm.api.followup.add_followup",
     params: {
-      type: "Lead", 
+      type: "Lead",
       notification_text: "You have a follow up for " + lead.data.lead_name,
       reference_type: "CRM Lead",
       reference_name: props.leadId,
@@ -590,29 +614,29 @@ function validateRequired(fieldname, value) {
 }
 
 const breadcrumbs = computed(() => {
-  let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
+  let items = [{ label: __("Leads"), route: { name: "Leads" } }];
 
   if (route.query.view || route.query.viewType) {
-    let view = getView(route.query.view, route.query.viewType, 'CRM Lead')
+    let view = getView(route.query.view, route.query.viewType, "CRM Lead");
     if (view) {
       items.push({
         label: __(view.label),
         icon: view.icon,
         route: {
-          name: 'Leads',
+          name: "Leads",
           params: { viewType: route.query.viewType },
           query: { view: route.query.view },
         },
-      })
+      });
     }
   }
 
   items.push({
-    label: lead.data.lead_name || __('Untitled'),
-    route: { name: 'Lead', params: { leadId: lead.data.name } },
-  })
-  return items
-})
+    label: lead.data.lead_name || __("Untitled"),
+    route: { name: "Lead", params: { leadId: lead.data.name } },
+  });
+  return items;
+});
 
 const tabIndex = ref(0);
 
@@ -773,7 +797,7 @@ async function convertToDeal(updated) {
     });
     if (deal) {
       if (updated) {
-        await contacts.reload()
+        await contacts.reload();
       }
       router.push({ name: "Deal", params: { dealId: deal } });
     }
@@ -789,43 +813,62 @@ function openEmailBox() {
 const handlePrevClick = () => {
   if (prevLead.value) {
     router.push({
-          name: "Lead",
-          params: {
-            leadId: prevLead.value,
-          },
-          query: {
-            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
-            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
-            sort: props.sort || allSortOrder.value,
-          },
-        });
+      name: "Lead",
+      params: {
+        leadId: prevLead.value,
+      },
+      query: {
+        filters: JSON.stringify(
+          props.filters && Object.keys(props.filters).length
+            ? props.filters
+            : allFilters.value
+        ),
+        or_filters: JSON.stringify(
+          props.or_filters && Object.keys(props.or_filters).length
+            ? props.or_filters
+            : allOrFilters.value
+        ),
+        sort: props.sort || allSortOrder.value,
+      },
+    });
   }
 };
 
 const handleNextClick = () => {
   if (nextLead.value) {
-        router.push({
-          name: "Lead",
-          params: {
-            leadId: nextLead.value,
-          },
-          query: {
-            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
-            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
-            sort: props.sort || allSortOrder.value,
-          },
-        });
-      }
+    router.push({
+      name: "Lead",
+      params: {
+        leadId: nextLead.value,
+      },
+      query: {
+        filters: JSON.stringify(
+          props.filters && Object.keys(props.filters).length
+            ? props.filters
+            : allFilters.value
+        ),
+        or_filters: JSON.stringify(
+          props.or_filters && Object.keys(props.or_filters).length
+            ? props.or_filters
+            : allOrFilters.value
+        ),
+        sort: props.sort || allSortOrder.value,
+      },
+    });
+  }
 };
 
 const updatePropsFromQuery = (query) => {
-      props.filters = query.filters ? JSON.parse(query.filters) : allFilters.value;
-      props.or_filters = query.or_filters ? JSON.parse(query.or_filters) : allOrFilters.value;
-      props.sort = query.sort || allSortOrder.value;
-    };
+  props.filters = query.filters ? JSON.parse(query.filters) : allFilters.value;
+  props.or_filters = query.or_filters ? JSON.parse(query.or_filters) : allOrFilters.value;
+  props.sort = query.sort || allSortOrder.value;
+};
 
-watch(() => route.query, (newQuery) => {
-      updatePropsFromQuery(newQuery);
-    }, { immediate: true });
-
+watch(
+  () => route.query,
+  (newQuery) => {
+    updatePropsFromQuery(newQuery);
+  },
+  { immediate: true }
+);
 </script>
