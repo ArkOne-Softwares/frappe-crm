@@ -53,7 +53,7 @@
           :type="field.type"
           :value="data[field.name]"
           :placeholder="field.placeholder"
-          :debounce="1000"
+          :debounce="1500"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
         <FormControl
