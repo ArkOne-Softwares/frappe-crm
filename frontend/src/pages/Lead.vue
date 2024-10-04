@@ -180,7 +180,7 @@
       <div>
         <div class="flex items-center justify-between p-5 border-b">
           <div class="text-lg font-medium">{{ __("Follow Up") }}</div>
-          <Button variant="ghost" class="w-7" @click="showTaskModal = true">
+          <Button variant="ghost" class="w-7" @click="showFollowUpModal = true">
             <NotificationsIcon class="h-4 w-4 text-yellow-700" />
           </Button>
         </div>
@@ -243,11 +243,19 @@
     }"
   >
     <template #body-content>
-      <div class="flex items-center gap-2 text-gray-600">
-        <CalendarIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __("Follow Up Date") }}</label>
+      <div class="space-y-4 text-gray-600">
+        <div class="flex items-center gap-2">
+          <!-- <CalendarIcon class="h-4 w-4" /> -->
+          <label class="block text-base">{{ __("Follow Up Date") }}</label>
+        </div>
+        <DateTimePicker v-model="followUpDateTime" />
+
+        <div class="flex items-center gap-2">
+          <!-- <CalendarIcon class="h-4 w-4" /> -->
+          <label class="block text-base">{{ __("Follow Up Reason") }}</label>
+        </div>
+        <TextInput v-model="followUpReason" type="text" placeholder="Follow Up Reason" />
       </div>
-      <DateTimePicker v-model="followUpDateTime" />
     </template>
   </Dialog>
 
@@ -335,8 +343,8 @@ import NotificationsIcon from "@/components/Icons/NotificationsIcon.vue";
 import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
 import EmailIcon from "@/components/Icons/EmailIcon.vue";
 import Email2Icon from "@/components/Icons/Email2Icon.vue";
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import Icon from '@/components/Icon.vue'
+import CalendarIcon from "@/components/Icons/CalendarIcon.vue";
+import Icon from "@/components/Icon.vue";
 import CommentIcon from "@/components/Icons/CommentIcon.vue";
 import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
 import TaskIcon from "@/components/Icons/TaskIcon.vue";
@@ -384,6 +392,7 @@ import {
   Breadcrumbs,
   call,
   DateTimePicker,
+  TextInput,
 } from "frappe-ui";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -534,6 +543,7 @@ const showSidePanelModal = ref(false);
 // ArkOne - Follow Up
 const showFollowUpModal = ref(false);
 const followUpDateTime = ref("");
+const followUpReason = ref("");
 function createFollowUpCRMNotification() {
   createResource({
     url: "crm.api.followup.add_followup",
@@ -543,6 +553,7 @@ function createFollowUpCRMNotification() {
       reference_type: "CRM Lead",
       reference_name: props.leadId,
       notification_time: followUpDateTime.value,
+      reason: followUpReason.value ?? "Follow Up",
     },
     auto: true,
     onSuccess: () => {

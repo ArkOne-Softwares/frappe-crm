@@ -44,13 +44,13 @@
             :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
           />
-          <!-- <ShowQuickFilter
+          <ShowQuickFilter
             v-if="!options.hideQuickFilter"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
             @update="(isDefault) => updateColumns(isDefault)"
-          /> -->
+          />
         </div>
       </div>
       <div
@@ -119,13 +119,13 @@
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
-        <!-- <ShowQuickFilter
+        <ShowQuickFilter
           v-if="!options.hideQuickFilter"
           v-model="list"
           :doctype="doctype"
           :hideLabel="isMobileView"
           @update="applyCustomQuickFilter"
-        /> -->
+        />
         <Dropdown
           v-if="!options.hideColumnsButton && route.params.viewType !== 'kanban'"
           :options="[
@@ -1082,15 +1082,28 @@ function applyCustomQuickFilter(selectedFilter) {
   if (selectedFilter == "new") {
     or_filters = {};
     or_filters["status"] = `New`;
+    or_filters["creation"] = [
+      "between",
+      [`${today}T00:00:00`, `${today}T23:59:59`],
+    ];
   }
   if (selectedFilter == "today") {
     or_filters = {};
-    or_filters["next_contact_date"] = ["=", new Date().toISOString().split("T")[0]];
+    const today = new Date().toISOString().split("T")[0];
+    or_filters["next_contact_date"] = [
+      "between",
+      [`${today}T00:00:00`, `${today}T23:59:59`],
+    ];
+    // or_filters["next_contact_date"] = ["<=", `${today}T23:59:59`];
   }
   if (selectedFilter == "newToday") {
     or_filters = {};
+    const today = new Date().toISOString().split("T")[0];
     or_filters["status"] = `New`;
-    or_filters["next_contact_date"] = ["=", new Date().toISOString().split("T")[0]];
+    or_filters["next_contact_date"] = [
+      "between",
+      [`${today}T00:00:00`, `${today}T23:59:59`],
+    ];
   }
   if (selectedFilter == "today&beyond") {
     or_filters = {};

@@ -304,7 +304,6 @@
   {
    "fieldname": "next_contact_date",
    "fieldtype": "Datetime",
-   "hidden": 1,
    "label": "Next Contact Date"
   },
   {
@@ -407,7 +406,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-04 08:23:24.804141",
+ "modified": "2024-10-04 19:41:09.695212",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

@@ -125,11 +125,55 @@ function markAllAsRead() {
 
 onBeforeUnmount(() => {
   $socket.off("crm_notification");
+  $socket.off("follow_up");
 });
 
 onMounted(() => {
-  $socket.on("crm_notification", () => {
+  $socket.on("crm_notification", (data) => {
     notificationsStore().notifications.reload();
+    if (Notification.permission === "granted") {
+      const notification = new Notification(
+        "Whatsapp Message received from contact " +
+          data.reference_name +
+          " : " +
+          data.message
+      );
+      notification.onclick = () => {
+        channel.postMessage("focus");
+      };
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          const notification = new Notification(
+            "Whatsapp Message received from contact " +
+              data.reference_name +
+              " : " +
+              data.message
+          );
+          notification.onclick = () => {
+            channel.postMessage("focus");
+          };
+        }
+      });
+    }
+  });
+  $socket.on("follow_up", (data) => {
+    notificationsStore().notifications.reload();
+    if (Notification.permission === "granted") {
+      const notification = new Notification(data.message ?? "Follow up Reminder");
+      notification.onclick = () => {
+        channel.postMessage("focus");
+      };
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          const notification = new Notification(data.message ?? "Follow up Reminder");
+          notification.onclick = () => {
+            channel.postMessage("focus");
+          };
+        }
+      });
+    }
   });
 });
 

@@ -432,16 +432,16 @@ const props = defineProps({
   },
 });
 
-const route = useRoute()
+const route = useRoute();
 
-const doc = defineModel()
-const reload = defineModel('reload')
-const tabIndex = defineModel('tabIndex')
+const doc = defineModel();
+const reload = defineModel("reload");
+const tabIndex = defineModel("tabIndex");
 
 const reload_email = ref(false);
 const modalRef = ref(null);
 
-const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+const title = computed(() => props.tabs?.[tabIndex.value]?.name || "Activity");
 
 const all_activities = createResource({
   url: "crm.api.activities.get_activities",
@@ -497,12 +497,12 @@ const whatsappMessages = createResource({
   auto: true,
   transform: (data) => {
     console.log("whatsappMessages", data);
-   return sortByCreation(data);
+    return sortByCreation(data);
   },
   onSuccess: () =>
     nextTick(async () => {
       scroll();
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         await call("crm.api.whatsapp.mark_as_read", {
           doc: "WhatsApp Message",
           user: doc.value.data.name,
@@ -525,16 +525,16 @@ onMounted(() => {
     ) {
       whatsappMessages.reload();
     }
-  })
+  });
 
   nextTick(() => {
-    const hash = route.hash.slice(1) || null
-    let tabNames = props.tabs?.map((tab) => tab.name)
+    const hash = route.hash.slice(1) || null;
+    let tabNames = props.tabs?.map((tab) => tab.name);
     if (!tabNames?.includes(hash)) {
-      scroll(hash)
+      scroll(hash);
     }
-  })
-})
+  });
+});
 
 function sendTemplate(template) {
   showWhatsappTemplates.value = false;
@@ -632,37 +632,37 @@ function update_activities_details(activity) {
 }
 
 const emptyText = computed(() => {
-  let text = 'No Activities'
-  if (title.value == 'Emails') {
-    text = 'No Email Communications'
-  } else if (title.value == 'Comments') {
-    text = 'No Comments'
-  } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
-  } else if (title.value == 'Notes') {
-    text = 'No Notes'
-  } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
-  } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+  let text = "No Activities";
+  if (title.value == "Emails") {
+    text = "No Email Communications";
+  } else if (title.value == "Comments") {
+    text = "No Comments";
+  } else if (title.value == "Calls") {
+    text = "No Call Logs";
+  } else if (title.value == "Notes") {
+    text = "No Notes";
+  } else if (title.value == "Tasks") {
+    text = "No Tasks";
+  } else if (title.value == "WhatsApp") {
+    text = "No WhatsApp Messages";
   }
   return text;
 });
 
 const emptyTextIcon = computed(() => {
-  let icon = ActivityIcon
-  if (title.value == 'Emails') {
-    icon = Email2Icon
-  } else if (title.value == 'Comments') {
-    icon = CommentIcon
-  } else if (title.value == 'Calls') {
-    icon = PhoneIcon
-  } else if (title.value == 'Notes') {
-    icon = NoteIcon
-  } else if (title.value == 'Tasks') {
-    icon = TaskIcon
-  } else if (title.value == 'WhatsApp') {
-    icon = WhatsAppIcon
+  let icon = ActivityIcon;
+  if (title.value == "Emails") {
+    icon = Email2Icon;
+  } else if (title.value == "Comments") {
+    icon = CommentIcon;
+  } else if (title.value == "Calls") {
+    icon = PhoneIcon;
+  } else if (title.value == "Notes") {
+    icon = NoteIcon;
+  } else if (title.value == "Tasks") {
+    icon = TaskIcon;
+  } else if (title.value == "WhatsApp") {
+    icon = WhatsAppIcon;
   }
   return h(icon, { class: "text-gray-500" });
 });
@@ -704,7 +704,7 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
 });
 
 function scroll(hash) {
-  if (['tasks', 'notes'].includes(route.hash?.slice(1))) return
+  if (["tasks", "notes"].includes(route.hash?.slice(1))) return;
   setTimeout(() => {
     let el;
     if (!hash) {
@@ -720,5 +720,5 @@ function scroll(hash) {
   }, 500);
 }
 
-defineExpose({ emailBox })
+defineExpose({ emailBox });
 </script>

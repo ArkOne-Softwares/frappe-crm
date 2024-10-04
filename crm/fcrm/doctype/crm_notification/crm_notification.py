@@ -20,48 +20,48 @@ def notify_user(args):
     args = frappe._dict(args)
 
     # ArkOne: Commented this so that the notification is sent even if the owner and assigned_to are same
-    if args.owner != args.assigned_to:
-        values = frappe._dict(
-            doctype="CRM Notification",
-            from_user=args.owner,
-            to_user=args.assigned_to,
-            type=args.notification_type,
-            message=args.message,
-            notification_text=args.notification_text,
-            notification_type_doctype=args.reference_doctype,
-            notification_type_doc=args.reference_docname,
-            reference_doctype=args.redirect_to_doctype,
-            reference_name=args.redirect_to_docname,
-            notification_time=args.notification_time if args.notification_time else frappe.utils.now(),
-        )
+    # if args.owner != args.assigned_to:
+    values = frappe._dict(
+        doctype="CRM Notification",
+        from_user=args.owner,
+        to_user=args.assigned_to,
+        type=args.notification_type,
+        message=args.message,
+        notification_text=args.notification_text,
+        notification_type_doctype=args.reference_doctype,
+        notification_type_doc=args.reference_docname,
+        reference_doctype=args.redirect_to_doctype,
+        reference_name=args.redirect_to_docname,
+        notification_time=args.notification_time if args.notification_time else frappe.utils.now(),
+    )
 
-        if frappe.db.exists("CRM Notification", values):
-            return
-        frappe.get_doc(values).insert(ignore_permissions=True)
+    if frappe.db.exists("CRM Notification", values):
         return
+    frappe.get_doc(values).insert(ignore_permissions=True)
+    return
 
-    if args.description:
-        main_description, due_date = extract_and_remove_due_date(
-            args.description)
+    # if args.description:
+    #     main_description, due_date = extract_and_remove_due_date(
+    #         args.description)
 
-        if due_date:
-            notification_time = datetime.strptime(
-                due_date, "%Y-%m-%d %H:%M:%S")
-            print(notification_time)
-            values = frappe._dict(
-                doctype="CRM Notification",
-                from_user=args.owner,
-                to_user=args.assigned_to,
-                type=args.notification_type,
-                message=args.message,
-                notification_text=args.notification_text,
-                notification_type_doctype=args.reference_doctype,
-                notification_type_doc=args.reference_docname,
-                reference_doctype=args.redirect_to_doctype,
-                reference_name=args.redirect_to_docname,
-                notification_time=notification_time,
-            )
-            frappe.get_doc(values).insert(ignore_permissions=True)
+    #     if due_date:
+    #         notification_time = datetime.strptime(
+    #             due_date, "%Y-%m-%d %H:%M:%S")
+    #         print(notification_time)
+    #         values = frappe._dict(
+    #             doctype="CRM Notification",
+    #             from_user=args.owner,
+    #             to_user=args.assigned_to,
+    #             type=args.notification_type,
+    #             message=args.message,
+    #             notification_text=args.notification_text,
+    #             notification_type_doctype=args.reference_doctype,
+    #             notification_type_doc=args.reference_docname,
+    #             reference_doctype=args.redirect_to_doctype,
+    #             reference_name=args.redirect_to_docname,
+    #             notification_time=notification_time,
+    #         )
+    #         frappe.get_doc(values).insert(ignore_permissions=True)
 
 
 def check_and_send_notifications():
@@ -87,13 +87,17 @@ def check_and_send_notifications():
 
 
 def send_scheduled_notification(doc):
-    user = doc.recipient  # The user who will receive the notification
+    user = doc.to_user  # The user who will receive the notification
     message = f"Reminder: You have an upcoming task scheduled on {doc.notification_time}."
 
-    # Optionally, you can use real-time notifications as well:
     frappe.publish_realtime(
-        event="msgprint",
-        message=message,
+        "follow_up",
+        {
+            "message": message,
+            "type": doc.type,
+            "reference_doctype": doc.reference_doctype,
+            "reference_name": doc.reference_name,
+        },
         user=user
     )
 
@@ -101,10 +105,10 @@ def send_scheduled_notification(doc):
     doc.notified = 1
     doc.save()
     # try:
-        # frappe.utils.play_sound("alert")
+    # frappe.utils.play_sound("alert")
     # except Exception as e:
-        # frappe.log_error(
-            # f"Failed to play sound: {str(e)}", "Sound Notification Error")
+    # frappe.log_error(
+    # f"Failed to play sound: {str(e)}", "Sound Notification Error")
 
 
 def extract_and_remove_due_date(description):

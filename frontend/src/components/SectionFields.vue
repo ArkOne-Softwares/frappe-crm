@@ -12,12 +12,10 @@
       <Tooltip :text="__(field.label)" :hoverDelay="1">
         <div class="sm:w-[106px] w-36 shrink-0 truncate text-sm text-gray-600">
           <span>{{ __(field.label) }}</span>
-          <span class="text-red-500">{{ field.reqd ? ' *' : '' }}</span>
+          <span class="text-red-500">{{ field.reqd ? " *" : "" }}</span>
         </div>
       </Tooltip>
-      <div
-        class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
-      >
+      <div class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base">
         <div
           v-if="field.read_only && field.type !== 'checkbox'"
           class="flex h-7 cursor-pointer items-center px-2 py-1 text-gray-600"
@@ -35,20 +33,27 @@
           :disabled="Boolean(field.read_only)"
         />
         <FormControl
-          v-else-if="
-            ['email', 'number', 'date', 'password', 'textarea'].includes(
-              field.type,
-            )
-          "
+          v-else-if="['email', 'number', 'password', 'textarea'].includes(field.type)"
           class="form-control"
           :class="{
-            '[&_input]:text-gray-500':
-              field.type === 'date' && !data[field.name],
+            '[&_input]:text-gray-500': field.type === 'date' && !data[field.name],
           }"
           :type="field.type"
           :value="data[field.name]"
           :placeholder="field.placeholder"
           :debounce="500"
+          @change.stop="emit('update', field.name, $event.target.value)"
+        />
+        <FormControl
+          v-else-if="['date'].includes(field.type)"
+          class="form-control"
+          :class="{
+            '[&_input]:text-gray-500': field.type === 'date' && !data[field.name],
+          }"
+          :type="field.type"
+          :value="data[field.name]"
+          :placeholder="field.placeholder"
+          :debounce="1000"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
         <FormControl
@@ -114,13 +119,13 @@
 </template>
 
 <script setup>
-import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
-import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-import Link from '@/components/Controls/Link.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
-import { usersStore } from '@/stores/users'
-import { Tooltip } from 'frappe-ui'
-import { computed } from 'vue'
+import FadedScrollableDiv from "@/components/FadedScrollableDiv.vue";
+import ArrowUpRightIcon from "@/components/Icons/ArrowUpRightIcon.vue";
+import Link from "@/components/Controls/Link.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
+import { usersStore } from "@/stores/users";
+import { Tooltip } from "frappe-ui";
+import { computed } from "vue";
 
 const props = defineProps({
   fields: {
@@ -130,52 +135,52 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const { getUser } = usersStore()
+const { getUser } = usersStore();
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(["update"]);
 
-const data = defineModel()
+const data = defineModel();
 
 const _fields = computed(() => {
-  let all_fields = []
+  let all_fields = [];
   props.fields?.forEach((field) => {
-    let df = field?.all_properties
-    if (df?.depends_on) evaluate_depends_on(df.depends_on, field)
+    let df = field?.all_properties;
+    if (df?.depends_on) evaluate_depends_on(df.depends_on, field);
     all_fields.push({
       ...field,
       filters: df?.link_filters && JSON.parse(df.link_filters),
       placeholder: field.placeholder || field.label,
-    })
-  })
-  return all_fields
-})
+    });
+  });
+  return all_fields;
+});
 
 function evaluate_depends_on(expression, field) {
-  if (expression.substr(0, 5) == 'eval:') {
+  if (expression.substr(0, 5) == "eval:") {
     try {
-      let out = evaluate(expression.substr(5), { doc: data.value })
+      let out = evaluate(expression.substr(5), { doc: data.value });
       if (!out) {
-        field.hidden = true
+        field.hidden = true;
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 }
 
 function evaluate(code, context = {}) {
-  let variable_names = Object.keys(context)
-  let variables = Object.values(context)
-  code = `let out = ${code}; return out`
+  let variable_names = Object.keys(context);
+  let variables = Object.values(context);
+  code = `let out = ${code}; return out`;
   try {
-    let expression_function = new Function(...variable_names, code)
-    return expression_function(...variables)
+    let expression_function = new Function(...variable_names, code);
+    return expression_function(...variables);
   } catch (error) {
-    console.log('Error evaluating the following expression:')
-    console.error(code)
-    throw error
+    console.log("Error evaluating the following expression:");
+    console.error(code);
+    throw error;
   }
 }
 </script>
@@ -185,7 +190,7 @@ function evaluate(code, context = {}) {
   margin: 2px;
 }
 
-:deep(.form-control input:not([type='checkbox'])),
+:deep(.form-control input:not([type="checkbox"])),
 :deep(.form-control select),
 :deep(.form-control textarea),
 :deep(.form-control button) {
@@ -196,7 +201,7 @@ function evaluate(code, context = {}) {
 :deep(.form-control button) {
   gap: 0;
 }
-:deep(.form-control [type='checkbox']) {
+:deep(.form-control [type="checkbox"]) {
   margin-left: 9px;
   cursor: pointer;
 }
