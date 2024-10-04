@@ -100,6 +100,11 @@ def send_scheduled_notification(doc):
     # Mark the document as notified to avoid resending
     doc.notified = 1
     doc.save()
+    try:
+        frappe.utils.play_sound("alert")
+    except Exception as e:
+        frappe.log_error(
+            f"Failed to play sound: {str(e)}", "Sound Notification Error")
 
 
 def extract_and_remove_due_date(description):
