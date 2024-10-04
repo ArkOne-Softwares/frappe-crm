@@ -601,7 +601,7 @@ const viewsDropdownOptions = computed(() => {
 });
 
 const quickFilterList = computed(() => {
-  let filters = [{ name: "title", label: __("Title") }];
+  let filters = [{ name: "lead_name", label: __("Title") }];
   if (quickFilters.data) {
     filters.push(...quickFilters.data);
   }
