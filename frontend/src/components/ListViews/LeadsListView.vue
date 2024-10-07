@@ -31,42 +31,6 @@
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
-        <div v-else-if="column.type === 'Data' || column.type === 'data'">
-          <NestedPopover>
-            <template #target>
-              <div class="flex items-center">
-                <Button
-                  :label="column.label"
-                  variant="ghosted"
-                  @click="updateSelectedColumn(column)"
-                >
-                </Button>
-              </div>
-            </template>
-            <template #body="{ close }">
-              <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
-                <div class="min-w-72 p-2 sm:min-w-[400px]">
-                  <TextInput
-                    :type="'search'"
-                    size="sm"
-                    variant="subtle"
-                    placeholder="Placeholder"
-                    :disabled="false"
-                    v-model="searchValue[column.key]"
-                    @keyup.enter="debouncedApplyFilter(column)"
-                    @input.stop="debouncedApplyFilter(column)"
-                  >
-                    <!-- <template #suffix>
-                      <Button variant="ghosted" @click="debouncedApplyFilter(column)">
-                        <FeatherIcon class="w-4" name="search" />
-                      </Button>
-                    </template> -->
-                  </TextInput>
-                </div>
-              </div>
-            </template>
-          </NestedPopover>
-        </div>
       </ListHeaderItem>
     </ListHeader>
     <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
@@ -233,7 +197,6 @@
 </template>
 
 <script setup>
-import NestedPopover from "@/components/NestedPopover.vue";
 import HeartIcon from "@/components/Icons/HeartIcon.vue";
 import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
 import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
@@ -249,13 +212,11 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
-  TextInput,
   Tooltip,
 } from "frappe-ui";
 import { sessionStore } from "@/stores/session";
 import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useDebounceFn } from "@vueuse/core";
 
 const props = defineProps({
   rows: {
@@ -283,7 +244,6 @@ const emit = defineEmits([
   "updatePageCount",
   "columnWidthUpdated",
   "applyFilter",
-  "applyFilterByListHeader",
   "applyLikeFilter",
   "likeDoc",
 ]);
@@ -313,30 +273,7 @@ watch(pageLengthCount, (val, old_value) => {
 
 const listBulkActionsRef = ref(null);
 
-const selectedLead = ref("");
-
 defineExpose({
   customListActions: computed(() => listBulkActionsRef.value?.customListActions),
-});
-
-const searchValue = ref([]);
-const selectedColumn = ref(null);
-
-const debouncedApplyFilter = useDebounceFn((column) => {
-  emit("applyFilterByListHeader", {
-    event: null,
-    column,
-    searchValue: searchValue.value[column.key],
-  });
-}, 500);
-
-const updateSelectedColumn = (column) => {
-  selectedColumn.value = column;
-};
-
-watch(searchValue, (newValue, oldValue) => {
-  if (newValue !== oldValue) {
-    debouncedApplyFilter(selectedColumn.value);
-  }
 });
 </script>
