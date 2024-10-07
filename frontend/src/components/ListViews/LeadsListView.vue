@@ -15,7 +15,10 @@
     }"
     row-key="name"
   >
-    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader
+      class="sm:mx-5 mx-3"
+      @columnWidthUpdated="emit('columnWidthUpdated')"
+    >
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -31,45 +34,44 @@
         >
           <HeartIcon class="h-4 w-4" />
         </Button>
-        <NestedPopover>
-          <template #target>
-            <div class="flex items-center">
-              <Button :label="column.label" variant="ghosted"> </Button>
-            </div>
-          </template>
-          <template #body="{ close }">
-            <div class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl">
-              <div class="min-w-72 p-2 sm:min-w-[400px]">
-                <TextInput
-                  :type="'search'"
-                  size="sm"
-                  variant="subtle"
-                  placeholder="Placeholder"
-                  :disabled="false"
-                  v-model="searchValue[column.key]"
-                  modelValue=""
+        <div v-else-if="column.type === 'Data' || column.type === 'data'">
+          <NestedPopover>
+            <template #target>
+              <div class="flex items-center">
+                <Button
+                  :label="column.label"
+                  variant="ghosted"
+                  @click="updateSelectedColumn(column)"
                 >
-                  <template #suffix>
-                    <Button
-                      variant="ghosted"
-                      @click="
-                        (event) => {
-                          emit('applyFilterByListHeader', {
-                            event,
-                            column,
-                            searchValue: searchValue[column.key],
-                          });
-                        }
-                      "
-                    >
-                      <FeatherIcon class="w-4" name="search" />
-                    </Button>
-                  </template>
-                </TextInput>
+                </Button>
               </div>
-            </div>
-          </template>
-        </NestedPopover>
+            </template>
+            <template #body="{ close }">
+              <div
+                class="my-2 rounded-lg border border-gray-100 bg-white shadow-xl"
+              >
+                <div class="min-w-72 p-2 sm:min-w-[400px]">
+                  <TextInput
+                    :type="'search'"
+                    size="sm"
+                    variant="subtle"
+                    placeholder="Search"
+                    :disabled="false"
+                    v-model="searchValue[column.key]"
+                    @keyup.enter="debouncedApplyFilter(column)"
+                    @input.stop="debouncedApplyFilter(column)"
+                  >
+                    <!-- <template #suffix>
+                      <Button variant="ghosted" @click="debouncedApplyFilter(column)">
+                        <FeatherIcon class="w-4" name="search" />
+                      </Button>
+                    </template> -->
+                  </TextInput>
+                </div>
+              </div>
+            </template>
+          </NestedPopover>
+        </div>
       </ListHeaderItem>
     </ListHeader>
     <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
@@ -168,7 +170,10 @@
               <HeartIcon class="h-4 w-4" />
             </Button>
           </div>
-          <div v-else-if="column.key === 'sla_status'" class="truncate text-base">
+          <div
+            v-else-if="column.key === 'sla_status'"
+            class="truncate text-base"
+          >
             <Badge
               v-if="item.value"
               :variant="'subtle'"
@@ -212,12 +217,13 @@
             {{ label }}
           </div>
         </template>
-        
       </ListRowItem>
     </ListRows>
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
-        <Dropdown :options="listBulkActionsRef.bulkActions(selections, unselectAll)">
+        <Dropdown
+          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+        >
           <Button icon="more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
@@ -238,12 +244,12 @@
 
 <script setup>
 import NestedPopover from '@/components/NestedPopover.vue'
-import HeartIcon from "@/components/Icons/HeartIcon.vue";
-import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
-import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
-import MultipleAvatar from "@/components/MultipleAvatar.vue";
-import ListBulkActions from "@/components/ListBulkActions.vue";
-import ListRows from "@/components/ListViews/ListRows.vue";
+import HeartIcon from '@/components/Icons/HeartIcon.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import ListBulkActions from '@/components/ListBulkActions.vue'
+import ListRows from '@/components/ListViews/ListRows.vue'
 import {
   Avatar,
   ListView,
@@ -253,11 +259,13 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
+  TextInput,
   Tooltip,
-} from "frappe-ui";
-import { sessionStore } from "@/stores/session";
-import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+} from 'frappe-ui'
+import { sessionStore } from '@/stores/session'
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps({
   rows: {
@@ -278,46 +286,69 @@ const props = defineProps({
       rowCount: 0,
     }),
   },
-});
+})
 
 const emit = defineEmits([
-  "loadMore",
-  "updatePageCount",
-  "columnWidthUpdated",
-  "applyFilter",
-  "applyFilterByListHeader",
-  "applyLikeFilter",
-  "likeDoc",
-]);
+  'loadMore',
+  'updatePageCount',
+  'columnWidthUpdated',
+  'applyFilter',
+  'applyFilterByListHeader',
+  'applyLikeFilter',
+  'likeDoc',
+])
 
-const route = useRoute();
+const route = useRoute()
 
-const pageLengthCount = defineModel();
-const list = defineModel("list");
+const pageLengthCount = defineModel()
+const list = defineModel('list')
 
 const isLikeFilterApplied = computed(() => {
-  return list.value.params?.filters?._liked_by ? true : false;
-});
+  return list.value.params?.filters?._liked_by ? true : false
+})
 
-const { user } = sessionStore();
+const { user } = sessionStore()
 
 function isLiked(item) {
   if (item) {
-    let likedByMe = JSON.parse(item);
-    return likedByMe.includes(user);
+    let likedByMe = JSON.parse(item)
+    return likedByMe.includes(user)
   }
 }
 
 watch(pageLengthCount, (val, old_value) => {
-  if (val === old_value) return;
-  emit("updatePageCount", val);
-});
+  if (val === old_value) return
+  emit('updatePageCount', val)
+})
 
-const listBulkActionsRef = ref(null);
-const searchValue = ref([]);
-const selectedLead = ref("");
+const listBulkActionsRef = ref(null)
+
+const selectedLead = ref('')
 
 defineExpose({
-  customListActions: computed(() => listBulkActionsRef.value?.customListActions),
-});
+  customListActions: computed(
+    () => listBulkActionsRef.value?.customListActions,
+  ),
+})
+
+const searchValue = ref([])
+const selectedColumn = ref(null)
+
+const debouncedApplyFilter = useDebounceFn((column) => {
+  emit('applyFilterByListHeader', {
+    event: null,
+    column,
+    searchValue: searchValue.value[column.key],
+  })
+}, 500)
+
+const updateSelectedColumn = (column) => {
+  selectedColumn.value = column
+}
+
+watch(searchValue, (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    debouncedApplyFilter(selectedColumn.value)
+  }
+})
 </script>

@@ -36,9 +36,7 @@
         />
         <FormControl
           v-else-if="
-            ['email', 'number', 'date', 'password', 'textarea'].includes(
-              field.type,
-            )
+            ['email', 'number', 'password', 'textarea'].includes(field.type)
           "
           class="form-control"
           :class="{
@@ -49,6 +47,19 @@
           :value="data[field.name]"
           :placeholder="field.placeholder"
           :debounce="500"
+          @change.stop="emit('update', field.name, $event.target.value)"
+        />
+        <FormControl
+          v-else-if="['date'].includes(field.type)"
+          class="form-control"
+          :class="{
+            '[&_input]:text-gray-500':
+              field.type === 'date' && !data[field.name],
+          }"
+          :type="field.type"
+          :value="data[field.name]"
+          :placeholder="field.placeholder"
+          :debounce="1500"
           @change.stop="emit('update', field.name, $event.target.value)"
         />
         <FormControl

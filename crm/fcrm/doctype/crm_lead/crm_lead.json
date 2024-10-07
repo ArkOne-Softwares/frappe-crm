@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "hash",
  "creation": "2023-07-24 12:19:39.616298",
  "default_view": "List",
  "doctype": "DocType",
@@ -304,6 +304,7 @@
   {
    "fieldname": "next_contact_date",
    "fieldtype": "Datetime",
+   "hidden": 1,
    "label": "Next Contact Date"
   },
   {
@@ -406,11 +407,11 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-17 18:36:57.289897",
+ "modified": "2024-10-08 01:31:30.641956",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {

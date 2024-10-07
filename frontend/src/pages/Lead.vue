@@ -43,7 +43,10 @@
               <IndicatorIcon />
             </template>
             <template #suffix>
-              <FeatherIcon :name="open ? 'chevron-up' : 'chevron-down'" class="h-4" />
+              <FeatherIcon
+                :name="open ? 'chevron-up' : 'chevron-down'"
+                class="h-4"
+              />
             </template>
           </Button>
         </template>
@@ -125,7 +128,7 @@
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="lead.data.lead_name || __('Set Name')">
                 <div class="truncate text-2xl font-medium">
-                  {{ lead.data.lead_name || __("Untitled") }}
+                  {{ lead.data.lead_name || __('Untitled') }}
                 </div>
               </Tooltip>
               <div class="flex gap-1.5">
@@ -177,6 +180,22 @@
         v-model="lead.data"
         @updateField="updateField"
       />
+      <div>
+        <div class="flex items-center justify-between p-5 border-b">
+          <div class="text-lg font-medium">{{ __('Follow Up') }}</div>
+          <Button variant="ghost" class="w-7" @click="showFollowUpModal = true">
+            <NotificationsIcon class="h-4 w-4 text-yellow-700" />
+          </Button>
+        </div>
+        <div
+          v-if="lead.data.next_contact_date"
+          class="flex items-center justify-between p-5 border-b text-sm"
+        >
+        <div class="text-sm font-medium">{{ __('Follow Up At') }}</div>
+          <div>{{ lead.data.next_contact_date }}</div>
+        </div>
+      </div>
+
       <div
         v-if="fieldsLayout.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -218,6 +237,44 @@
     doctype="CRM Lead"
   />
   <Dialog
+    v-model="showFollowUpModal"
+    :options="{
+      title: __('Follow Up'),
+      size: 'md',
+      actions: [
+        {
+          label: __('Create Follow Up'),
+          variant: 'solid',
+          onClick: () => {
+            createFollowUpCRMNotification()
+            showFollowUpModal = false
+          },
+        },
+      ],
+    }"
+  >
+    <template #body-content>
+      <div class="space-y-4 text-gray-600">
+        <div class="flex items-center gap-2">
+          <!-- <CalendarIcon class="h-4 w-4" /> -->
+          <label class="block text-base">{{ __('Follow Up Date') }}</label>
+        </div>
+        <DateTimePicker v-model="followUpDateTime" />
+
+        <div class="flex items-center gap-2">
+          <!-- <CalendarIcon class="h-4 w-4" /> -->
+          <label class="block text-base">{{ __('Follow Up Reason') }}</label>
+        </div>
+        <TextInput
+          v-model="followUpReason"
+          type="text"
+          placeholder="Follow Up Reason"
+        />
+      </div>
+    </template>
+  </Dialog>
+
+  <Dialog
     v-model="showConvertToDealModal"
     :options="{
       title: __('Convert to Deal'),
@@ -234,11 +291,11 @@
     <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-gray-600">
         <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __("Organization") }}</label>
+        <label class="block text-base">{{ __('Organization') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __("Choose Existing") }}</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
         <Link
@@ -252,18 +309,20 @@
         />
         <div v-else class="mt-2.5 text-base">
           {{
-            __("New organization will be created based on the data in details section")
+            __(
+              'New organization will be created based on the data in details section',
+            )
           }}
         </div>
       </div>
 
       <div class="mb-4 mt-6 flex items-center gap-2 text-gray-600">
         <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __("Contact") }}</label>
+        <label class="block text-base">{{ __('Contact') }}</label>
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __("Choose Existing") }}</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
         <Link
@@ -282,37 +341,48 @@
     </template>
   </Dialog>
   <SidePanelModal
-  v-if="showSidePanelModal"
-  v-model="showSidePanelModal"
-  @reload="() => fieldsLayout.reload()"
-/>
+    v-if="showSidePanelModal"
+    v-model="showSidePanelModal"
+    @reload="() => fieldsLayout.reload()"
+  />
+  <TaskModal
+    v-if="showTaskModal"
+    v-model="showTaskModal"
+    :task="task"
+    doctype="CRM Lead"
+    :doc="docname"
+  />
 </template>
 <script setup>
-import Resizer from "@/components/Resizer.vue";
-import EditIcon from "@/components/Icons/EditIcon.vue";
-import ActivityIcon from "@/components/Icons/ActivityIcon.vue";
-import EmailIcon from "@/components/Icons/EmailIcon.vue";
-import Email2Icon from "@/components/Icons/Email2Icon.vue";
-import CommentIcon from "@/components/Icons/CommentIcon.vue";
-import PhoneIcon from "@/components/Icons/PhoneIcon.vue";
-import TaskIcon from "@/components/Icons/TaskIcon.vue";
-import NoteIcon from "@/components/Icons/NoteIcon.vue";
-import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
-import IndicatorIcon from "@/components/Icons/IndicatorIcon.vue";
-import CameraIcon from "@/components/Icons/CameraIcon.vue";
-import LinkIcon from "@/components/Icons/LinkIcon.vue";
-import OrganizationsIcon from "@/components/Icons/OrganizationsIcon.vue";
-import ContactsIcon from "@/components/Icons/ContactsIcon.vue";
-import LayoutHeader from "@/components/LayoutHeader.vue";
-import Activities from "@/components/Activities/Activities.vue";
-import AssignmentModal from "@/components/Modals/AssignmentModal.vue";
-import SidePanelModal from "@/components/Settings/SidePanelModal.vue";
-import MultipleAvatar from "@/components/MultipleAvatar.vue";
-import Link from "@/components/Controls/Link.vue";
-import Section from "@/components/Section.vue";
-import SectionFields from "@/components/SectionFields.vue";
-import SLASection from "@/components/SLASection.vue";
-import CustomActions from "@/components/CustomActions.vue";
+import Resizer from '@/components/Resizer.vue'
+import EditIcon from '@/components/Icons/EditIcon.vue'
+import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
+import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import Icon from '@/components/Icon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import CameraIcon from '@/components/Icons/CameraIcon.vue'
+import LinkIcon from '@/components/Icons/LinkIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import LayoutHeader from '@/components/LayoutHeader.vue'
+import TaskModal from '@/components/Modals/TaskModal.vue'
+import Activities from '@/components/Activities/Activities.vue'
+import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import SidePanelModal from '@/components/Settings/SidePanelModal.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
+import Link from '@/components/Controls/Link.vue'
+import Section from '@/components/Section.vue'
+import SectionFields from '@/components/SectionFields.vue'
+import SLASection from '@/components/SLASection.vue'
+import CustomActions from '@/components/CustomActions.vue'
 import {
   openWebsite,
   createToast,
@@ -338,16 +408,19 @@ import {
   Switch,
   Breadcrumbs,
   call,
-} from "frappe-ui";
-import { ref, computed, onMounted, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+  DateTimePicker,
+  TextInput,
+} from 'frappe-ui'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-const { $dialog, makeCall,$socket, allFilters, allOrFilters, allSortOrder } = globalStore();
-const { getContactByName, contacts } = contactsStore();
-const { statusOptions, getLeadStatus } = statusesStore();
-const { isManager } = usersStore();
-const route = useRoute();
-const router = useRouter();
+const { $dialog, makeCall, $socket, allFilters, allOrFilters, allSortOrder } =
+  globalStore()
+const { getContactByName, contacts } = contactsStore()
+const { statusOptions, getLeadStatus } = statusesStore()
+const { isManager } = usersStore()
+const route = useRoute()
+const router = useRouter()
 
 const props = defineProps({
   leadId: {
@@ -356,7 +429,7 @@ const props = defineProps({
   },
   sort: {
     type: String,
-    default: "",
+    default: '',
   },
   or_filters: {
     type: Object,
@@ -366,11 +439,22 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-});
+})
 const customActions = ref([])
 const customStatuses = ref([])
-const prevLead = ref("");
-const nextLead = ref("");
+const prevLead = ref('')
+const nextLead = ref('')
+const showTaskModal = ref(false)
+const docname = ref('')
+
+const task = ref({
+  title: '',
+  description: '',
+  assigned_to: '',
+  due_date: '',
+  priority: 'Low',
+  status: 'Backlog',
+})
 
 // const filters = computed(() => {
 //   console.log('props.filters:', props.filters);
@@ -391,9 +475,9 @@ const nextLead = ref("");
 // });
 
 const lead = createResource({
-  url: "crm.fcrm.doctype.crm_lead.api.get_lead",
+  url: 'crm.fcrm.doctype.crm_lead.api.get_lead',
   params: { name: props.leadId },
-  cache: ["lead", props.leadId],
+  cache: ['lead', props.leadId],
   onSuccess: async (data) => {
     let obj = {
       doc: data,
@@ -416,16 +500,18 @@ const lead = createResource({
     customActions.value = customization.actions || []
     customStatuses.value = customization.statuses || []
   },
-});
+})
 
 const prev = createResource({
-  url: "crm.api.doc.get_next",
+  url: 'crm.api.doc.get_next',
   params: {
     value: props.leadId,
     prev: 1,
-    doctype: "CRM Lead",
+    doctype: 'CRM Lead',
     filters:
-      props.filters && Object.keys(props.filters).length ? props.filters : allFilters,
+      props.filters && Object.keys(props.filters).length
+        ? props.filters
+        : allFilters,
     or_filters:
       props.or_filters && Object.keys(props.or_filters).length
         ? props.or_filters
@@ -433,18 +519,20 @@ const prev = createResource({
     sort: props.sort || allSortOrder,
   },
   onSuccess: (data) => {
-    prevLead.value = data;
+    prevLead.value = data
   },
-});
+})
 
 const next = createResource({
-  url: "crm.api.doc.get_next",
+  url: 'crm.api.doc.get_next',
   params: {
     value: props.leadId,
     prev: 0,
-    doctype: "CRM Lead",
+    doctype: 'CRM Lead',
     filters:
-      props.filters && Object.keys(props.filters).length ? props.filters : allFilters,
+      props.filters && Object.keys(props.filters).length
+        ? props.filters
+        : allFilters,
     or_filters:
       props.or_filters && Object.keys(props.or_filters).length
         ? props.or_filters
@@ -452,68 +540,103 @@ const next = createResource({
     sort: props.sort || allSortOrder,
   },
   onSuccess: (data) => {
-    nextLead.value = data;
+    nextLead.value = data
   },
-});
+})
 
 onMounted(() => {
-  next.fetch();
-  prev.fetch();
-  if (lead.data) return;
-  lead.fetch();
-});
+  next.fetch()
+  prev.fetch()
+  if (lead.data) return
+  lead.fetch()
+})
 
-const reload = ref(false);
-const showAssignmentModal = ref(false);
-const showSidePanelModal = ref(false);
+const reload = ref(false)
+const showAssignmentModal = ref(false)
+const showSidePanelModal = ref(false)
+
+// ArkOne - Follow Up
+const showFollowUpModal = ref(false)
+const followUpDateTime = ref('')
+const followUpReason = ref('')
+function createFollowUpCRMNotification() {
+  createResource({
+    url: 'crm.api.followup.add_followup',
+    params: {
+      type: 'Lead',
+      notification_text: 'You have a follow up for ' + lead.data.lead_name,
+      reference_type: 'CRM Lead',
+      reference_name: props.leadId,
+      notification_time: followUpDateTime.value,
+      reason: followUpReason.value ?? 'Follow Up',
+    },
+    auto: true,
+    onSuccess: () => {
+      createToast({
+        title: __('Follow Up Notification Created'),
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+    },
+    onError: (err) => {
+      createToast({
+        title: __('Error Creating Follow Up Notification'),
+        text: __(err.messages?.[0]),
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
+    },
+  })
+}
+// Ends; ArkOne - Follow Up
 
 function updateLead(fieldname, value, callback) {
-  value = Array.isArray(fieldname) ? "" : value;
+  value = Array.isArray(fieldname) ? '' : value
 
-  if (!Array.isArray(fieldname) && validateRequired(fieldname, value)) return;
+  if (!Array.isArray(fieldname) && validateRequired(fieldname, value)) return
 
   createResource({
-    url: "frappe.client.set_value",
+    url: 'frappe.client.set_value',
     params: {
-      doctype: "CRM Lead",
+      doctype: 'CRM Lead',
       name: props.leadId,
       fieldname,
       value,
     },
     auto: true,
     onSuccess: () => {
-      lead.reload();
-      reload.value = true;
+      lead.reload()
+      reload.value = true
       createToast({
-        title: __("Lead updated"),
-        icon: "check",
-        iconClasses: "text-green-600",
-      });
-      callback?.();
+        title: __('Lead updated'),
+        icon: 'check',
+        iconClasses: 'text-green-600',
+      })
+      callback?.()
     },
     onError: (err) => {
       createToast({
-        title: __("Error updating lead"),
+        title: __('Error updating lead'),
         text: __(err.messages?.[0]),
-        icon: "x",
-        iconClasses: "text-red-600",
-      });
+        icon: 'x',
+        iconClasses: 'text-red-600',
+      })
     },
-  });
+  })
 }
 
 function validateRequired(fieldname, value) {
-  let meta = lead.data.fields_meta || {};
+  let meta = lead.data.fields_meta || {}
   if (meta[fieldname]?.reqd && !value) {
     createToast({
-      title: __("Error Updating Lead"),
-      text: __("{0} is a required field", [meta[fieldname].label]),
-      icon: "x",
-      iconClasses: "text-red-600",
-    });
-    return true;
+      title: __('Error Updating Lead'),
+      text: __('{0} is a required field', [meta[fieldname].label]),
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return true
   }
-  return false;
+  return false
 }
 
 const breadcrumbs = computed(() => {
@@ -541,144 +664,144 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-const tabIndex = ref(0);
+const tabIndex = ref(0)
 
 const tabs = computed(() => {
   let tabOptions = [
     {
-      name: "Activity",
-      label: __("Activity"),
+      name: 'Activity',
+      label: __('Activity'),
       icon: ActivityIcon,
     },
     {
-      name: "Tasks",
-      label: __("Tasks"),
+      name: 'Tasks',
+      label: __('Tasks'),
       icon: TaskIcon,
     },
     {
-      name: "WhatsApp",
-      label: __("WhatsApp"),
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
       icon: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
     {
-      name: "Comments",
-      label: __("Comments"),
+      name: 'Comments',
+      label: __('Comments'),
       icon: CommentIcon,
     },
     {
-      name: "Notes",
-      label: __("Notes"),
+      name: 'Notes',
+      label: __('Notes'),
       icon: NoteIcon,
     },
     {
-      name: "Calls",
-      label: __("Calls"),
+      name: 'Calls',
+      label: __('Calls'),
       icon: PhoneIcon,
       condition: () => callEnabled.value,
     },
     {
-      name: "Emails",
-      label: __("Emails"),
+      name: 'Emails',
+      label: __('Emails'),
       icon: EmailIcon,
     },
-  ];
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true));
-});
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
 
 watch(tabs, (value) => {
   if (value && route.params.tabName) {
     let index = value.findIndex(
-      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase()
-    );
+      (tab) => tab.name.toLowerCase() === route.params.tabName.toLowerCase(),
+    )
     if (index !== -1) {
-      tabIndex.value = index;
+      tabIndex.value = index
     }
   }
-});
+})
 
 watch(
   () => props.leadId,
   (newVal) => {
     if (newVal) {
-      window.location.reload();
+      window.location.reload()
     }
-  }
-);
+  },
+)
 
 function validateFile(file) {
-  let extn = file.name.split(".").pop().toLowerCase();
-  if (!["png", "jpg", "jpeg"].includes(extn)) {
-    return __("Only PNG and JPG images are allowed");
+  let extn = file.name.split('.').pop().toLowerCase()
+  if (!['png', 'jpg', 'jpeg'].includes(extn)) {
+    return __('Only PNG and JPG images are allowed')
   }
 }
 
 const fieldsLayout = createResource({
-  url: "crm.api.doc.get_sidebar_fields",
-  cache: ["fieldsLayout", props.leadId],
-  params: { doctype: "CRM Lead", name: props.leadId },
+  url: 'crm.api.doc.get_sidebar_fields',
+  cache: ['fieldsLayout', props.leadId],
+  params: { doctype: 'CRM Lead', name: props.leadId },
   auto: true,
-});
+})
 
 function updateField(name, value, callback) {
   updateLead(name, value, () => {
-    lead.data[name] = value;
-    callback?.();
-  });
+    lead.data[name] = value
+    callback?.()
+  })
 }
 
 async function deleteLead(name) {
-  await call("frappe.client.delete", {
-    doctype: "CRM Lead",
+  await call('frappe.client.delete', {
+    doctype: 'CRM Lead',
     name,
-  });
-  router.push({ name: "Leads" });
+  })
+  router.push({ name: 'Leads' })
 }
 
 // Convert to Deal
-const showConvertToDealModal = ref(false);
-const existingContactChecked = ref(false);
-const existingOrganizationChecked = ref(false);
+const showConvertToDealModal = ref(false)
+const existingContactChecked = ref(false)
+const existingOrganizationChecked = ref(false)
 
-const existingContact = ref("");
-const existingOrganization = ref("");
+const existingContact = ref('')
+const existingOrganization = ref('')
 
 async function convertToDeal(updated) {
-  let valueUpdated = false;
+  let valueUpdated = false
 
   if (existingContactChecked.value && !existingContact.value) {
     createToast({
-      title: __("Error"),
-      text: __("Please select an existing contact"),
-      icon: "x",
-      iconClasses: "text-red-600",
-    });
-    return;
+      title: __('Error'),
+      text: __('Please select an existing contact'),
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return
   }
 
   if (existingOrganizationChecked.value && !existingOrganization.value) {
     createToast({
-      title: __("Error"),
-      text: __("Please select an existing organization"),
-      icon: "x",
-      iconClasses: "text-red-600",
-    });
-    return;
+      title: __('Error'),
+      text: __('Please select an existing organization'),
+      icon: 'x',
+      iconClasses: 'text-red-600',
+    })
+    return
   }
 
   if (existingContactChecked.value && existingContact.value) {
-    lead.data.salutation = getContactByName(existingContact.value).salutation;
-    lead.data.lead_name = getContactByName(existingContact.value).lead_name;
-    lead.data.email_id = getContactByName(existingContact.value).email_id;
-    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no;
-    existingContactChecked.value = false;
-    valueUpdated = true;
+    lead.data.salutation = getContactByName(existingContact.value).salutation
+    lead.data.lead_name = getContactByName(existingContact.value).lead_name
+    lead.data.email_id = getContactByName(existingContact.value).email_id
+    lead.data.mobile_no = getContactByName(existingContact.value).mobile_no
+    existingContactChecked.value = false
+    valueUpdated = true
   }
 
   if (existingOrganizationChecked.value && existingOrganization.value) {
-    lead.data.organization = existingOrganization.value;
-    existingOrganizationChecked.value = false;
-    valueUpdated = true;
+    lead.data.organization = existingOrganization.value
+    existingOrganizationChecked.value = false
+    valueUpdated = true
   }
 
   if (valueUpdated) {
@@ -690,69 +813,93 @@ async function convertToDeal(updated) {
         mobile_no: lead.data.mobile_no,
         organization: lead.data.organization,
       },
-      "",
-      () => convertToDeal(true)
-    );
-    showConvertToDealModal.value = false;
+      '',
+      () => convertToDeal(true),
+    )
+    showConvertToDealModal.value = false
   } else {
-    let deal = await call("crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal", {
-      lead: lead.data.name,
-    });
+    let deal = await call(
+      'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal',
+      {
+        lead: lead.data.name,
+      },
+    )
     if (deal) {
       if (updated) {
         await contacts.reload()
       }
-      router.push({ name: "Deal", params: { dealId: deal } });
+      router.push({ name: 'Deal', params: { dealId: deal } })
     }
   }
 }
 
-const activities = ref(null);
+const activities = ref(null)
 
 function openEmailBox() {
-  activities.value.emailBox.show = true;
+  activities.value.emailBox.show = true
 }
 
 const handlePrevClick = () => {
   if (prevLead.value) {
     router.push({
-          name: "Lead",
-          params: {
-            leadId: prevLead.value,
-          },
-          query: {
-            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
-            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
-            sort: props.sort || allSortOrder.value,
-          },
-        });
+      name: 'Lead',
+      params: {
+        leadId: prevLead.value,
+      },
+      query: {
+        filters: JSON.stringify(
+          props.filters && Object.keys(props.filters).length
+            ? props.filters
+            : allFilters.value,
+        ),
+        or_filters: JSON.stringify(
+          props.or_filters && Object.keys(props.or_filters).length
+            ? props.or_filters
+            : allOrFilters.value,
+        ),
+        sort: props.sort || allSortOrder.value,
+      },
+    })
   }
-};
+}
 
 const handleNextClick = () => {
   if (nextLead.value) {
-        router.push({
-          name: "Lead",
-          params: {
-            leadId: nextLead.value,
-          },
-          query: {
-            filters: JSON.stringify(props.filters && Object.keys(props.filters).length ? props.filters : allFilters.value),
-            or_filters: JSON.stringify(props.or_filters && Object.keys(props.or_filters).length ? props.or_filters : allOrFilters.value),
-            sort: props.sort || allSortOrder.value,
-          },
-        });
-      }
-};
+    router.push({
+      name: 'Lead',
+      params: {
+        leadId: nextLead.value,
+      },
+      query: {
+        filters: JSON.stringify(
+          props.filters && Object.keys(props.filters).length
+            ? props.filters
+            : allFilters.value,
+        ),
+        or_filters: JSON.stringify(
+          props.or_filters && Object.keys(props.or_filters).length
+            ? props.or_filters
+            : allOrFilters.value,
+        ),
+        sort: props.sort || allSortOrder.value,
+      },
+    })
+  }
+}
 
 const updatePropsFromQuery = (query) => {
-      props.filters = query.filters ? JSON.parse(query.filters) : allFilters.value;
-      props.or_filters = query.or_filters ? JSON.parse(query.or_filters) : allOrFilters.value;
-      props.sort = query.sort || allSortOrder.value;
-    };
+  props.filters = query.filters ? JSON.parse(query.filters) : allFilters.value
+  props.or_filters = query.or_filters
+    ? JSON.parse(query.or_filters)
+    : allOrFilters.value
+  props.sort = query.sort || allSortOrder.value
+}
 
-watch(() => route.query, (newQuery) => {
-      updatePropsFromQuery(newQuery);
-    }, { immediate: true });
-
+watch(
+  () => route.query,
+  (newQuery) => {
+    updatePropsFromQuery(newQuery)
+  },
+  { immediate: true },
+)
 </script>

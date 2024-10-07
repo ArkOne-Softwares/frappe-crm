@@ -13,13 +13,13 @@ app_home = "/app/crm-pro"
 
 # required_apps = []
 add_to_apps_screen = [
-	{
-		"name": "crm",
-		"logo": "/assets/crm/manifest/apple-icon-180.png",
-		"title": "CRM",
-		"route": "/app/crm-pro"
-		# "has_permission": "crm.api.check_app_permission",
-	}
+    {
+        "name": "crm",
+        "logo": "/assets/crm/manifest/apple-icon-180.png",
+                "title": "CRM",
+                "route": "/app/crm-pro"
+                # "has_permission": "crm.api.check_app_permission",
+    }
 ]
 
 # Includes in <head>
@@ -57,11 +57,11 @@ add_to_apps_screen = [
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# "Role": "home_page"
 # }
 
 website_route_rules = [
-	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+    {"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 ]
 
 # Generators
@@ -75,8 +75,8 @@ website_route_rules = [
 
 # add methods and filters to jinja environment
 # jinja = {
-#	"methods": "crm.utils.jinja_methods",
-#	"filters": "crm.utils.jinja_filters"
+# "methods": "crm.utils.jinja_methods",
+# "filters": "crm.utils.jinja_filters"
 # }
 
 # Installation
@@ -118,11 +118,11 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+# "Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-#	"Event": "frappe.desk.doctype.event.event.has_permission",
+# "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # DocType Class
@@ -130,8 +130,8 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Contact": "crm.overrides.contact.CustomContact",
-	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+    "Contact": "crm.overrides.contact.CustomContact",
+    "Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
 # Document Events
@@ -139,44 +139,63 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
-	"Contact": {
-		"validate": ["crm.api.contact.validate"],
-	},
-	"ToDo": {
-		"after_insert": ["crm.api.todo.after_insert"],
-	},
-	"Comment": {
-		"on_update": ["crm.api.comment.on_update"],
-	},
-	"WhatsApp Message": {
-		"validate": ["crm.api.whatsapp.validate"],
-		"on_update": ["crm.api.whatsapp.on_update"],
-	},
+    "Contact": {
+        "validate": ["crm.api.contact.validate"],
+    },
+    "ToDo": {
+        "after_insert": ["crm.api.todo.after_insert"],
+    },
+    "Comment": {
+        "on_update": ["crm.api.comment.on_update"],
+    },
+    "WhatsApp Message": {
+        "validate": ["crm.api.whatsapp.validate"],
+        "on_update": ["crm.api.whatsapp.on_update"],
+    },
     "CRM Deal": {
         "on_update": ["crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"],
-	},
+    },
 }
 
 # Scheduled Tasks
 # ---------------
 
+scheduler_events = {
+    "cron": {
+        "* * * * *": [  # This runs the check every minute. Adjust as needed.
+            "crm.fcrm.doctype.crm_notification.crm_notification.check_and_send_notifications"
+        ]
+    }
+}
+
 # scheduler_events = {
-#	"all": [
-#		"crm.tasks.all"
-#	],
-#	"daily": [
-#		"crm.tasks.daily"
-#	],
-#	"hourly": [
-#		"crm.tasks.hourly"
-#	],
-#	"weekly": [
-#		"crm.tasks.weekly"
-#	],
-#	"monthly": [
-#		"crm.tasks.monthly"
-#	],
+# "all": [
+# "crm.tasks.all"
+# ],
+# "daily": [
+# "crm.tasks.daily"
+# ],
+# "hourly": [
+# "crm.tasks.hourly"
+# ],
+# "weekly": [
+# "crm.tasks.weekly"
+# ],
+# "monthly": [
+# "crm.tasks.monthly"
+# ],
 # }
+
+sounds = [
+    {"name": "email", "src": "/assets/frappe/sounds/email.mp3", "volume": 0.1},
+    {"name": "submit", "src": "/assets/frappe/sounds/submit.mp3", "volume": 0.1},
+    {"name": "cancel", "src": "/assets/frappe/sounds/cancel.mp3", "volume": 0.1},
+    {"name": "delete", "src": "/assets/frappe/sounds/delete.mp3", "volume": 0.05},
+    {"name": "click", "src": "/assets/frappe/sounds/click.mp3", "volume": 0.05},
+    {"name": "error", "src": "/assets/frappe/sounds/error.mp3", "volume": 0.1},
+    {"name": "alert", "src": "/assets/frappe/sounds/alert.mp3", "volume": 0.2},
+    # {"name": "chime", "src": "/assets/frappe/sounds/chime.mp3"},
+]
 
 # Testing
 # -------
@@ -187,14 +206,14 @@ doc_events = {
 # ------------------------------
 #
 # override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
+# "frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-#	"Task": "crm.task.get_dashboard_data"
+# "Task": "crm.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -220,29 +239,29 @@ doc_events = {
 # --------------------
 
 # user_data_fields = [
-#	{
-#		"doctype": "{doctype_1}",
-#		"filter_by": "{filter_by}",
-#		"redact_fields": ["{field_1}", "{field_2}"],
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_2}",
-#		"filter_by": "{filter_by}",
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_3}",
-#		"strict": False,
-#	},
-#	{
-#		"doctype": "{doctype_4}"
-#	}
+# {
+# "doctype": "{doctype_1}",
+# "filter_by": "{filter_by}",
+# "redact_fields": ["{field_1}", "{field_2}"],
+# "partial": 1,
+# },
+# {
+# "doctype": "{doctype_2}",
+# "filter_by": "{filter_by}",
+# "partial": 1,
+# },
+# {
+# "doctype": "{doctype_3}",
+# "strict": False,
+# },
+# {
+# "doctype": "{doctype_4}"
+# }
 # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-#	"crm.auth.validate"
+# "crm.auth.validate"
 # ]

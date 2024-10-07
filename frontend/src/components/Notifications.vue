@@ -11,8 +11,10 @@
     }"
   >
     <div class="flex h-screen flex-col">
-      <div class="z-20 flex items-center justify-between border-b bg-white px-5 py-2.5">
-        <div class="text-base font-medium">{{ __("Notifications") }}</div>
+      <div
+        class="z-20 flex items-center justify-between border-b bg-white px-5 py-2.5"
+      >
+        <div class="text-base font-medium">{{ __('Notifications') }}</div>
         <div class="flex gap-1">
           <Tooltip :text="__('Mark all as read')">
             <div>
@@ -60,7 +62,7 @@
                 {{ n.from_user.full_name }}
               </span>
               <span>
-                {{ __("mentioned you in {0}", [n.reference_doctype]) }}
+                {{ __('mentioned you in {0}', [n.reference_doctype]) }}
               </span>
               <span class="font-medium text-gray-900">
                 {{ n.reference_name }}
@@ -72,89 +74,140 @@
           </div>
         </RouterLink>
       </div>
-      <div v-else class="flex flex-1 flex-col items-center justify-center gap-2">
+      <div
+        v-else
+        class="flex flex-1 flex-col items-center justify-center gap-2"
+      >
         <NotificationsIcon class="h-20 w-20 text-gray-300" />
         <div class="text-lg font-medium text-gray-500">
-          {{ __("No new notifications") }}
+          {{ __('No new notifications') }}
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import WhatsAppIcon from "@/components/Icons/WhatsAppIcon.vue";
-import MarkAsDoneIcon from "@/components/Icons/MarkAsDoneIcon.vue";
-import NotificationsIcon from "@/components/Icons/NotificationsIcon.vue";
-import UserAvatar from "@/components/UserAvatar.vue";
-import { notificationsStore } from "@/stores/notifications";
-import { globalStore } from "@/stores/global";
-import { timeAgo } from "@/utils";
-import { onClickOutside } from "@vueuse/core";
-import { capture } from "@/telemetry";
-import { Tooltip } from "frappe-ui";
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
+import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
+import { notificationsStore } from '@/stores/notifications'
+import { globalStore } from '@/stores/global'
+import { timeAgo } from '@/utils'
+import { onClickOutside } from '@vueuse/core'
+import { capture } from '@/telemetry'
+import { Tooltip } from 'frappe-ui'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const { $socket } = globalStore();
+const { $socket } = globalStore()
 
-const target = ref(null);
+const target = ref(null)
 onClickOutside(
   target,
   () => {
     if (notificationsStore().visible) {
-      toggleNotificationPanel();
+      toggleNotificationPanel()
     }
   },
   {
-    ignore: ["#notifications-btn"],
-  }
-);
+    ignore: ['#notifications-btn'],
+  },
+)
 
 function toggleNotificationPanel() {
-  notificationsStore().toggle();
+  notificationsStore().toggle()
 }
 
 function markAsRead(doc) {
-  capture("notification_mark_as_read");
-  notificationsStore().mark_doc_as_read(doc);
+  capture('notification_mark_as_read')
+  notificationsStore().mark_doc_as_read(doc)
 }
 
 function markAllAsRead() {
-  capture("notification_mark_all_as_read");
-  notificationsStore().mark_as_read.reload();
+  capture('notification_mark_all_as_read')
+  notificationsStore().mark_as_read.reload()
 }
 
 onBeforeUnmount(() => {
-  $socket.off("crm_notification");
-});
+  $socket.off('crm_notification')
+  $socket.off('follow_up')
+})
 
 onMounted(() => {
-  $socket.on("crm_notification", () => {
-    notificationsStore().notifications.reload();
-  });
-});
+  $socket.on('crm_notification', (data) => {
+    notificationsStore().notifications.reload()
+    if (Notification.permission === 'granted') {
+      const notification = new Notification(
+        'Whatsapp Message received from contact ' +
+          data.reference_name +
+          ' : ' +
+          data.message,
+      )
+      notification.onclick = () => {
+        channel.postMessage('focus')
+      }
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          const notification = new Notification(
+            'Whatsapp Message received from contact ' +
+              data.reference_name +
+              ' : ' +
+              data.message,
+          )
+          notification.onclick = () => {
+            channel.postMessage('focus')
+          }
+        }
+      })
+    }
+  })
+  $socket.on('follow_up', (data) => {
+    notificationsStore().notifications.reload()
+    if (Notification.permission === 'granted') {
+      const notification = new Notification(
+        data.message ?? 'Follow up Reminder',
+      )
+      notification.onclick = () => {
+        channel.postMessage('focus')
+      }
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          const notification = new Notification(
+            data.message ?? 'Follow up Reminder',
+          )
+          notification.onclick = () => {
+            channel.postMessage('focus')
+          }
+        }
+      })
+    }
+  })
+})
 
 function getRoute(notification) {
-  console.log(":notification", notification);
-  let route = notification.route_name;
+  console.log(':notification', notification)
+  let route = notification.route_name
   let params = {
-    leadId: notification.reference_name ?? "",
-  };
-  let hash = "#" + notification.comment || notification.notification_type_doc;
-  if (notification.route_name === "Deal") {
+    leadId: notification.reference_name ?? '',
+  }
+  let hash = '#' + notification.comment || notification.notification_type_doc
+  if (notification.route_name === 'Deal') {
     params = {
       dealId: notification.reference_name,
-    };
+    }
   }
-  if (notification.route_name === "WhatsApp") {
-    params = {};
-    hash = "";
+  if (notification.route_name === 'WhatsApp') {
+    params = {}
+    hash = ''
   }
   return {
     name: route,
     params: params,
     hash: hash,
-  };
+  }
 }
 
-onMounted(() => {});
+onMounted(() => {})
 </script>
