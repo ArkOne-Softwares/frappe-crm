@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-gray-900">
-              {{ __('Create Lead') }}
+              {{ __("Create Lead") }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -42,155 +42,133 @@
 </template>
 
 <script setup>
-import EditIcon from '@/components/Icons/EditIcon.vue'
-import Fields from '@/components/Fields.vue'
-import { usersStore } from '@/stores/users'
-import { statusesStore } from '@/stores/statuses'
-import { capture } from '@/telemetry'
-import { createResource } from 'frappe-ui'
-import { computed, onMounted, ref, reactive, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import EditIcon from "@/components/Icons/EditIcon.vue";
+import Fields from "@/components/Fields.vue";
+import { usersStore } from "@/stores/users";
+import { statusesStore } from "@/stores/statuses";
+import { capture } from "@/telemetry";
+import { createResource } from "frappe-ui";
+import { computed, onMounted, ref, nextTick } from "vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   defaults: Object,
-})
+});
 
-const { getUser, isManager } = usersStore()
-const { getLeadStatus, statusOptions } = statusesStore()
+const { getUser, isManager } = usersStore();
+const { getLeadStatus, statusOptions } = statusesStore();
 
-const show = defineModel()
-const router = useRouter()
-const error = ref(null)
-const isLeadCreating = ref(false)
+const show = defineModel();
+const router = useRouter();
+const error = ref(null);
+const isLeadCreating = ref(false);
+const showQuickEntryModal = defineModel("quickEntry");
+
+const lead = ref({
+  status: "",
+});
 
 const sections = createResource({
-  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
-  cache: ['quickEntryFields', 'CRM Lead'],
-  params: { doctype: 'CRM Lead', type: 'Quick Entry' },
+  url: "crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout",
+  cache: ["quickEntryFields", "CRM Lead"],
+  params: { doctype: "CRM Lead", type: "Quick Entry" },
   auto: true,
   transform: (data) => {
     return data.forEach((section) => {
       section.fields.forEach((field) => {
-        if (field.name == 'status') {
-          field.type = 'Select'
-          field.options = leadStatuses.value
-          field.prefix = getLeadStatus(lead.status).iconColorClass
-        } else if (field.name == 'lead_owner') {
-          field.type = 'User'
+        if (field.name == "status") {
+          field.type = "Select";
+          field.options = leadStatuses.value;
+          field.prefix = getLeadStatus(lead.value.status).iconColorClass;
+        } else if (field.name == "lead_owner") {
+          field.type = "User";
         }
-      })
-    })
+        console.log(field);
+        if (!lead.value.hasOwnProperty(field.name)) {
+          lead.value[field.name] = field.placeholder || "";
+        }
+      });
+    });
   },
-})
-
-const lead = reactive({
-  salutation: '',
-  lead_name: '',
-  email: '',
-  mobile_no: '',
-  gender: '',
-  dob: '',
-  height: '',
-  weight: '',
-  marital_status: '',
-  annual_revenue: '',
-  qualification: '',
-  lead_source: '',
-  city: '',
-  state: '',
-  caste: '',
-  kids: '',
-  family_background: '',
-  lead_status: '',
-  status: '',
-  lead_owner: '',
-  first_name: '',
-  last_name: '',
-})
+});
 
 const createLead = createResource({
-  url: 'frappe.client.insert',
+  url: "frappe.client.insert",
   makeParams(values) {
     return {
       doc: {
-        doctype: 'CRM Lead',
+        doctype: "CRM Lead",
         ...values,
       },
-    }
+    };
   },
-})
+});
 
 const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
-  if (!lead.status) {
-    lead.status = statuses[0].value
+  let statuses = statusOptions("lead");
+  if (!lead.value.status) {
+    lead.value.status = statuses[0].value;
   }
-  return statuses
-})
+  return statuses;
+});
 
 function createNewLead() {
-  if (lead.website && !lead.website.startsWith('http')) {
-    lead.website = 'https://' + lead.website
+  if (lead.value.website && !lead.value.website.startsWith("http")) {
+    lead.value.website = "https://" + lead.value.website;
   }
 
-  createLead.submit(lead, {
+  createLead.submit(lead.value, {
     validate() {
-      error.value = null
-      // if (!lead.lead_name) {
-      //   error.value = __('Name is mandatory')
-      //   return error.value
-      // }
-      if (!lead.lead_name) {
-        lead.lead_name = 'EMPTY';
+      error.value = null;
+      if (!lead.value.lead_name) {
+        lead.value.lead_name = "EMPTY";
         return "Your have not provided a name for the lead. We have set it to 'EMPTY'. Click on 'Create' again to proceed.";
       }
-      if (lead.mobile_no && isNaN(lead.mobile_no.replace(/[-+() ]/g, ''))) {
-        error.value = __('Mobile No should be a number')
-        return error.value
+      if (lead.value.mobile_no && isNaN(lead.value.mobile_no.replace(/[-+() ]/g, ""))) {
+        error.value = __("Mobile No should be a number");
+        return error.value;
       }
-      if (lead.email && !lead.email.includes('@')) {
-        error.value = __('Invalid Email')
-        return error.value
+      if (lead.value.email && !lead.value.email.includes("@")) {
+        error.value = __("Invalid Email");
+        return error.value;
       }
-      if (!lead.status) {
-        error.value = __('Status is required')
-        return error.value
+      if (!lead.value.status) {
+        error.value = __("Status is required");
+        return error.value;
       }
-      isLeadCreating.value = true
+      isLeadCreating.value = true;
     },
     onSuccess(data) {
-      capture('lead_created')
-      isLeadCreating.value = false
-      show.value = false
-      router.push({ name: 'Lead', params: { leadId: data.name } })
+      capture("lead_created");
+      isLeadCreating.value = false;
+      show.value = false;
+      router.push({ name: "Lead", params: { leadId: data.name } });
     },
     onError(err) {
-      isLeadCreating.value = false
+      isLeadCreating.value = false;
       if (!err.messages) {
-        error.value = err.message
-        return
+        error.value = err.message;
+        return;
       }
-      error.value = err.messages.join('\n')
+      error.value = err.messages.join("\n");
     },
-  })
+  });
 }
 
-const showQuickEntryModal = defineModel('quickEntry')
-
 function openQuickEntryModal() {
-  showQuickEntryModal.value = true
+  showQuickEntryModal.value = true;
   nextTick(() => {
-    show.value = false
-  })
+    show.value = false;
+  });
 }
 
 onMounted(() => {
-  Object.assign(lead, props.defaults)
-  if (!lead.lead_owner) {
-    lead.lead_owner = getUser().name
+  Object.assign(lead.value, props.defaults);
+  if (!lead.value.lead_owner) {
+    lead.value.lead_owner = getUser().name;
   }
-  if (!lead.status && leadStatuses.value[0].value) {
-    lead.status = leadStatuses.value[0].value
+  if (!lead.value.status && leadStatuses.value[0].value) {
+    lead.value.status = leadStatuses.value[0].value;
   }
-})
+});
 </script>
