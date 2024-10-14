@@ -106,12 +106,12 @@ const links = computed(() => {
       to: 'Deals',
       condition: () => crmSettings.value.deal_visible,
     },
-    // {
-    //   label: 'Contacts',
-    //   icon: ContactsIcon,
-    //   to: 'Contacts',
-    //   condition: () => crmSettings.value.contacts_visible,
-    // },
+    {
+      label: 'Contacts',
+      icon: ContactsIcon,
+      to: 'Contacts',
+      condition: () => !whatsappEnabled.value && crmSettings.value.contacts_visible,
+    },
     {
       label: 'Organizations',
       icon: OrganizationsIcon,
